@@ -1,0 +1,104 @@
+package com.github.texxel.levels.roomtypes;
+
+import com.github.texxel.levels.components.Room;
+import com.github.texxel.levels.components.TileMap;
+import com.github.texxel.tiles.TileList;
+import com.github.texxel.utils.Point2D;
+import com.github.texxel.utils.Random;
+import com.github.texxel.utils.Rectangle;
+
+import java.util.Map;
+
+
+public class PassageRoom implements RoomType {
+
+    @Override
+    public void decorate( TileMap tileMap, Room room ) {
+        Point2D center = room.center();
+
+        Rectangle bounds = room.bounds;
+        if (bounds.width > bounds.height
+                || ( bounds.width == bounds.height && Random.roll( 2 ) ) ) {
+            // passage goes from left to right
+
+            // set left to far right and right to far left
+            int left = bounds.x2 - 1;
+            int right = bounds.x + 1;
+
+            for (Point2D door : room.connected.values()) {
+
+                // draw passage from door to vertical center
+                int stepDirection = door.y < center.y ? +1 : -1;
+                if (door.x == bounds.x ) {
+                    // inform passage it can extend to far left
+                    left = bounds.x + 1;
+
+                    for (int i = door.y; i != center.y; i += stepDirection)
+                        tileMap.setTile( left, i, TileList.FLOOR );
+                } else if ( door.x == bounds.x2 ) {
+                    // inform passage it can extend to far right
+                    right = bounds.x2 - 1;
+
+                    for (int i = door.y; i != center.y; i += stepDirection)
+                        tileMap.setTile( right, i, TileList.FLOOR );
+                } else {
+                    // extend passage way if needed
+                    if (door.x < left)
+                        left = door.x;
+                    if (door.x > right)
+                        right = door.x;
+
+                    for ( int i = door.y + stepDirection; i != center.y; i += stepDirection )
+                        tileMap.setTile( door.x, i, TileList.FLOOR );
+                }
+            }
+
+            // draw the passage from the left to the right
+            // if left never got set to less than right, nothing will be drawn
+            for ( int i = left; i <= right; i++ )
+                tileMap.setTile( i, center.y, TileList.FLOOR );
+
+        } else {
+            // passage goes top to bottom (much the same as above)
+
+            int top = bounds.y2 - 1;
+            int bottom = bounds.y + 1;
+
+            for (Point2D door : room.connected.values()) {
+
+                int stepDirection = door.x < center.x ? +1 : -1;
+
+                if (door.y == bounds.y ) {
+                    top = bounds.y + 1;
+                    for ( int i = door.x; i != center.x; i += stepDirection)
+                        tileMap.setTile( i, top, TileList.FLOOR );
+                } else if ( door.y == bounds.y2 ) {
+                    bottom = bounds.y2 - 1;
+                    for ( int i = door.x; i != center.x; i += stepDirection )
+                        tileMap.setTile( i, bottom, TileList.FLOOR );
+                } else {
+                    if (door.y < top)
+                        top = door.y;
+                    if (door.y > bottom)
+                        bottom = door.y;
+
+                    for ( int i = door.x + stepDirection; i != center.x; i += stepDirection )
+                        tileMap.setTile( i, door.y, TileList.FLOOR );
+                }
+            }
+
+            for (int i = top; i <= bottom; i++)
+                tileMap.setTile( center.x, i, TileList.FLOOR );
+        }
+
+        for ( Map.Entry<Room, Point2D> entry : room.connected.entrySet()) {
+            Room connected = entry.getKey();
+            Point2D door = entry.getValue();
+            if (connected.type instanceof PassageRoom ) {
+                tileMap.setTile( door.x, door.y, TileList.FLOOR );
+            } else
+                tileMap.setTile( door.x, door.y, TileList.DOOR_CLOSED );
+        }
+    }
+
+}
