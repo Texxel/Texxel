@@ -1,6 +1,7 @@
 package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.Constructor;
@@ -23,8 +24,13 @@ public class StairsUpTile extends AbstractTile implements Interactable {
     }
 
     @Override
-    public boolean interact( Char ch, int x, int y ) {
-        return false;
+    public void interact( Char ch, int x, int y ) {
+        Dungeon.goTo( Dungeon.level().id()+1 );
+    }
+
+    @Override
+    public boolean canInteract( Char ch, int x, int y ) {
+        return true;
     }
 
     @Override

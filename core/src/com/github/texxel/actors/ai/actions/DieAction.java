@@ -25,25 +25,22 @@ public class DieAction implements Action {
     }
 
     @Override
-    public void update() {
+    public boolean update() {
         timeToFinish -= GameTimer.tickTime();
         if ( timeToFinish <= 0 ) {
             Dungeon.level().removeActor( character );
-        }
+            return true;
+        } else
+            return false;
     }
 
     @Override
-    public void render() {
-
+    public boolean render() {
+        return true;
     }
 
     @Override
-    public boolean finished() {
-        return timeToFinish <= 0;
-    }
+    public void onFinish() {
 
-    @Override
-    public boolean finishedGraphics() {
-        return timeToFinish <= 0;
     }
 }

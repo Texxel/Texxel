@@ -3,8 +3,9 @@ package com.github.texxel.actors.heroes;
 import com.github.texxel.Dungeon;
 import com.github.texxel.actors.AbstractChar;
 import com.github.texxel.actors.Char;
-import com.github.texxel.actors.ai.state.HeroHuntState;
-import com.github.texxel.actors.ai.state.HeroMoveState;
+import com.github.texxel.actors.ai.brains.HeroHuntAI;
+import com.github.texxel.actors.ai.brains.HeroIdleAI;
+import com.github.texxel.actors.ai.brains.HeroMoveAI;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.event.listeners.input.CellSelectedListener;
@@ -21,11 +22,11 @@ import com.github.texxel.utils.Point2D;
 public abstract class AbstractHero extends AbstractChar implements Hero, CellSelectedListener, TileSetListener {
 
     public AbstractHero( Point2D spawn ) {
-        super( spawn );
+        super( spawn, 10 );
         updateFog();
+        setBrain( new HeroIdleAI( this ) );
         Dungeon.level().getCellSelectHandler().addListener( this, EventHandler.LATE );
         Dungeon.level().getTileMap().getTileSetHandler().addListener( this, EventHandler.VERY_LATE );
-        setState( new HeroMoveState( this ) );
     }
 
     protected AbstractHero( Bundle bundle ) {
@@ -41,12 +42,12 @@ public abstract class AbstractHero extends AbstractChar implements Hero, CellSel
         Level level = Dungeon.level();
         for ( Char c : level.getCharacters()) {
             if ( c.isOver( x, y ) ) {
-                this.setState( new HeroHuntState( this, c ) );
+                setBrain( new HeroHuntAI( this, c ) );
                 return;
             }
         }
         if ( x >= 0 && x < level.width() && y >= 0 && y < level.height()  )
-            target( new Point2D( e.getX(), e.getY() ) );
+            setBrain( new HeroMoveAI( this, new Point2D( x, y ) ) );
     }
 
     @Override
@@ -107,5 +108,10 @@ public abstract class AbstractHero extends AbstractChar implements Hero, CellSel
     @Override
     public boolean isUserControlled() {
         return true;
+    }
+
+    @Override
+    public Side getSide() {
+        return Side.GOOD;
     }
 }

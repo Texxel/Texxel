@@ -3,6 +3,7 @@ package com.github.texxel.sprites.api;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.gameloop.GameBatcher;
 import com.github.texxel.sprites.GameSprite;
+import com.github.texxel.utils.Point2D;
 
 /**
  * A visual is a high level representation of something that can be drawn. It is often useful to
@@ -49,8 +50,20 @@ public interface Visual {
 
     /**
      * Renders the Visual to the GameBatcher
-     * @param batcher the batcher that will (lazilly) draw something.
+     * @param batcher the batcher that will (lazily) draw something.
      */
     void render( GameBatcher batcher );
+
+    /**
+     * Sets the direction that the visual is facing (y positive is up)
+     * @param dir the direction to face
+     */
+    void setDirection( Point2D dir );
+
+    /**
+     * Gets the direction the visual is facing
+     * @return the visuals direction
+     */
+    Point2D getDirection();
 
 }

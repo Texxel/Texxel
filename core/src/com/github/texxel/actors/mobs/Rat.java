@@ -26,7 +26,7 @@ public class Rat extends AbstractMob {
     }
 
     public Rat( Point2D spawn ) {
-        super( spawn );
+        super( spawn, 6 );
     }
 
     @Override

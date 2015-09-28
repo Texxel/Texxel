@@ -2,14 +2,10 @@ package com.github.texxel.actors;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.Dungeon;
-import com.github.texxel.actors.ai.actions.IdleAction;
-import com.github.texxel.actors.ai.Action;
-import com.github.texxel.actors.ai.state.CharWanderState;
+import com.github.texxel.actors.ai.brains.CharDieAI;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.events.actor.CharMoveEvent;
-import com.github.texxel.event.events.actor.CharTargetEvent;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
-import com.github.texxel.event.listeners.actor.CharTargetListener;
 import com.github.texxel.mechanics.BasicFOV;
 import com.github.texxel.mechanics.FieldOfVision;
 import com.github.texxel.saving.Bundle;
@@ -18,23 +14,26 @@ import com.github.texxel.utils.Point2D;
 
 public abstract class AbstractChar extends AbstractActor implements Char {
 
+    private float health, maxHealth;
     private Point2D location;
     private Point2D target;
     private FieldOfVision fov;
-    private com.github.texxel.actors.ai.State currentState;
-    private final EventHandler<CharTargetListener> targetHandler = new EventHandler<>();
     private final EventHandler<CharMoveListener> moveHandler = new EventHandler<>();
 
     /**
      * Constructs the char at the spawn point
      * @param spawn the point that the char should start at
+     * @param health the maximum health of the char
+     * @throws NullPointerException is spawn is null
+     * @throws IllegalArgumentException if health is <= 0
      */
-    public AbstractChar( Point2D spawn ) {
+    public AbstractChar( Point2D spawn, float health ) {
         if ( spawn == null )
-            throw new IllegalArgumentException( "spawn cannot be null" );
+            throw new NullPointerException( "spawn cannot be null" );
+        if ( health <= 0 )
+            throw new IllegalArgumentException( "health cannot be <= 0" );
         this.location = spawn;
-        setState( new CharWanderState( this ) );
-        setNextAction( new IdleAction( this ) );
+        maxHealth = this.health = health;
     }
 
     /**
@@ -50,6 +49,8 @@ public abstract class AbstractChar extends AbstractActor implements Char {
         Bundle bundle = super.bundle( topLevel );
         bundle.put( "location", location.bundle( topLevel ) );
         bundle.put( "target", target.bundle( topLevel ) );
+        bundle.put( "health", health );
+        bundle.put( "max-health", maxHealth );
         return bundle;
     }
 
@@ -58,53 +59,20 @@ public abstract class AbstractChar extends AbstractActor implements Char {
         super.restore( bundle );
         this.location = bundle.getBundlable( "location" );
         this.target = bundle.getBundlable( "target" );
-    }
-
-    @Override
-    public Action getAction() {
-        currentState.update();
-        return super.getAction();
-    }
-
-    @Override
-    public com.github.texxel.actors.ai.State getState() {
-        return currentState;
-    }
-
-    @Override
-    public void setState( com.github.texxel.actors.ai.State state ) {
-        if ( state == null )
-            throw new NullPointerException( "'state' cannot be null" );
-        if ( currentState != null )
-            currentState.onRemove();
-        currentState = state;
-        state.onStart();
+        this.health = bundle.getInt( "health" );
+        this.maxHealth = bundle.getInt( "max-health" );
     }
 
     @Override
     public void attack( Char enemy ) {
-        System.out.print( name() + " attacked " + enemy.name() );
+        System.out.println( name() + " attacked " + enemy.name() );
         spend( 1.0f );
+        enemy.damage( 3, this );
     }
 
     @Override
     public Point2D getLocation() {
         return location;
-    }
-
-    @Override
-    public Point2D getTarget() {
-        return target;
-    }
-
-    @Override
-    public boolean target( Point2D target ) {
-        CharTargetEvent e = new CharTargetEvent( this, target );
-        targetHandler.dispatch( e );
-        if ( e.isCancelled() )
-            return false;
-        this.target = e.getTarget();
-        return true;
     }
 
     @Override
@@ -117,7 +85,7 @@ public abstract class AbstractChar extends AbstractActor implements Char {
         moveHandler.dispatch( e );
         location = e.getTo();
         if ( e.isCancelled() )
-            return null;
+            return this.location;
 
         // set the location
         this.location = location;
@@ -141,11 +109,6 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
-    public EventHandler<CharTargetListener> getTargetHandler() {
-        return targetHandler;
-    }
-
-    @Override
     public EventHandler<CharMoveListener> getMoveHandler() {
         return moveHandler;
     }
@@ -158,5 +121,43 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     @Override
     public boolean isOver( int x, int y ) {
         return location.equals( x, y );
+    }
+
+    @Override
+    public float damage( float damage, Object source ) {
+        setHealth( getHealth() - damage );
+        return damage;
+    }
+
+    @Override
+    public void setMaxHealth( float health ) {
+        if ( health <= 0 )
+            throw new IllegalArgumentException( "'health' cannot be smaller than 0" );
+        if ( this.health > health )
+            this.health = health;
+        this.maxHealth = health;
+    }
+
+    @Override
+    public void setHealth( float health ) {
+        if ( health > maxHealth )
+            throw new IllegalArgumentException( "'health' cannot be greater than max health" );
+        this.health = health;
+        if ( health <= 0 )
+            die();
+    }
+
+    private void die() {
+        setBrain( new CharDieAI( this ) );
+    }
+
+    @Override
+    public float getHealth() {
+        return health;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return maxHealth;
     }
 }

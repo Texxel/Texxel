@@ -1,12 +1,22 @@
 package com.github.texxel.actors;
 
+import com.github.texxel.actors.ai.Brain;
+import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
 
 public abstract class AbstractActor implements Actor {
 
     private float time;
-    private com.github.texxel.actors.ai.Action nextAction;
+    private Brain brain;
+    private Goal goal;
+
+    /**
+     * Constructs an actor who's time is at 0. Make sure to set the actor's brain as well
+     */
+    public AbstractActor() {
+        time = 0;
+    }
 
     /**
      * Constructs the actor from a bundle
@@ -28,15 +38,8 @@ public abstract class AbstractActor implements Actor {
     @Override
     public void restore( Bundle bundle ) {
         // nothing to do.
-        // But sub classes should still call this method in
-        // case there is something to do in the future
-    }
-
-    /**
-     * Constructs an actor who's time is at 0
-     */
-    public AbstractActor() {
-        time = 0;
+        // But sub classes should still call this method in case there is something
+        // to do in the future
     }
 
     @Override
@@ -55,15 +58,27 @@ public abstract class AbstractActor implements Actor {
     }
 
     @Override
-    public com.github.texxel.actors.ai.Action getAction() {
-        com.github.texxel.actors.ai.Action action = nextAction;
-        nextAction = null;
-        return action;
+    public Goal getGoal() {
+        return goal;
     }
 
     @Override
-    public void setNextAction( com.github.texxel.actors.ai.Action action ) {
-        this.nextAction = action;
+    public void setGoal( Goal goal ) {
+        if ( goal == null )
+            throw new NullPointerException( "'goal' cannot be null" );
+        this.goal = goal;
+    }
+
+    @Override
+    public Brain getBrain() {
+        return brain;
+    }
+
+    @Override
+    public void setBrain( Brain brain ) {
+        if ( brain == null )
+            throw new NullPointerException( "'brain' cannot be null" );
+        this.brain = brain;
     }
 
     @Override

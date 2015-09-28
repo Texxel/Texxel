@@ -12,7 +12,6 @@ public abstract class AbstractCharVisual extends AbstractVisual implements CharV
     private Animation dieAnimation = null;
     private Animation attackAnimation = null;
 
-
     /**
      * Gets the images used to draw this Hero. This method is only called once to construct
      * animations. If different textures are wanted later on, then the textures must be changed by

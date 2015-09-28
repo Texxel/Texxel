@@ -21,27 +21,65 @@ public class Point2D implements Bundlable {
         ConstructorRegistry.put( Point2D.class, CONSTRUCTOR );
     }
 
+    public static final Point2D
+            UP          = new Point2D(  0,  1 ),
+            DOWN        = new Point2D(  0, -1 ),
+            LEFT        = new Point2D( -1,  0 ),
+            RIGHT       = new Point2D(  1,  0 ),
+            UP_LEFT     = new Point2D( -1,  1 ),
+            UP_RIGHT    = new Point2D(  1,  1 ),
+            DOWN_LEFT   = new Point2D( -1, -1 ),
+            DOWN_RIGHT  = new Point2D(  1, -1 );
+
     public final int x;
     public final int y;
+
+    /**
+     * Returns a point that points in the closest direction to the components passed.
+     * @param x the x part
+     * @param y the y part
+     * @return a vector that points in the same direction
+     */
+    public static Point2D direction( float x, float y ) {
+        double PION8 = Math.PI/8;
+        double angle = Math.atan2( y, x );
+        if ( angle >= -PION8 && angle <= PION8 )
+            return RIGHT;
+        else if ( angle > PION8 && angle < 3*PION8 )
+            return UP_RIGHT;
+        else if ( angle >= 3*PION8 && angle <= 5*PION8 )
+            return UP;
+        else if ( angle > 5*PION8 && angle < 7*PION8 )
+            return UP_LEFT;
+
+        else if ( angle < -PION8 && angle > -3*PION8 )
+            return DOWN_RIGHT;
+        else if ( angle <= -3*PION8 && angle >= -5*PION8 )
+            return DOWN;
+        else if ( angle < -5*PION8 && angle > -7*PION8 )
+            return DOWN_LEFT;
+        else
+            return LEFT;
+    }
 
     public Point2D( int x, int y ) {
         this.x = x;
         this.y = y;
     }
 
-    public Point2D add( int x, int y ) {
+    public Point2D plus( int x, int y ) {
         return new Point2D( this.x + x, this.y + y );
     }
 
-    public Point2D subtract( int x, int y ) {
+    public Point2D minus( int x, int y ) {
         return new Point2D( this.x - x, this.y - y );
     }
 
-    public Point2D add( Point2D other ) {
+    public Point2D plus( Point2D other ) {
         return new Point2D( this.x + other.x, this.y + other.y );
     }
 
-    public Point2D subtract( Point2D other ) {
+    public Point2D minus( Point2D other ) {
         return new Point2D( this.x - other.x, this.y - other.y );
     }
 
@@ -85,5 +123,14 @@ public class Point2D implements Bundlable {
     @Override
     public void restore( Bundle bundle ) {
         // nothing to do
+    }
+
+    /**
+     * Gets a point that is in the direction of the other point
+     * @param other the other point
+     * @return the direction to the other point
+     */
+    public Point2D directionTo( Point2D other ) {
+        return Point2D.direction( other.x - x, other.y - y );
     }
 }

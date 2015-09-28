@@ -20,7 +20,7 @@ public class CameraMover implements ScreenTouchedListener {
      * The minimum zoom
      * TODO make max/min zoom amounts less arbitrary
      */
-    private static final float MIN_ZOOM = 0.6f;
+    private static final float MIN_ZOOM = 0.3f;
     /**
      * The maximum zoom
      */

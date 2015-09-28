@@ -11,59 +11,26 @@ import java.util.Map;
 
 public class LevelUpdater {
 
-    private Map<Actor, Action> delayedActions = new HashMap<>();
+    private Map<Actor, Action> renderingActions = new HashMap<>();
+    private boolean actionFinished;
     private Action currentAction;
-    private Actor currentActor;
 
     public void update( Level level ) {
-        while ( true ) {
-            if ( updateDelayedActions() ) {
-                //System.out.println( "waiting for delayed actions to finish" );
-                // need to return to renderer
-                return;
-            }
+        if ( currentAction == null || currentAction.update() ) {
+            actionFinished = true;
+            // current action finished. Choose a new one
+            Actor nextActor = getNextActor( level.getActors() );
 
-            // make sure we have a current action
-            if ( currentAction == null ) {
-                currentActor = getNextActor( level.getActors() );
-                if ( delayedActions.containsKey( currentActor ))
-                    if ( currentActor.isUserControlled() )
-                        return;
-                    else
-                        continue;
-                currentAction = currentActor.getAction();
-                if ( currentAction == null ) {
-                    if ( currentActor.isUserControlled() ) {
-                        //System.out.println( currentActor );
-                        // go to the renderer
-                        return;
-                    } else {
-                        System.err.println( "Non user controlled actor had a null action. Game may freeze now..." );
-                        continue;
-                    }
-                } else {
-                    currentAction.onStart();
-                }
-            }
+            if ( !renderingActions.containsKey( nextActor ) ) {
+                nextActor.getBrain().update();
+                currentAction = nextActor.getGoal().nextAction();
+                currentAction.onStart();
+                actionFinished = false;
 
-            // update the current action
-            if ( currentAction.finished() ) {
-                delayedActions.put( currentActor, currentAction );
-                currentAction = null;
-                boolean userControlled = currentActor.isUserControlled();
-                currentActor = null;
-                if ( userControlled )
-                    return;
-            } else {
-                currentAction.update();
-                currentAction.render();
-                // action may take some time. return to renderer
-                if ( !currentAction.finished() ) {
-                    //System.out.println( "action " + currentAction + " not finished" );
-                    return;
-                }
+                renderingActions.put( nextActor, currentAction );
             }
         }
+        renderActions();
     }
 
     /**
@@ -88,18 +55,17 @@ public class LevelUpdater {
         return nextActor;
     }
 
-    private boolean updateDelayedActions() {
-        Iterator<Map.Entry<Actor, Action>> i = delayedActions.entrySet().iterator();
+    private boolean renderActions() {
+        Iterator<Map.Entry<Actor, Action>> i = renderingActions.entrySet().iterator();
         boolean userControlled = false;
-        //System.out.println( delayedActions );
         while ( i.hasNext() ) {
             Map.Entry<Actor, Action> entry = i.next();
             Actor actor = entry.getKey();
             Action action = entry.getValue();
-            if ( action.finishedGraphics() )
+            if ( action.render() && ( action != currentAction || actionFinished ) ) {
+                action.onFinish();
                 i.remove();
-            else
-                action.render();
+            }
             userControlled |= actor.isUserControlled();
         }
         return userControlled;

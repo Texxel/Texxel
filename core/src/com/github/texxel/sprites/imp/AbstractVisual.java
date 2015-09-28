@@ -6,6 +6,7 @@ import com.github.texxel.gameloop.GameBatcher;
 import com.github.texxel.sprites.GameSprite;
 import com.github.texxel.sprites.api.Visual;
 import com.github.texxel.utils.GameTimer;
+import com.github.texxel.utils.Point2D;
 
 public abstract class AbstractVisual implements Visual {
 
@@ -13,6 +14,11 @@ public abstract class AbstractVisual implements Visual {
     private float playTime = 0;
     private Animation animation;
     private TextureRegion lastFrame = null;
+    private Point2D facing;
+
+    public AbstractVisual() {
+        facing = Point2D.RIGHT;
+    }
 
     @Override
     public void render( GameBatcher batcher ) {
@@ -26,6 +32,7 @@ public abstract class AbstractVisual implements Visual {
         if ( frame != lastFrame ) {
             lastFrame = frame;
             sprite.setRegion( lastFrame );
+            doFacingCorrection( facing, sprite );
         }
 
         playTime += GameTimer.tickTime();
@@ -67,6 +74,18 @@ public abstract class AbstractVisual implements Visual {
     }
 
     /**
+     * Flips the sprite so that it is facing in the correct direction
+     * @param facing the direction to turn the sprite
+     * @param sprite the sprite to flip
+     */
+    protected void doFacingCorrection( Point2D facing, GameSprite sprite ) {
+        if ( facing.x > 0 )
+            sprite.setFlip( false, false );
+        else if ( facing.x < 0 )
+            sprite.setFlip( true, false );
+    }
+
+    /**
      * Starts playing the actions first action.
      */
     protected abstract void playStartAction();
@@ -84,5 +103,18 @@ public abstract class AbstractVisual implements Visual {
     @Override
     public void setLocation( float x, float y ) {
         getSprite().setPosition( x, y );
+    }
+
+    @Override
+    public void setDirection( Point2D dir ) {
+        if ( dir == null )
+            throw new NullPointerException( "'dir' cannot be null" );
+        facing = dir;
+        doFacingCorrection( facing, sprite );
+    }
+
+    @Override
+    public Point2D getDirection() {
+        return facing;
     }
 }

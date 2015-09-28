@@ -1,10 +1,7 @@
 package com.github.texxel.actors;
 
-import com.github.texxel.actors.ai.State;
 import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.events.actor.CharTargetEvent;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
-import com.github.texxel.event.listeners.actor.CharTargetListener;
 import com.github.texxel.mechanics.FieldOfVision;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.sprites.api.WorldVisual;
@@ -22,7 +19,7 @@ public interface Char extends Actor, WorldVisual, Examinable {
          */
         EVIL,
         /**
-         * Neutral characters are characters like the shop keeper
+         * Neutral characters are characters like the shopkeeper
          */
         NEUTRAL,
         /**
@@ -48,32 +45,11 @@ public interface Char extends Actor, WorldVisual, Examinable {
      * spend any time or trample any tiles. The move can be listened and altered through the
      * EventHandler returned by {@link #getMoveHandler()}
      * @param location the location to move to.
-     * @return where the character was actually moved to (as it might have been altered by a plugin)
-     * or null if the move event was cancelled.
+     * @return where the character was actually moved to. If the event was cancelled, then the starting
+     * location will be returned.
      * @see #getLocation()
      */
     Point2D setLocation( Point2D location );
-
-    /**
-     * Gets where this character is trying to go to. If the character is not trying to go anywhere,
-     * then null will be returned.
-     * @apiNote having a target set does <i>not</i> always mean that the character actually has a
-     * target: the returned target may just be some place that the character is wandering aimlessly
-     * towards.
-     * // TODO add target priorities
-     * @return the current target
-     */
-    Point2D getTarget();
-
-    /**
-     * Tells the character that it should try to go towards a specific goal. If the character sees
-     * something else that it wants to do along the way, it will path towards the goal. Plugins
-     * can alter where a character targets though a {@link CharTargetEvent}.
-     * @param target where to try to get to
-     * @return true if the target was selected
-     * @see #getTargetHandler()
-     */
-    boolean target( Point2D target );
 
     /**
      * Launches an attack at an enemy.
@@ -82,17 +58,12 @@ public interface Char extends Actor, WorldVisual, Examinable {
     void attack( Char enemy );
 
     /**
-     * Sets the State that this char is in.
-     * @param state the state to use
-     * @throws NullPointerException if the state is null
+     * Does some damage to this char. The damage will be reduced by things such as armor or
+     * resistances
+     * @param damage the damage to do
+     * @param source the source of the damage
      */
-    void setState( State state );
-
-    /**
-     * Gets the state that the character is in
-     * @return the characters current state
-     */
-    State getState();
+    float damage( float damage, Object source );
 
     /**
      * Gets the side that this enemy is on.
@@ -112,14 +83,35 @@ public interface Char extends Actor, WorldVisual, Examinable {
     CharVisual getVisual();
 
     /**
-     * EventHandler that fires events whenever {@link #target(Point2D)} is called
-     */
-    EventHandler<CharTargetListener> getTargetHandler();
-
-    /**
      * EventHandler that fires events whenever {@link #setLocation(Point2D)} is called
      */
     EventHandler<CharMoveListener> getMoveHandler();
 
+    /**
+     * Gets the character's current health
+     * @return the chars health
+     */
+    float getHealth();
+
+    /**
+     * Directly sets the characters health. If the health is <= 0, then the char will be killed
+     * @param health the chars new health
+     * @throws IllegalArgumentException if health is greater than the max health
+     */
+    void setHealth( float health );
+
+    /**
+     * Gets the maximum health this character can have
+     * @return the chars maximum health
+     */
+    float getMaxHealth();
+
+    /**
+     * Sets the characters maximum health. If the new health is smaller than the current health,
+     * then the current health will be reduced, otherwise, the health will be un-effected.
+     * @param health the new max health
+     * @throws IllegalArgumentException if health <= 0
+     */
+    void setMaxHealth( float health );
 
 }

@@ -1,13 +1,10 @@
-package com.github.texxel.actors.ai.state;
+package com.github.texxel.actors.ai.goals;
 
 import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
-import com.github.texxel.actors.ai.State;
-import com.github.texxel.actors.ai.actions.IdleAction;
-import com.github.texxel.actors.ai.actions.WalkAction;
-import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.events.actor.CharTargetEvent;
-import com.github.texxel.event.listeners.actor.CharTargetListener;
+import com.github.texxel.actors.ai.Action;
+import com.github.texxel.actors.ai.Goal;
+import com.github.texxel.actors.ai.actions.StepAction;
 import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.PathFinder;
 import com.github.texxel.utils.Arrays2D;
@@ -15,16 +12,23 @@ import com.github.texxel.utils.Point2D;
 
 import java.util.List;
 
-public abstract class CharMoveState implements State, CharTargetListener {
+/**
+ * The char mover will
+ */
+public abstract class CharMoveGoal implements Goal {
 
     private final Char character;
     private Point2D target;
     private final boolean[][] passable;
 
-    public CharMoveState( Char character ) {
+    public CharMoveGoal( Char character, Point2D target ) {
+        if ( character == null )
+            throw new NullPointerException( "'character' cannot be null" );
+        if ( target == null )
+            throw new NullPointerException( "'target' cannot be null" );
         this.character = character;
+        this.target = target;
         passable = new boolean[Dungeon.level().width()][Dungeon.level().height()];
-        character.getTargetHandler().addListener( this, EventHandler.VERY_LATE );
     }
 
     @Override
@@ -32,42 +36,34 @@ public abstract class CharMoveState implements State, CharTargetListener {
     }
 
     @Override
-    public void update() {
-        if ( target == null ) {
-            onNoTarget();
-            return;
-        }
+    public Action nextAction() {
         if ( character.getLocation().equals( target ) ) {
-            onTargetReached();
-            return;
+            return onTargetReached();
         }
         Point2D step = nextPoint();
         if ( step == null ) {
-            onCannotReachTarget();
-            return;
+            return onCannotReachTarget();
         }
         if ( passable[step.x][step.y] ) {
-            character.setNextAction( new WalkAction( character, step ) );
+            return new StepAction( character, step );
         } else {
-            if ( PathFinder.isNextTo( step.x, step.y, target.x, target.y ) )
-                onTargetReached();
+            if ( PathFinder.isNextTo( step.x, step.y, target.x, target.y ) ) {
+                return onTargetReached();
+            } else {
+                throw new RuntimeException( "Can reach target but must go through solid wall to do so?!?" );
+            }
         }
     }
 
     @Override
     public void onRemove() {
-        character.getTargetHandler().removeListener( this, EventHandler.VERY_LATE );
-    }
 
-    @Override
-    public void onCharTarget( CharTargetEvent e ) {
-        this.target = e.getTarget();
     }
 
     public void setTarget( Point2D target ) {
-        character.target( target );
         if ( target == null )
-            character.setNextAction( new IdleAction( character ) );
+            throw new NullPointerException( "'target' cannot be null" );
+        this.target = target;
     }
 
     public Point2D getTarget() {
@@ -103,9 +99,14 @@ public abstract class CharMoveState implements State, CharTargetListener {
         passables[loc.x][loc.y] = true;
     }
 
-    public abstract void onTargetReached();
+    /**
+     * Called when the character reaches the target
+     */
+    public abstract Action onTargetReached();
 
-    public abstract void onCannotReachTarget();
+    /**
+     * Called when there is no what to reach the target
+     */
+    public abstract Action onCannotReachTarget();
 
-    public abstract void onNoTarget();
 }

@@ -3,10 +3,12 @@ package com.github.texxel.tiles;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
+import com.github.texxel.mechanics.PathFinder;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.sprites.TileAssets;
+import com.github.texxel.utils.Point2D;
 
 public class DoorLockedTile extends AbstractTile implements Interactable {
 
@@ -49,8 +51,14 @@ public class DoorLockedTile extends AbstractTile implements Interactable {
     }
 
     @Override
-    public boolean interact( Char ch, int x, int y ) {
+    public void interact( Char ch, int x, int y ) {
+        ch.spend( 3 );
         Dungeon.level().getTileMap().setTile( x, y, TileList.DOOR_CLOSED );
-        return true;
+    }
+
+    @Override
+    public boolean canInteract( Char ch, int x, int y ) {
+        Point2D p = ch.getLocation();
+        return PathFinder.isNextTo( x, y, p.x, p.y );
     }
 }
