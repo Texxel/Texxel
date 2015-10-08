@@ -114,4 +114,12 @@ public interface Char extends Actor, WorldVisual, Examinable {
      */
     void setMaxHealth( float health );
 
+    /**
+     * Tests if the character's health is less than or equal to 0. If the character is dead, then
+     * there should be no further interactions with the character and all references to the
+     * character should be removed so the garbage collector can clean up.
+     * @return true if the character is dead
+     */
+    boolean isDead();
+
 }

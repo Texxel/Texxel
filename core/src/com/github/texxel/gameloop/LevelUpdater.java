@@ -2,6 +2,7 @@ package com.github.texxel.gameloop;
 
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.Actor;
+import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
 
 import java.util.HashMap;
@@ -22,15 +23,26 @@ public class LevelUpdater {
             Actor nextActor = getNextActor( level.getActors() );
 
             if ( !renderingActions.containsKey( nextActor ) ) {
-                nextActor.getBrain().update();
-                currentAction = nextActor.getGoal().nextAction();
-                currentAction.onStart();
-                actionFinished = false;
-
-                renderingActions.put( nextActor, currentAction );
+                updateActor( nextActor );
             }
         }
         renderActions();
+    }
+
+    private void updateActor( Actor actor ) {
+        // update the actors sensors
+        List<Sensor> sensors = actor.getSensors();
+        int size = sensors.size();
+        for ( int i = 0; i < sensors.size(); i++ )
+            sensors.get( i ).update();
+
+        // update the actors actions
+        actor.getBrain().update();
+        currentAction = actor.getGoal().nextAction();
+        currentAction.onStart();
+        actionFinished = false;
+
+        renderingActions.put( actor, currentAction );
     }
 
     /**

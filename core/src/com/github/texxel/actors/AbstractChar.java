@@ -160,4 +160,9 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     public float getMaxHealth() {
         return maxHealth;
     }
+
+    @Override
+    public boolean isDead() {
+        return health <= 0;
+    }
 }

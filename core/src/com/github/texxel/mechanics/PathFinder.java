@@ -285,6 +285,16 @@ public final class PathFinder {
     }
 
     /**
+     * The same as {@link #gridDistance(int, int, int, int)} but simplified for using Point2Ds
+     * @param p1 the first point
+     * @param p2 the second point
+     * @return the distance between the points
+     */
+    public static int gridDistance( Point2D p1, Point2D p2 ) {
+        return gridDistance( p1.x, p1.y, p2.x, p2.y );
+    }
+
+    /**
      * Tests if two points are directly next to each other or on top each other. Diagonals
      * are counted as being next to each other.
      * @return true if the two points are next to each other
@@ -293,6 +303,16 @@ public final class PathFinder {
         int xDist = Math.abs( x1 - x2 );
         int yDist = Math.abs( y1 - y2 );
         return xDist <= 1 && yDist <= 1;
+    }
+
+    /**
+     * The same as {@link #isNextTo(int, int, int, int)} but simplified for using Point2Ds
+     * @param p1 one point
+     * @param p2 another point
+     * @return true if the points are directly next to each other
+     */
+    public static boolean isNextTo( Point2D p1, Point2D p2 ) {
+        return isNextTo( p1.x, p1.y, p2.x, p2.y );
     }
 
 }

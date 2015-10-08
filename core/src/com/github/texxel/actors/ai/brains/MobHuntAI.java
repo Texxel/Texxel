@@ -8,7 +8,7 @@ import com.github.texxel.actors.ai.actions.IdleAction;
 import com.github.texxel.actors.ai.goals.CharMoveGoal;
 import com.github.texxel.utils.Point2D;
 
-public class CharHuntAI implements Brain {
+public class MobHuntAI implements Brain {
 
     private class Mover extends CharMoveGoal {
 
@@ -19,45 +19,45 @@ public class CharHuntAI implements Brain {
         @Override
         public Action onTargetReached() {
             // ATTACK!
-            return new AttackAction( character, hunted );
+            return new AttackAction( mob, hunted );
         }
 
         @Override
         public Action onCannotReachTarget() {
             // wait until we can reach them
-            return new IdleAction( character );
+            return new IdleAction( mob );
         }
 
     }
 
-    final Char character;
+    final Char mob;
     final Mover mover;
     final Char hunted;
 
     /**
      * Creates a brain that's sole goal is to hunt the given opponent.
-     * @param character the character that is hunting
+     * @param mob the character that is hunting
      * @param hunted the hunted character
      */
-    public CharHuntAI( Char character, Char hunted ) {
-        if ( character == null )
+    public MobHuntAI( Char mob, Char hunted ) {
+        if ( mob == null )
             throw new NullPointerException( "'character' cannot be null" );
         if ( hunted == null )
             throw new NullPointerException( "'hunted' cannot be null" );
-        this.character = character;
+        this.mob = mob;
         this.hunted = hunted;
-        mover = new Mover( character, hunted.getLocation() );
-        character.setGoal( mover );
+        mover = new Mover( mob, hunted.getLocation() );
+        mob.setGoal( mover );
     }
 
     @Override
     public void update() {
-        if ( character.getVision().isVisible( hunted.getLocation() ) ) {
+        if ( mob.getVision().isVisible( hunted.getLocation() ) && !hunted.isDead() ) {
             // follow them
             mover.setTarget( hunted.getLocation() );
         } else {
             // go wandering (but check where they were first)
-            character.setBrain( new CharWanderAI( character, mover.getTarget() ) );
+            mob.setBrain( new MobWanderAI( mob, mover.getTarget() ) );
         }
     }
 }

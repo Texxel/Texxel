@@ -1,11 +1,14 @@
 package com.github.texxel.actors.ai.actions;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.gameloop.CameraMover;
 import com.github.texxel.sprites.api.CharVisual;
+import com.github.texxel.tiles.Tile;
+import com.github.texxel.tiles.Trampleable;
 import com.github.texxel.utils.GameTimer;
 import com.github.texxel.utils.Point2D;
 
@@ -41,6 +44,15 @@ public class StepAction implements Action {
             finishImmediately = true;
             return;
         }
+
+        // trample the tiles
+        Tile tile = Dungeon.level().getTileMap().getTile( end.x, end.y );
+        if ( tile instanceof Trampleable )
+            ( (Trampleable) tile ).onTrample( character, end.x, end.y );
+
+        tile = Dungeon.level().getTileMap().getTile( start.x, start.y );
+        if ( tile instanceof Trampleable )
+            ( (Trampleable) tile ).onLeave( character, start.x, start.y );
 
         // TODO remove hardcoded walk time
         character.spend( 1.0f );

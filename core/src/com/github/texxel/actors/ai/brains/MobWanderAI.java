@@ -6,10 +6,9 @@ import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.actions.IdleAction;
 import com.github.texxel.actors.ai.goals.CharMoveGoal;
-import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.utils.Point2D;
 
-public class CharWanderAI implements Brain {
+public class MobWanderAI implements Brain {
 
     private class Mover extends CharMoveGoal {
 
@@ -33,24 +32,27 @@ public class CharWanderAI implements Brain {
     final Char mob;
     final Mover mover;
 
-    public CharWanderAI( Char mob, Point2D target ) {
+    /**
+     * Constructs a wandering ai
+     * @param mob the mob to control
+     * @param target the first place the mob should wander to
+     */
+    public MobWanderAI( Char mob, Point2D target ) {
         this.mob = mob;
         mover = new Mover( mob, target );
         mob.setGoal( mover );
     }
 
+    /**
+     * Constructs a new wander AI that will begin to move the mob to a random spot in the level
+     * @param mob the character to move. The AI is designed for mobs but will work for any Char.
+     */
+    public MobWanderAI( Char mob ) {
+        this( mob, Dungeon.level().randomRespawnCell() );
+    }
+
     @Override
     public void update() {
-        // look for enemies
-        // TODO move enemy search to sensors
-        for ( Char c : Dungeon.level().getCharacters() ) {
-            if ( c instanceof Hero ) {
-                Point2D loc = c.getLocation();
-                if ( mob.getVision().isVisible( loc ) ) {
-                    mob.setBrain( new CharHuntAI( mob, c ) );
-                    return;
-                }
-            }
-        }
+        // just keep moving
     }
 }

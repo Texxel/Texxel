@@ -2,14 +2,21 @@ package com.github.texxel.actors;
 
 import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.Goal;
+import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractActor implements Actor {
 
     private float time;
     private Brain brain;
     private Goal goal;
+    private List<Sensor> sensors = new ArrayList<>();
+    private List<Sensor> unmodifiableSensors = Collections.unmodifiableList( sensors );
 
     /**
      * Constructs an actor who's time is at 0. Make sure to set the actor's brain as well
@@ -79,6 +86,24 @@ public abstract class AbstractActor implements Actor {
         if ( brain == null )
             throw new NullPointerException( "'brain' cannot be null" );
         this.brain = brain;
+    }
+
+    @Override
+    public void addSensor( Sensor sensor ) {
+        sensors.add( sensor );
+    }
+
+    @Override
+    public List<Sensor> getSensors() {
+        return unmodifiableSensors;
+    }
+
+    @Override
+    public void remove( Sensor sensor ) {
+        //noinspection StatementWithEmptyBody
+        while ( sensors.remove( sensor ) ) {
+        }
+        sensor.onRemove();
     }
 
     @Override

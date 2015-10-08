@@ -36,6 +36,7 @@ public class DieAction implements Action {
 
     @Override
     public boolean render() {
+        // TODO make character fade out
         return true;
     }
 

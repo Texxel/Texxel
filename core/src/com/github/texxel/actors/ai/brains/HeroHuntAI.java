@@ -46,7 +46,7 @@ public class HeroHuntAI implements Brain {
     @Override
     public void update() {
         // run at enemy until can not see them
-        if ( hero.getVision().isVisible( enemy.getLocation() ) )
+        if ( hero.getVision().isVisible( enemy.getLocation() ) && !enemy.isDead() )
             mover.setTarget( enemy.getLocation() );
         else
             hero.setBrain( new HeroIdleAI( hero ) );
