@@ -6,6 +6,7 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.brains.HeroHuntAI;
 import com.github.texxel.actors.ai.brains.HeroIdleAI;
 import com.github.texxel.actors.ai.brains.HeroMoveAI;
+import com.github.texxel.actors.ai.sensors.HeroDangerSensor;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.event.listeners.input.CellSelectedListener;
@@ -25,6 +26,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero, CellSel
         super( spawn, 10 );
         updateFog();
         setBrain( new HeroIdleAI( this ) );
+        addSensor( new HeroDangerSensor( this ) );
         Dungeon.level().getCellSelectHandler().addListener( this, EventHandler.LATE );
         Dungeon.level().getTileMap().getTileSetHandler().addListener( this, EventHandler.VERY_LATE );
     }

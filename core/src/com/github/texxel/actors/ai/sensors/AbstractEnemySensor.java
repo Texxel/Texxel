@@ -1,4 +1,4 @@
-package com.github.texxel.actors.ai.senses;
+package com.github.texxel.actors.ai.sensors;
 
 import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
@@ -38,27 +38,33 @@ public abstract class AbstractEnemySensor implements Sensor {
             Char enemy = chars.get( i );
             if ( Char.Side.areEnemies( side, enemy.getSide() )
                     && vision.isVisible( enemy.getLocation() ) ) {
-                onEnemySeen( enemy );
-                knownEnemies.put( enemy, enemy.getLocation() );
+                if ( knownEnemies.put( enemy, enemy.getLocation() ) == null )
+                    onEnemySeen( enemy );
             }
         }
         Iterator<Char> i = knownEnemies.keySet().iterator();
         while ( i.hasNext() ) {
             Char enemy = i.next();
-            if ( enemy.isDead() ) {
+            boolean isDead = enemy.isDead();
+            boolean isVisible = vision.isVisible( enemy.getLocation() );
+            Point2D loc = knownEnemies.get( enemy );
+            if ( loc == null )
+                throw new RuntimeException( "loc should never be able to be null" );
+
+            if ( isDead || !isVisible )
+                i.remove();
+
+            if ( isDead )
                 onEnemyDie( enemy );
-                i.remove();
-            }
-            if ( vision.isVisible( enemy.getLocation() )) {
-                onEnemyGone( enemy, knownEnemies.get( enemy ) );
-                i.remove();
-            }
+            if ( !isVisible )
+                onEnemyGone( enemy, loc );
         }
     }
 
     /**
-     * Gets an unmodifiable list of all the enemies the character can see. The list will
-     * automatically be updated as more/less enemies appear.
+     * Gets an unmodifiable list of all the enemies the character can see. This does not include
+     * enemies that have just disappeared. The list will automatically be updated as more/less
+     * enemies appear.
      * @return list of all the enemies.
      */
     public Set<Char> getKnownEnemies() {
@@ -79,7 +85,8 @@ public abstract class AbstractEnemySensor implements Sensor {
     protected abstract void onEnemyGone( Char enemy, Point2D lastKnown );
 
     /**
-     * Called when an enemy is seen to die
+     * Called when an enemy is seen to die. There will be a call to {@link #onEnemyGone(Char, Point2D)}
+     * for the same enemy directly after the call to this method
      * @param enemy the enemy that was killed
      */
     protected void onEnemyDie( Char enemy ) {

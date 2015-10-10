@@ -1,4 +1,4 @@
-package com.github.texxel.actors.ai.senses;
+package com.github.texxel.actors.ai.sensors;
 
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.brains.MobHuntAI;
@@ -32,6 +32,9 @@ public class MobEnemySensor extends AbstractEnemySensor {
             // hunt the selected enemy
             character.setBrain( new MobHuntAI( character, enemy ) );
         }
+        // else
+        // do nothing
+        // hunt ai will cancel itself
     }
 
     @Override
