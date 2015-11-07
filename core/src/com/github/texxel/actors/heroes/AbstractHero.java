@@ -20,37 +20,48 @@ import com.github.texxel.tiles.Tile;
 import com.github.texxel.utils.ColorMaths;
 import com.github.texxel.utils.Point2D;
 
-public abstract class AbstractHero extends AbstractChar implements Hero, CellSelectedListener, TileSetListener {
+public abstract class AbstractHero extends AbstractChar implements Hero {
+
+    private class Listener implements CellSelectedListener, TileSetListener {
+        @Override
+        public void onCellSelected( CellSelectedEvent e ) {
+            if ( e.isCancelled() )
+                return;
+            int x = e.getX();
+            int y = e.getY();
+            Level level = Dungeon.level();
+            for ( Char c : level.getCharacters()) {
+                if ( c.isOver( x, y ) ) {
+                    setBrain( new HeroHuntAI( AbstractHero.this, c ) );
+                    return;
+                }
+            }
+            if ( x >= 0 && x < level.width() && y >= 0 && y < level.height()  )
+                setBrain( new HeroMoveAI( AbstractHero.this, new Point2D( x, y ) ) );
+        }
+
+        @Override
+        public boolean onTileSet( TileMap tileMap, Tile tile, int x, int y ) {
+            updateFog();
+            return false;
+        }
+    }
 
     public AbstractHero( Point2D spawn ) {
         super( spawn, 10 );
         updateFog();
         setBrain( new HeroIdleAI( this ) );
         addSensor( new HeroDangerSensor( this ) );
-        Dungeon.level().getCellSelectHandler().addListener( this, EventHandler.LATE );
-        Dungeon.level().getTileMap().getTileSetHandler().addListener( this, EventHandler.VERY_LATE );
+        Listener listener = new Listener();
+        Dungeon.level().getCellSelectHandler().addListener( listener, EventHandler.LATE );
+        Dungeon.level().getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
     }
 
     protected AbstractHero( Bundle bundle ) {
         super( bundle );
     }
 
-    @Override
-    public void onCellSelected( CellSelectedEvent e ) {
-        if ( e.isCancelled() )
-            return;
-        int x = e.getX();
-        int y = e.getY();
-        Level level = Dungeon.level();
-        for ( Char c : level.getCharacters()) {
-            if ( c.isOver( x, y ) ) {
-                setBrain( new HeroHuntAI( this, c ) );
-                return;
-            }
-        }
-        if ( x >= 0 && x < level.width() && y >= 0 && y < level.height()  )
-            setBrain( new HeroMoveAI( this, new Point2D( x, y ) ) );
-    }
+
 
     @Override
     public HeroFOV getVision() {
@@ -94,12 +105,6 @@ public abstract class AbstractHero extends AbstractChar implements Hero, CellSel
         location = super.setLocation( location );
         updateFog();
         return location;
-    }
-
-    @Override
-    public boolean onTileSet( TileMap tileMap, Tile tile, int x, int y ) {
-        updateFog();
-        return false;
     }
 
     @Override

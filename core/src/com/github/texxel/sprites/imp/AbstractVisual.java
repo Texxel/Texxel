@@ -14,11 +14,7 @@ public abstract class AbstractVisual implements Visual {
     private float playTime = 0;
     private Animation animation;
     private TextureRegion lastFrame = null;
-    private Point2D facing;
-
-    public AbstractVisual() {
-        facing = Point2D.RIGHT;
-    }
+    private Point2D facing = Point2D.RIGHT;
 
     @Override
     public void render( GameBatcher batcher ) {
@@ -63,7 +59,7 @@ public abstract class AbstractVisual implements Visual {
     }
 
     @Override
-    public void play( Animation animation ) {
+    public Visual play( Animation animation ) {
         if ( animation == null )
             throw new NullPointerException( "'animation' cannot be null" );
         // don't update unless setting a new animation
@@ -71,6 +67,7 @@ public abstract class AbstractVisual implements Visual {
             this.animation = animation;
             this.playTime = 0;
         }
+        return this;
     }
 
     /**
@@ -101,20 +98,33 @@ public abstract class AbstractVisual implements Visual {
     }
 
     @Override
-    public void setLocation( float x, float y ) {
+    public Visual setLocation( float x, float y ) {
         getSprite().setPosition( x, y );
+        return this;
     }
 
     @Override
-    public void setDirection( Point2D dir ) {
+    public Visual setDirection( Point2D dir ) {
         if ( dir == null )
             throw new NullPointerException( "'dir' cannot be null" );
         facing = dir;
         doFacingCorrection( facing, sprite );
+        return this;
     }
 
     @Override
     public Point2D getDirection() {
         return facing;
+    }
+
+    @Override
+    public float getRotation() {
+        return sprite.getRotation();
+    }
+
+    @Override
+    public Visual setRotation( float rotation ) {
+        sprite.setRotation( rotation );
+        return this;
     }
 }

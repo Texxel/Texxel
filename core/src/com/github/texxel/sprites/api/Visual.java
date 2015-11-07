@@ -23,8 +23,9 @@ public interface Visual {
      * Sets the animation that is playing. If the animation is not different to the animation that
      * was previously playing, then nothing will happen.
      * @param animation the animation to play
+     * @return  this
      */
-    void play( Animation animation );
+    Visual play( Animation animation );
 
     /**
      * Gets the x location of the sprite. 1 unit is equal to on world unit.
@@ -45,8 +46,36 @@ public interface Visual {
      * change where the thing that the visual represents is drawn.</p>
      * @param x the x position
      * @param y the y position
+     * @return this
      */
-    void setLocation( float x, float y );
+    Visual setLocation( float x, float y );
+
+    /**
+     * Sets the direction that the visual is facing (y positive is up)
+     * @param dir the direction to face
+     * @return this
+     */
+    Visual setDirection( Point2D dir );
+
+    /**
+     * Gets the direction the visual is facing (positive y is up). The returned point does not
+     * need to be a "unit vector"
+     * @return the visuals direction
+     */
+    Point2D getDirection();
+
+    /**
+     * Gets the rotation of the visual
+     * @return the visuals rotation
+     */
+    float getRotation();
+
+    /**
+     * Sets the current rotation of the visual. The rotation is in degrees and counter clockwise
+     * @param rotation visuals rotation
+     * @return this
+     */
+    Visual setRotation( float rotation );
 
     /**
      * Renders the Visual to the GameBatcher
@@ -54,16 +83,6 @@ public interface Visual {
      */
     void render( GameBatcher batcher );
 
-    /**
-     * Sets the direction that the visual is facing (y positive is up)
-     * @param dir the direction to face
-     */
-    void setDirection( Point2D dir );
 
-    /**
-     * Gets the direction the visual is facing
-     * @return the visuals direction
-     */
-    Point2D getDirection();
 
 }
