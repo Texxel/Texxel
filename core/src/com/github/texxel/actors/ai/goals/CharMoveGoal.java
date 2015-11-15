@@ -1,6 +1,5 @@
 package com.github.texxel.actors.ai.goals;
 
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.ai.Goal;
@@ -20,15 +19,17 @@ public abstract class CharMoveGoal implements Goal {
     private final Char character;
     private Point2D target;
     private final boolean[][] passable;
+    private Level level;
 
     public CharMoveGoal( Char character, Point2D target ) {
         if ( character == null )
             throw new NullPointerException( "'character' cannot be null" );
         if ( target == null )
             throw new NullPointerException( "'target' cannot be null" );
+        level = character.level();
         this.character = character;
         this.target = target;
-        passable = new boolean[Dungeon.level().width()][Dungeon.level().height()];
+        passable = new boolean[level.width()][level.height()];
     }
 
     @Override
@@ -75,7 +76,7 @@ public abstract class CharMoveGoal implements Goal {
     }
 
     public Point2D nextPoint() {
-        Level level = Dungeon.level();
+        Level level = this.level;
         boolean[][] passable = this.passable;
         Char character = this.character;
         setPassables( passable );
@@ -86,7 +87,7 @@ public abstract class CharMoveGoal implements Goal {
     }
 
     public void setPassables( boolean[][] passables ) {
-        Level level = Dungeon.level();
+        Level level = this.level;
         Arrays2D.copy( level.getTileMap().getPassables(), passables );
         List<Char> characters = level.getCharacters();
         int size = characters.size();

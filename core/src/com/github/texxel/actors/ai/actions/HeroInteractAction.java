@@ -10,19 +10,16 @@ import com.github.texxel.utils.GameTimer;
 public class HeroInteractAction implements Action {
 
     private final Interactable tile;
-    private final int xTile, yTile;
     private final Char hero;
     private float timeToFinish;
 
-    public HeroInteractAction( Char hero, Interactable tile, int x, int y ) {
+    public HeroInteractAction( Char hero, Interactable tile ) {
         if ( hero == null )
             throw new NullPointerException( "'hero' cannot be null" );
         if ( tile == null )
             throw new NullPointerException( "'tile' cannot be null" );
         this.hero = hero;
         this.tile = tile;
-        xTile = x;
-        yTile = y;
     }
 
     @Override
@@ -37,7 +34,7 @@ public class HeroInteractAction implements Action {
     public boolean update() {
         timeToFinish -= GameTimer.tickTime();
         if ( timeToFinish < 0 ) {
-            tile.interact( hero, xTile, yTile );
+            tile.interact( hero );
             return true;
         } else {
             return false;

@@ -12,19 +12,21 @@ public class GameScene implements Screen {
 
     private LevelUpdater updater;
     private LevelRenderer renderer;
+    private Dungeon dungeon;
 
     @Override
     public void show() {
-        Dungeon.goTo( 1 );
+        dungeon = new Dungeon();
+        dungeon.goTo( 1 );
         updater = new LevelUpdater();
-        renderer = new LevelRenderer();
+        renderer = new LevelRenderer( dungeon.level() );
         Gdx.input.setOnscreenKeyboardVisible( true );
     }
 
     @Override
     public void render( float delta ) {
         GameTimer.update();
-        Level level = Dungeon.level();
+        Level level = dungeon.level();
         updater.update( level );
         renderer.render( level );
     }
@@ -49,6 +51,6 @@ public class GameScene implements Screen {
 
     @Override
     public void dispose() {
-        Dungeon.gameEnd();
+        dungeon.gameEnd();
     }
 }

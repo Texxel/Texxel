@@ -1,9 +1,8 @@
 package com.github.texxel.actors.ai.actions;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.github.texxel.Dungeon;
-import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.Char;
+import com.github.texxel.actors.ai.Action;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.utils.GameTimer;
 
@@ -28,7 +27,7 @@ public class DieAction implements Action {
     public boolean update() {
         timeToFinish -= GameTimer.tickTime();
         if ( timeToFinish <= 0 ) {
-            Dungeon.level().removeActor( character );
+            character.level().removeActor( character );
             return true;
         } else
             return false;

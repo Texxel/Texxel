@@ -1,6 +1,5 @@
 package com.github.texxel.actors.heroes;
 
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.AbstractChar;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.brains.HeroHuntAI;
@@ -29,7 +28,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
                 return;
             int x = e.getX();
             int y = e.getY();
-            Level level = Dungeon.level();
+            Level level = e.getLevel();
             for ( Char c : level.getCharacters()) {
                 if ( c.isOver( x, y ) ) {
                     setBrain( new HeroHuntAI( AbstractHero.this, c ) );
@@ -47,14 +46,14 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         }
     }
 
-    public AbstractHero( Point2D spawn ) {
-        super( spawn, 10 );
+    public AbstractHero( Level level, Point2D spawn ) {
+        super( level, spawn, 10 );
         updateFog();
         setBrain( new HeroIdleAI( this ) );
         addSensor( new HeroDangerSensor( this ) );
         Listener listener = new Listener();
-        Dungeon.level().getCellSelectHandler().addListener( listener, EventHandler.LATE );
-        Dungeon.level().getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
+        level.getCellSelectHandler().addListener( listener, EventHandler.LATE );
+        level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
     }
 
     protected AbstractHero( Bundle bundle ) {
@@ -73,8 +72,8 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     }
 
     private void updateFog() {
-        TileMap tileMap = Dungeon.level().getTileMap();
-        FogOfWar fog = Dungeon.level().getFogOfWar();
+        TileMap tileMap = level().getTileMap();
+        FogOfWar fog = level().getFogOfWar();
         HeroFOV fov = getVision();
         // can't see
         for ( int i = 0; i < tileMap.width(); i++ ) {
@@ -109,7 +108,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
 
     @Override
     protected FieldOfVision makeFOV() {
-        return new BasicHeroFOV( Dungeon.level().getTileMap().getLosBlocking(), getLocation() );
+        return new BasicHeroFOV( level().getTileMap().getLosBlocking(), getLocation() );
     }
 
     @Override

@@ -1,11 +1,11 @@
 package com.github.texxel.actors;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.ai.brains.CharDieAI;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.events.actor.CharMoveEvent;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
+import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.BasicFOV;
 import com.github.texxel.mechanics.FieldOfVision;
 import com.github.texxel.saving.Bundle;
@@ -27,7 +27,8 @@ public abstract class AbstractChar extends AbstractActor implements Char {
      * @throws NullPointerException is spawn is null
      * @throws IllegalArgumentException if health is <= 0
      */
-    public AbstractChar( Point2D spawn, float health ) {
+    public AbstractChar( Level level, Point2D spawn, float health ) {
+        super( level );
         if ( spawn == null )
             throw new NullPointerException( "spawn cannot be null" );
         if ( health <= 0 )
@@ -105,7 +106,7 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     protected FieldOfVision makeFOV() {
-        return new BasicFOV( Dungeon.level().getTileMap().getLosBlocking(), location );
+        return new BasicFOV( level().getTileMap().getLosBlocking(), location );
     }
 
     @Override

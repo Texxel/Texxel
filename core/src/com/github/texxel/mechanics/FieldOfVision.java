@@ -6,7 +6,7 @@ import com.github.texxel.utils.Point2D;
  * The FieldOfVision class is designed to determine where a character can see to in the world. It is
  * up to the implementation to decide how line of sight is calculated; there is <b>no</b>
  * requirement that if A can see B, then B can see A. All methods will throw an {@link
- * IndexOutOfBoundsException} if it is passed an argument referencing a cell outside of the
+ * IndexOutOfBoundsException} if it is passed an argument referencing a cell outside of the world
  */
 public interface FieldOfVision {
 

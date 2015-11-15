@@ -1,11 +1,8 @@
 package com.github.texxel.actors.ai.actions;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
-import com.github.texxel.actors.heroes.Hero;
-import com.github.texxel.gameloop.CameraMover;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.tiles.Trampleable;
@@ -46,13 +43,27 @@ public class StepAction implements Action {
         }
 
         // trample the tiles
-        Tile tile = Dungeon.level().getTileMap().getTile( end.x, end.y );
-        if ( tile instanceof Trampleable )
-            ( (Trampleable) tile ).onTrample( character, end.x, end.y );
+        Tile tile = character.level().getTileMap().getTile( end.x, end.y );
+        Tile trampleTo = null;
+        if ( tile instanceof Trampleable ) {
+            trampleTo = ( (Trampleable) tile ).onTrample( character );
+            if ( trampleTo == null )
+                throw new NullPointerException( "Tile '" + tile + "' said to trample to null!" );
+            if ( trampleTo != tile ) {
+                character.level().getTileMap().setTile( end.x, end.y, trampleTo );
+            }
+        }
 
-        tile = Dungeon.level().getTileMap().getTile( start.x, start.y );
-        if ( tile instanceof Trampleable )
-            ( (Trampleable) tile ).onLeave( character, start.x, start.y );
+        // un trample the tiles
+        tile = character.level().getTileMap().getTile( start.x, start.y );
+        if ( tile instanceof Trampleable ) {
+            trampleTo = ( (Trampleable) tile ).onLeave( character );
+            if ( trampleTo == null )
+                throw new NullPointerException( "Tile '" + tile + "' said to un-trample to null!" );
+            if ( trampleTo != tile ) {
+                character.level().getTileMap().setTile( start.x, start.y, trampleTo );
+            }
+        }
 
         // TODO remove hardcoded walk time
         character.spend( 1.0f );
@@ -85,10 +96,10 @@ public class StepAction implements Action {
         charVisual.setLocation( x, y );
 
         // TODO camera following hero is very hacky
-        if ( character instanceof Hero ) {
-            CameraMover.instance.camera.position.set( x, y, 0 );
-            CameraMover.instance.camera.update();
-        }
+        //if ( character instanceof Hero ) {
+        //    CameraMover.instance.camera.position.set( x, y, 0 );
+        //    CameraMover.instance.camera.update();
+        //}
 
         // finished if we're over on the next step
         return (timeElapsed + GameTimer.tickTime()) / STEP_TIME >= 1;

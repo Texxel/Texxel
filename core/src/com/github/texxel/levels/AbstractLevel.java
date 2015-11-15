@@ -1,5 +1,6 @@
 package com.github.texxel.levels;
 
+import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Actor;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.heroes.Hero;
@@ -23,7 +24,7 @@ import com.github.texxel.mechanics.SimpleFog;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.tiles.Tile;
-import com.github.texxel.tiles.TileList;
+import com.github.texxel.tiles.WallTile;
 import com.github.texxel.ui.ExamineMaker;
 import com.github.texxel.utils.Point2D;
 import com.github.texxel.utils.Random;
@@ -46,19 +47,21 @@ public abstract class AbstractLevel implements Level {
     private final EventHandler<ItemDropListener> itemDropHandler = new EventHandler<>();
     private final EventHandler<CellSelectedListener> cellSelectedHandler = new EventHandler<>();
 
+    private final Dungeon dungeon;
     private final int id;
     private final int width, height;
     private final FogOfWar fog;
     private TileMap tileMap;
 
-    public AbstractLevel( int id, int width, int height ) {
+    public AbstractLevel( Dungeon dungeon, int id, int width, int height ) {
+        this.dungeon = dungeon;
         this.id = id;
         this.width = width;
         this.height = height;
         TileFiller.FullFiller filler = new TileFiller.FullFiller() {
             @Override
             public Tile makeTile( int x, int y ) {
-                return TileList.WALL;
+                return WallTile.getInstance();
             }
         };
         this.tileMap = new TileMap( width, height, filler );
@@ -71,6 +74,7 @@ public abstract class AbstractLevel implements Level {
      * {@link com.github.texxel.saving.Constructor#newInstance(Bundle)} method.
      */
     protected AbstractLevel( Bundle bundle ) {
+        dungeon = bundle.getBundlable( "dungeon" );
         id = bundle.getInt( "id" );
         width = bundle.getInt( "width" );
         height = bundle.getInt( "height" );
@@ -92,6 +96,11 @@ public abstract class AbstractLevel implements Level {
     }
 
     @Override
+    public Dungeon dungeon() {
+        return dungeon;
+    }
+
+    @Override
     public int id() {
         return id;
     }
@@ -108,11 +117,11 @@ public abstract class AbstractLevel implements Level {
 
     @Override
     public void populate() {
-        Hero hero = new Warrior( randomRespawnCell() );
+        Hero hero = new Warrior( this, randomRespawnCell() );
         addActor( hero );
 
         for ( int i = 0; i < 3; i++ ) {
-            addActor( new Rat( randomRespawnCell() ) );
+            addActor( new Rat( this, randomRespawnCell() ) );
         }
 
     }

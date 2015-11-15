@@ -2,7 +2,8 @@ package com.github.texxel.levels.roomtypes;
 
 import com.github.texxel.levels.components.Room;
 import com.github.texxel.levels.components.TileMap;
-import com.github.texxel.tiles.TileList;
+import com.github.texxel.tiles.DoorClosedTile;
+import com.github.texxel.tiles.FloorTile;
 import com.github.texxel.utils.Point2D;
 import com.github.texxel.utils.Random;
 import com.github.texxel.utils.Rectangle;
@@ -34,13 +35,13 @@ public class PassageRoom implements RoomType {
                     left = bounds.x + 1;
 
                     for (int i = door.y; i != center.y; i += stepDirection)
-                        tileMap.setTile( left, i, TileList.FLOOR );
+                        tileMap.setTile( left, i, FloorTile.getInstance() );
                 } else if ( door.x == bounds.x2 ) {
                     // inform passage it can extend to far right
                     right = bounds.x2 - 1;
 
                     for (int i = door.y; i != center.y; i += stepDirection)
-                        tileMap.setTile( right, i, TileList.FLOOR );
+                        tileMap.setTile( right, i, FloorTile.getInstance() );
                 } else {
                     // extend passage way if needed
                     if (door.x < left)
@@ -49,14 +50,14 @@ public class PassageRoom implements RoomType {
                         right = door.x;
 
                     for ( int i = door.y + stepDirection; i != center.y; i += stepDirection )
-                        tileMap.setTile( door.x, i, TileList.FLOOR );
+                        tileMap.setTile( door.x, i, FloorTile.getInstance() );
                 }
             }
 
             // draw the passage from the left to the right
             // if left never got set to less than right, nothing will be drawn
             for ( int i = left; i <= right; i++ )
-                tileMap.setTile( i, center.y, TileList.FLOOR );
+                tileMap.setTile( i, center.y, FloorTile.getInstance() );
 
         } else {
             // passage goes top to bottom (much the same as above)
@@ -71,11 +72,11 @@ public class PassageRoom implements RoomType {
                 if (door.y == bounds.y ) {
                     top = bounds.y + 1;
                     for ( int i = door.x; i != center.x; i += stepDirection)
-                        tileMap.setTile( i, top, TileList.FLOOR );
+                        tileMap.setTile( i, top, FloorTile.getInstance() );
                 } else if ( door.y == bounds.y2 ) {
                     bottom = bounds.y2 - 1;
                     for ( int i = door.x; i != center.x; i += stepDirection )
-                        tileMap.setTile( i, bottom, TileList.FLOOR );
+                        tileMap.setTile( i, bottom, FloorTile.getInstance() );
                 } else {
                     if (door.y < top)
                         top = door.y;
@@ -83,21 +84,21 @@ public class PassageRoom implements RoomType {
                         bottom = door.y;
 
                     for ( int i = door.x + stepDirection; i != center.x; i += stepDirection )
-                        tileMap.setTile( i, door.y, TileList.FLOOR );
+                        tileMap.setTile( i, door.y, FloorTile.getInstance() );
                 }
             }
 
             for (int i = top; i <= bottom; i++)
-                tileMap.setTile( center.x, i, TileList.FLOOR );
+                tileMap.setTile( center.x, i, FloorTile.getInstance() );
         }
 
         for ( Map.Entry<Room, Point2D> entry : room.connected.entrySet()) {
             Room connected = entry.getKey();
             Point2D door = entry.getValue();
             if (connected.type instanceof PassageRoom ) {
-                tileMap.setTile( door.x, door.y, TileList.FLOOR );
+                tileMap.setTile( door.x, door.y, FloorTile.getInstance() );
             } else
-                tileMap.setTile( door.x, door.y, TileList.DOOR_CLOSED );
+                tileMap.setTile( door.x, door.y, DoorClosedTile.getInstance() );
         }
     }
 

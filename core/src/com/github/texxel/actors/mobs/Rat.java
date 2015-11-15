@@ -1,5 +1,6 @@
 package com.github.texxel.actors.mobs;
 
+import com.github.texxel.levels.Level;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
@@ -25,8 +26,8 @@ public class Rat extends AbstractMob {
         super( bundle );
     }
 
-    public Rat( Point2D spawn ) {
-        super( spawn, 6 );
+    public Rat( Level level, Point2D spawn ) {
+        super( level, spawn, 6 );
     }
 
     @Override

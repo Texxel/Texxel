@@ -4,17 +4,24 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.github.texxel.Dungeon;
 import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.event.events.input.ScreenTouchedEvent;
 import com.github.texxel.event.listeners.input.ScreenTouchedListener;
-import com.github.texxel.levels.Level;
 import com.github.texxel.ui.InputHandler;
 
-public class CameraMover implements ScreenTouchedListener {
+class CameraMover implements ScreenTouchedListener {
 
-    public static CameraMover instance;
+    /**
+     * The handler used to inform that the user has pressed a buttom
+     */
+    public interface ClickHandler {
+        /**
+         * Called when the user taps on the screen. The passed coordinates are in world co-ordinates
+         * @param x the x cell of the tap
+         * @param y the y cell of the tap
+         */
+        void onClick( int x, int y );
+    }
 
     /**
      * The minimum zoom
@@ -30,19 +37,30 @@ public class CameraMover implements ScreenTouchedListener {
      */
     private static final float DRAG_THRESHOLD = 100f;
 
-    float startSpan = -1;
-    float startZoom;
-    boolean pinching = false;
-    boolean dragging = false;
-    ScreenTouchedEvent.Touch touchA = null;
-    ScreenTouchedEvent.Touch touchB = null;
-    public final OrthographicCamera camera;
-    Vector3 lastPos = new Vector3();
-    Vector3 temp = new Vector3();
+    /** The camera to manipulate */
+    private final OrthographicCamera camera;
+    /** The thing to call when the user clicks */
+    private final ClickHandler clickHandler;
+    /** When zooming, this is the starting distance between the fingers in screen distances */
+    private float startSpan = -1;
+    /** This is the zoom that the camera was at before pinching */
+    private float startZoom;
+    /** True when the user is zooming */
+    private boolean pinching = false;
+    /** True is the user is currently dragging */
+    private boolean dragging = false;
+    /** The first finger on the screen. Will never be null if touchB is null*/
+    private ScreenTouchedEvent.Touch touchA = null;
+    /** The 2nd finger on the screen. Will never contain something if touchA is null */
+    private ScreenTouchedEvent.Touch touchB = null;
+    /** The last place the player dragged in world coords*/
+    private Vector3 lastPos = new Vector3();
+    /** A temporary vector for random use in math calculations */
+    private Vector3 temp = new Vector3();
 
-    public CameraMover( OrthographicCamera camera ) {
+    public CameraMover( OrthographicCamera camera, ClickHandler handler ) {
         this.camera = camera;
-        instance = this;
+        this.clickHandler = handler;
         InputHandler.getTouchHandler().addListener( this, EventHandler.NORMAL );
     }
 
@@ -169,16 +187,12 @@ public class CameraMover implements ScreenTouchedListener {
     }
 
     private void onClick( ScreenTouchedEvent.Touch touch ) {
-        // inform the level that it has been clicked
-        // TODO level clicking could have a better place?
         Vector3 temp = this.temp;
         temp.set( touch.xCurrent(), touch.yCurrent(), 0 );
         camera.unproject( temp );
         int x = (int)temp.x;
         int y = (int)temp.y;
-        Level level = Dungeon.level();
-        level.getCellSelectHandler().dispatch(
-                new CellSelectedEvent( x, y ) );
+        clickHandler.onClick( x, y );
     }
 
     private static float dist( ScreenTouchedEvent.Touch a, ScreenTouchedEvent.Touch b ) {

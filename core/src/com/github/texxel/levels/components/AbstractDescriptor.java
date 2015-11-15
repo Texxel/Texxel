@@ -1,5 +1,6 @@
 package com.github.texxel.levels.components;
 
+import com.github.texxel.Dungeon;
 import com.github.texxel.levels.Level;
 
 import java.util.Collection;
@@ -7,19 +8,21 @@ import java.util.Collections;
 
 public abstract class AbstractDescriptor implements LevelDescriptor {
 
+    private final Dungeon dungeon;
     private final int id;
     private int width = 32, height = 32;
     private LevelBuilder builder = new BasicBuilder();
     private LevelDecorator decorator = new BasicDecorator();
 
 
-    public AbstractDescriptor( int id ) {
+    public AbstractDescriptor( Dungeon dungeon, int id ) {
+        this.dungeon = dungeon;
         this.id = id;
     }
 
     @Override
     public Level constructLevel() {
-        Level level = constructLevel( id, width, height );
+        Level level = constructLevel( dungeon, id, width, height );
         Collection<Room> rooms = null;
         while ( rooms == null )
             rooms = builder.buildRooms( width, height );
@@ -27,7 +30,7 @@ public abstract class AbstractDescriptor implements LevelDescriptor {
         return level;
     }
 
-    protected abstract Level constructLevel( int id, int width, int height );
+    protected abstract Level constructLevel( Dungeon dungeon, int id, int width, int height );
 
     @Override
     public int width() {

@@ -6,43 +6,20 @@ import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.sprites.TileAssets;
 
-public class WallDecorTile extends AbstractTile {
+public class WallDecorTile extends WallTile {
 
-    private static Constructor<WallDecorTile> constructor = new Constructor<WallDecorTile>() {
+    public static final WallDecorTile instance = new WallDecorTile();
+
+    private static final Constructor<WallDecorTile> constructor = new Constructor<WallDecorTile>() {
         @Override
-        public WallDecorTile newInstance( Bundle bundle ) { return TileList.WALL_DECOR; }
+        public WallDecorTile newInstance( Bundle bundle ) { return instance; }
     };
     static {
         ConstructorRegistry.put( WallDecorTile.class, constructor );
     }
 
     @Override
-    public boolean isSolid() {
-        return true;
-    }
-
-    @Override
-    public boolean isOpaque() {
-        return true;
-    }
-
-    @Override
-    public boolean isPassable() {
-        return false;
-    }
-
-    @Override
-    public TextureRegion getImage() {
+    public TextureRegion getDefaultImage() {
         return TileAssets.WALL_DECORATED;
-    }
-
-    @Override
-    public String name() {
-        return "Wall";
-    }
-
-    @Override
-    public String description() {
-        return "A wall. Try running into it :P";
     }
 }

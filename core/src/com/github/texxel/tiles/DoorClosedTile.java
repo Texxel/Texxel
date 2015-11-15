@@ -1,7 +1,6 @@
 package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.texxel.Dungeon;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
@@ -9,9 +8,15 @@ import com.github.texxel.sprites.TileAssets;
 
 public class DoorClosedTile extends AbstractTile implements Trampleable {
 
+    private static final DoorClosedTile instance = new DoorClosedTile();
+
+    public static DoorClosedTile getInstance() {
+        return instance;
+    }
+
     private static Constructor<DoorClosedTile> constructor = new Constructor<DoorClosedTile>() {
         @Override
-        public DoorClosedTile newInstance( Bundle bundle ) { return TileList.DOOR_CLOSED; }
+        public DoorClosedTile newInstance( Bundle bundle ) { return instance; }
     };
     static {
         ConstructorRegistry.put( DoorClosedTile.class, constructor );
@@ -33,7 +38,7 @@ public class DoorClosedTile extends AbstractTile implements Trampleable {
     }
 
     @Override
-    public TextureRegion getImage() {
+    public TextureRegion getDefaultImage() {
         return TileAssets.DOOR_CLOSED;
     }
 
@@ -48,11 +53,12 @@ public class DoorClosedTile extends AbstractTile implements Trampleable {
     }
 
     @Override
-    public void onTrample( Object source, int x, int y ) {
-        Dungeon.level().getTileMap().setTile( x, y, TileList.DOOR_OPEN );
+    public Tile onTrample( Object source ) {
+        return DoorOpenTile.getInstance();
     }
 
     @Override
-    public void onLeave( Object source, int x, int y ) {
+    public Tile onLeave( Object source ) {
+        return this;
     }
 }

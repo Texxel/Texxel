@@ -8,9 +8,14 @@ import com.github.texxel.sprites.TileAssets;
 
 public class FloorTile extends AbstractTile {
 
+    private static final FloorTile INSTANCE = new FloorTile();
+    public static FloorTile getInstance() {
+        return INSTANCE;
+    }
+
     private static Constructor<FloorTile> constructor = new Constructor<FloorTile>() {
         @Override
-        public FloorTile newInstance( Bundle bundle ) { return TileList.FLOOR; }
+        public FloorTile newInstance( Bundle bundle ) { return INSTANCE; }
     };
     static {
         ConstructorRegistry.put( FloorTile.class, constructor );
@@ -42,7 +47,7 @@ public class FloorTile extends AbstractTile {
     }
 
     @Override
-    public TextureRegion getImage() {
+    public TextureRegion getDefaultImage() {
         return TileAssets.FLOOR;
     }
 

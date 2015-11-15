@@ -1,6 +1,5 @@
 package com.github.texxel.ui;
 
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Actor;
 import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.event.listeners.input.CellSelectedListener;
@@ -13,7 +12,7 @@ public class ExamineMaker implements CellSelectedListener {
     public void onCellSelected( CellSelectedEvent e ) {
         if ( e.isCancelled() )
             return;
-        Level level = Dungeon.level();
+        Level level = e.getLevel();
         int x = e.getX();
         int y = e.getY();
         if ( !level.isInBounds( x, y ) )
@@ -28,7 +27,7 @@ public class ExamineMaker implements CellSelectedListener {
                 return;
             }
         }
-        Tile tile = Dungeon.level().getTileMap().getTile( e.getX(), e.getY() );
+        Tile tile = level.getTileMap().getTile( e.getX(), e.getY() );
         examine( tile );
         e.setCancelled( true );
 

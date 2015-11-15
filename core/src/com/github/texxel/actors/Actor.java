@@ -3,11 +3,18 @@ package com.github.texxel.actors;
 import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
+import com.github.texxel.levels.Level;
 import com.github.texxel.saving.Bundlable;
 
 import java.util.List;
 
 public interface Actor extends Bundlable {
+
+    /**
+     * Gets the level the actor is on
+     * @return the current level
+     */
+    Level level();
 
     /**
      * Sets back the next actions by an amount of turns

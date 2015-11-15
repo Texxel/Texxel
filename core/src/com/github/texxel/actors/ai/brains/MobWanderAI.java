@@ -1,6 +1,5 @@
 package com.github.texxel.actors.ai.brains;
 
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.ai.Brain;
@@ -18,13 +17,13 @@ public class MobWanderAI implements Brain {
 
         @Override
         public Action onTargetReached() {
-            setTarget( Dungeon.level().randomRespawnCell() );
+            setTarget( mob.level().randomRespawnCell() );
             return new IdleAction( mob );
         }
 
         @Override
         public Action onCannotReachTarget() {
-            setTarget( Dungeon.level().randomRespawnCell() );
+            setTarget( mob.level().randomRespawnCell() );
             return new IdleAction( mob );
         }
     }
@@ -48,7 +47,7 @@ public class MobWanderAI implements Brain {
      * @param mob the character to move. The AI is designed for mobs but will work for any Char.
      */
     public MobWanderAI( Char mob ) {
-        this( mob, Dungeon.level().randomRespawnCell() );
+        this( mob, mob.level().randomRespawnCell() );
     }
 
     @Override

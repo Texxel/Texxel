@@ -3,6 +3,7 @@ package com.github.texxel.actors;
 import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
+import com.github.texxel.levels.Level;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
 
@@ -17,12 +18,14 @@ public abstract class AbstractActor implements Actor {
     private Goal goal;
     private List<Sensor> sensors = new ArrayList<>();
     private List<Sensor> unmodifiableSensors = Collections.unmodifiableList( sensors );
+    private Level level;
 
     /**
      * Constructs an actor who's time is at 0. Make sure to set the actor's brain as well
      */
-    public AbstractActor() {
+    public AbstractActor( Level level ) {
         time = 0;
+        this.level = level;
     }
 
     /**
@@ -33,6 +36,11 @@ public abstract class AbstractActor implements Actor {
         if ( !bundle.contains( "time" ) )
             throw new IllegalArgumentException( "bundle must have 'time' mapping" );
         this.time = (float)bundle.getDouble( "time" );
+    }
+
+    @Override
+    public Level level() {
+        return level;
     }
 
     @Override

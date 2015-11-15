@@ -8,16 +8,21 @@ import com.github.texxel.sprites.TileAssets;
 
 public class EmbersTile extends AbstractTile {
 
+    private static final EmbersTile instance = new EmbersTile();
+    public static EmbersTile getInstance() {
+        return instance;
+    }
+
     private static Constructor<EmbersTile> constructor = new Constructor<EmbersTile>() {
         @Override
-        public EmbersTile newInstance( Bundle bundle ) { return TileList.EMBERS; }
+        public EmbersTile newInstance( Bundle bundle ) { return instance; }
     };
     static {
         ConstructorRegistry.put( EmbersTile.class, constructor );
     }
 
     @Override
-    public TextureRegion getImage() {
+    public TextureRegion getDefaultImage() {
         return TileAssets.EMBERS;
     }
 

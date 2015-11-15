@@ -12,41 +12,48 @@ import com.github.texxel.event.listeners.level.LevelSaveListener;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.RegularLevel;
 import com.github.texxel.levels.components.LevelDescriptor;
+import com.github.texxel.saving.Bundlable;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
 
 import java.util.HashMap;
 
-public class Dungeon {
+public class Dungeon implements Bundlable {
 
-    private static final EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
-    private static final EventHandler<LevelSaveListener> saveHandler = new EventHandler<>();
-    private static final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
+    private final EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
+    private final EventHandler<LevelSaveListener> saveHandler = new EventHandler<>();
+    private final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
 
-    private static Level currentLevel;
+    private Level currentLevel;
 
-    static {
-        // FIXME RegularLevel class loading
-        try {
-            Class.forName( RegularLevel.class.getName() );
-        } catch ( ClassNotFoundException e ) {
-            e.printStackTrace();
-        }
+    {
+
+        register( 1, new RegularLevel.RegularDescriptor( this, 1 ) );
+        register( 2, new RegularLevel.RegularDescriptor( this, 2 ) );
+        register( 3, new RegularLevel.RegularDescriptor( this, 3 ) );
+        register( 4, new RegularLevel.RegularDescriptor( this, 4 ) );
+        register( 5, new RegularLevel.RegularDescriptor( this, 5 ) );
     }
 
-    private Dungeon() {
-        // static methods only
-    }
-
-    public static void register( int id, LevelDescriptor descriptor ) {
+    /**
+     * Sets the level that will generated when the specified id is asked for
+     * @param id the level's id
+     * @param descriptor the constructor for the level
+     */
+    public void register( int id, LevelDescriptor descriptor ) {
         levelRegistry.put( id, descriptor );
     }
 
-    public static LevelDescriptor getDescriptor( int id ) {
+    /**
+     * Gets the level that will be constructed when the given id is requested
+     * @param id the level's id
+     * @return the constructor for the id
+     */
+    public LevelDescriptor getDescriptor( int id ) {
         return levelRegistry.get( id );
     }
 
-    public static Level goTo( int levelID ) {
+    public Level goTo( int levelID ) {
         if ( currentLevel != null )
             currentLevel.destroy();
         currentLevel = null;
@@ -55,7 +62,7 @@ public class Dungeon {
         return currentLevel;
     }
 
-    private static void make( int id ) {
+    private void make( int id ) {
         LevelPlanEvent planEvent = new LevelPlanEvent( levelRegistry.get( id ), "hello" );
         constructionHandler.dispatch( planEvent );
         LevelDescriptor descriptor = planEvent.getLevel();
@@ -72,7 +79,7 @@ public class Dungeon {
         constructionHandler.dispatch( madeEvent );
     }
 
-    private static boolean load( int id ) {
+    private boolean load( int id ) {
         FileHandle file = fileHandle( id );
         if ( !file.exists() )
             return false;
@@ -82,13 +89,13 @@ public class Dungeon {
         return true;
     }
 
-    public static void gameEnd() {
+    public void gameEnd() {
         saveLevel( currentLevel );
         currentLevel.destroy();
         currentLevel = null;
     }
 
-    private static FileHandle saveLevel( Level level ) {
+    private FileHandle saveLevel( Level level ) {
         FileHandle levelFile = fileHandle( level.id() );
         BundleGroup bundleGroup = BundleGroup.newGroup();
         bundleGroup.put( "level", level );
@@ -96,7 +103,7 @@ public class Dungeon {
         return levelFile;
     }
 
-    private static FileHandle fileHandle( int id ) {
+    private FileHandle fileHandle( int id ) {
         return Gdx.files.local( "level" + id + ".json" );
     }
 
@@ -104,16 +111,25 @@ public class Dungeon {
      * Gets the current level. Note: using this method when switching between
      * @return the current level
      */
-    public static Level level() {
+    public Level level() {
         return currentLevel;
     }
 
-    public static EventHandler<LevelConstructionListener> levelConstructionHandler() {
+    public EventHandler<LevelConstructionListener> levelConstructionHandler() {
         return constructionHandler;
     }
 
-    public static EventHandler<LevelSaveListener> getLevelSaveHandler() {
+    public EventHandler<LevelSaveListener> getLevelSaveHandler() {
         return saveHandler;
     }
 
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        return topLevel.newBundle();
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+
+    }
 }

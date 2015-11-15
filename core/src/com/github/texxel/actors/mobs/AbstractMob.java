@@ -1,9 +1,9 @@
 package com.github.texxel.actors.mobs;
 
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.AbstractChar;
 import com.github.texxel.actors.ai.brains.MobWanderAI;
 import com.github.texxel.actors.ai.sensors.MobEnemySensor;
+import com.github.texxel.levels.Level;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.utils.Point2D;
 
@@ -13,9 +13,9 @@ public abstract class AbstractMob extends AbstractChar implements Mob {
         super( bundle );
     }
 
-    public AbstractMob( Point2D spawn, float health ) {
-        super( spawn, health );
-        setBrain( new MobWanderAI( this, Dungeon.level().randomRespawnCell() ) );
+    public AbstractMob( Level level, Point2D spawn, float health ) {
+        super( level, spawn, health );
+        setBrain( new MobWanderAI( this, level.randomRespawnCell() ) );
         addSensor( new MobEnemySensor( this ) );
     }
 

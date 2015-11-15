@@ -8,9 +8,15 @@ import com.github.texxel.sprites.TileAssets;
 
 public class WallTile extends AbstractTile {
 
-    private static Constructor<WallTile> constructor = new Constructor<WallTile>() {
+    private static final WallTile instance = new WallTile();
+
+    public static WallTile getInstance() {
+        return instance;
+    }
+
+    private static final Constructor<WallTile> constructor = new Constructor<WallTile>() {
         @Override
-        public WallTile newInstance( Bundle bundle ) { return TileList.WALL; }
+        public WallTile newInstance( Bundle bundle ) { return instance; }
     };
     static {
         ConstructorRegistry.put( WallTile.class, constructor );
@@ -23,7 +29,7 @@ public class WallTile extends AbstractTile {
 
     @Override
     public String description() {
-        return "Nothing to see here";
+        return "Try running into it";
     }
 
     @Override
@@ -42,7 +48,7 @@ public class WallTile extends AbstractTile {
     }
 
     @Override
-    public TextureRegion getImage() {
+    public TextureRegion getDefaultImage() {
         return TileAssets.WALL;
     }
 }

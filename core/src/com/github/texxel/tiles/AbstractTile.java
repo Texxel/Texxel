@@ -4,6 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
 
+/**
+ * Pre defines the methods that will be the same for all tiles.
+ */
 public abstract class AbstractTile implements Tile {
 
     @Override
@@ -17,7 +20,7 @@ public abstract class AbstractTile implements Tile {
 
     @Override
     public Animation getLogo() {
-        return new Animation( 1.0f, getImage() );
+        return new Animation( 1.0f, getDefaultImage() );
     }
 
     @Override

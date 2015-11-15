@@ -3,13 +3,18 @@ package com.github.texxel.event.events.input;
 import com.github.texxel.event.Cancelable;
 import com.github.texxel.event.Event;
 import com.github.texxel.event.listeners.input.CellSelectedListener;
+import com.github.texxel.levels.Level;
 
 public class CellSelectedEvent implements Event<CellSelectedListener>, Cancelable {
 
     private final int x, y;
+    private final Level level;
     private boolean cancelled = false;
 
-    public CellSelectedEvent( int x, int y ) {
+    public CellSelectedEvent( Level level, int x, int y ) {
+        if ( level == null )
+            throw new NullPointerException( "'level' cannot be null" );
+        this.level = level;
         this.x = x;
         this.y = y;
     }
@@ -20,6 +25,10 @@ public class CellSelectedEvent implements Event<CellSelectedListener>, Cancelabl
 
     public int getY() {
         return y;
+    }
+
+    public Level getLevel() {
+        return level;
     }
 
     public boolean isCancelled() {

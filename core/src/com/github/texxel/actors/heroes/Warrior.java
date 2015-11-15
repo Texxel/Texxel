@@ -1,5 +1,6 @@
 package com.github.texxel.actors.heroes;
 
+import com.github.texxel.levels.Level;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
@@ -20,8 +21,8 @@ public class Warrior extends AbstractHero {
 
     private WarriorVisual sprite = new WarriorVisual();
 
-    public Warrior( Point2D spawn ) {
-        super( spawn );
+    public Warrior( Level level, Point2D spawn ) {
+        super( level, spawn );
         sprite.setLocation( spawn.x, spawn.y );
     }
 

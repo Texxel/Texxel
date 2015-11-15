@@ -1,5 +1,6 @@
 package com.github.texxel.levels;
 
+import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Actor;
 import com.github.texxel.actors.Char;
 import com.github.texxel.event.EventHandler;
@@ -65,6 +66,12 @@ public interface Level extends Bundlable {
      * @return the level's height
      */
     int height();
+
+    /**
+     * Gets the dungeon this level is in.
+     * @return the game's dungeon
+     */
+    Dungeon dungeon();
 
     /**
      * Adds an actor to the level. Plugins may edit/read the addition of the actor by registering
