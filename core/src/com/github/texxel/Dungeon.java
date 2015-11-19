@@ -8,31 +8,35 @@ import com.github.texxel.event.events.level.LevelPlanEvent;
 import com.github.texxel.event.events.level.LevelPopulateEvent;
 import com.github.texxel.event.events.level.LevelTilePlacedEvent;
 import com.github.texxel.event.listeners.level.LevelConstructionListener;
-import com.github.texxel.event.listeners.level.LevelSaveListener;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.RegularLevel;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.saving.Bundlable;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
+import com.github.texxel.saving.Constructor;
+import com.github.texxel.saving.ConstructorRegistry;
 
 import java.util.HashMap;
 
 public class Dungeon implements Bundlable {
 
-    private final EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
-    private final EventHandler<LevelSaveListener> saveHandler = new EventHandler<>();
+    static {
+        ConstructorRegistry.put( Dungeon.class, new Constructor<Dungeon>() {
+            @Override
+            public Dungeon newInstance( Bundle bundle ) {
+                return new Dungeon();
+            }
+        } );
+    }
+
+    private EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
     private final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
 
-    private Level currentLevel;
-
     {
-
-        register( 1, new RegularLevel.RegularDescriptor( this, 1 ) );
-        register( 2, new RegularLevel.RegularDescriptor( this, 2 ) );
-        register( 3, new RegularLevel.RegularDescriptor( this, 3 ) );
-        register( 4, new RegularLevel.RegularDescriptor( this, 4 ) );
-        register( 5, new RegularLevel.RegularDescriptor( this, 5 ) );
+        for ( int i = 1; i <= 10; i++ ) {
+            register( i, new RegularLevel.RegularDescriptor( this, i ) );
+        }
     }
 
     /**
@@ -53,20 +57,37 @@ public class Dungeon implements Bundlable {
         return levelRegistry.get( id );
     }
 
-    public Level goTo( int levelID ) {
-        if ( currentLevel != null )
-            currentLevel.destroy();
-        currentLevel = null;
-        if ( !load( levelID ) )
-            make( levelID );
-        return currentLevel;
+    /**
+     * If the level has previously been visited, then the level will be read from memory. Otherwise,
+     * the level will be created anew.
+     * @param id the ID of the level to create
+     * @return the created level
+     */
+    public Level loadLevel( int id ) {
+        Level level = load( id );
+        if (level != null)
+            return level;
+        return make( id );
     }
 
-    private void make( int id ) {
+    private static Level load( int id ) {
+        FileHandle file = levelFile( id );
+        if ( !file.exists() )
+            return null;
+        String data = file.readString();
+        Bundle levelBundle = BundleGroup.loadGroup( data );
+        return levelBundle.getBundlable( "level" );
+    }
+
+    private static FileHandle levelFile( int id ) {
+        return Gdx.files.local( "level" + id + ".json" );
+    }
+
+    private Level make( int id ) {
         LevelPlanEvent planEvent = new LevelPlanEvent( levelRegistry.get( id ), "hello" );
         constructionHandler.dispatch( planEvent );
         LevelDescriptor descriptor = planEvent.getLevel();
-        Level level = currentLevel = descriptor.constructLevel();
+        Level level = descriptor.constructLevel();
 
         LevelTilePlacedEvent tilePlacedEvent = new LevelTilePlacedEvent( level );
         constructionHandler.dispatch( tilePlacedEvent );
@@ -77,59 +98,34 @@ public class Dungeon implements Bundlable {
 
         LevelCreatedEvent madeEvent = new LevelCreatedEvent( level );
         constructionHandler.dispatch( madeEvent );
-    }
 
-    private boolean load( int id ) {
-        FileHandle file = fileHandle( id );
-        if ( !file.exists() )
-            return false;
-        String data = file.readString();
-        Bundle levelBundle = BundleGroup.loadGroup( data );
-        currentLevel = levelBundle.getBundlable( "level" );
-        return true;
-    }
-
-    public void gameEnd() {
-        saveLevel( currentLevel );
-        currentLevel.destroy();
-        currentLevel = null;
-    }
-
-    private FileHandle saveLevel( Level level ) {
-        FileHandle levelFile = fileHandle( level.id() );
-        BundleGroup bundleGroup = BundleGroup.newGroup();
-        bundleGroup.put( "level", level );
-        levelFile.writeString( bundleGroup.toString(), false );
-        return levelFile;
-    }
-
-    private FileHandle fileHandle( int id ) {
-        return Gdx.files.local( "level" + id + ".json" );
-    }
-
-    /**
-     * Gets the current level. Note: using this method when switching between
-     * @return the current level
-     */
-    public Level level() {
-        return currentLevel;
+        return level;
     }
 
     public EventHandler<LevelConstructionListener> levelConstructionHandler() {
         return constructionHandler;
     }
 
-    public EventHandler<LevelSaveListener> getLevelSaveHandler() {
-        return saveHandler;
+    public void save() {
+        BundleGroup bundle = BundleGroup.newGroup();
+        bundle( bundle );
+        FileHandle file = dungeonFile();
+        file.writeString( bundle.toString(), false );
+    }
+
+    private static FileHandle dungeonFile() {
+        return Gdx.files.local( "dungeon.json" );
     }
 
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
-        return topLevel.newBundle();
+        Bundle bundle = topLevel.newBundle();
+        bundle.putBundlable( "constructionHandler", constructionHandler );
+        return bundle;
     }
 
     @Override
     public void restore( Bundle bundle ) {
-
+        constructionHandler = bundle.getBundlable( "constructionHandler" );
     }
 }

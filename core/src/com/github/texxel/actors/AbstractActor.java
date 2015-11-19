@@ -46,15 +46,14 @@ public abstract class AbstractActor implements Actor {
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = topLevel.newBundle();
-        bundle.put( "time", time );
+        bundle.putDouble( "time", time );
+        bundle.putBundlable( "level", level );
         return bundle;
     }
 
     @Override
     public void restore( Bundle bundle ) {
-        // nothing to do.
-        // But sub classes should still call this method in case there is something
-        // to do in the future
+        level = bundle.getBundlable( "level" );
     }
 
     @Override

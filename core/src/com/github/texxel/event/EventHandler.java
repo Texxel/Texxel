@@ -1,13 +1,32 @@
 package com.github.texxel.event;
 
+import com.github.texxel.saving.Bundlable;
+import com.github.texxel.saving.Bundle;
+import com.github.texxel.saving.BundleGroup;
+import com.github.texxel.saving.Constructor;
+import com.github.texxel.saving.ConstructorRegistry;
+
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
  * The EventHandler assists with dispatching events to a set of listeners.
  * @param <L> the type of listener that can be added
  */
-public final class EventHandler<L extends Listener> {
+public final class EventHandler<L extends Listener> implements Bundlable {
+
+    private static final Constructor<EventHandler> constructor = new Constructor<EventHandler>() {
+        @Override
+        public EventHandler newInstance( Bundle bundle ) {
+            return new EventHandler();
+        }
+    };
+    static {
+        ConstructorRegistry.put( EventHandler.class, constructor );
+    }
 
     /**
      * Priority to use for making big changes to an event.
@@ -21,11 +40,17 @@ public final class EventHandler<L extends Listener> {
      * A mid way priority. This priority should rarely be used.
      */
     public static final int NORMAL = 0;
+    /**
+     * Priority for listening to events. Don't make any changes on this priority
+     */
     public static final int LATE = -100;
+    /**
+     * Priority for listening to events. You should never use this priority except for when debugging.
+     */
     public static final int VERY_LATE = -1000;
 
-    private Listener[] listenersBaked = null;
-    private TreeMap<Integer, HashSet<Listener>> listeners = new TreeMap<>();
+    Listener[] listenersBaked = null;
+    TreeMap<Integer, HashSet<Listener>> listeners = new TreeMap<>();
 
     /**
      * Dispatches an event to all the listeners. If a listener cancels an event, then no further
@@ -77,9 +102,7 @@ public final class EventHandler<L extends Listener> {
         if ( listener == null )
             throw new NullPointerException( "Listener cannot be null" );
         HashSet<Listener> set = listeners.get( priority );
-        if ( set == null )
-            return false;
-        return set.remove( listener );
+        return set != null && set.remove( listener );
     }
 
     /**
@@ -108,7 +131,7 @@ public final class EventHandler<L extends Listener> {
             size += list.size();
         Listener[] listenersBaked = this.listenersBaked = new Listener[size];
         int i = 0;
-        for( HashSet<Listener> set : listeners.values() ) {
+        for( HashSet<Listener> set : listeners.descendingMap().values() ) {
             for ( Listener l : set ) {
                 listenersBaked[i] = l;
                 i++;
@@ -116,4 +139,25 @@ public final class EventHandler<L extends Listener> {
         }
     }
 
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        Bundle bundle = topLevel.newBundle();
+        for ( Map.Entry<Integer, HashSet<Listener>> entry : listeners.entrySet() ) {
+            int priority = entry.getKey();
+            bundle.putBundlables( Integer.toString( priority ), entry.getValue() );
+        }
+        return bundle;
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+        Set<String> keys = bundle.keys();
+        for ( String key : keys ) {
+            int priority = Integer.valueOf( key );
+            List<L> list = bundle.getBundlables( key );
+            for ( L l : list ) {
+                addListener( l, priority );
+            }
+        }
+    }
 }

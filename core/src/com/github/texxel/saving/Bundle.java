@@ -47,9 +47,8 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      * @throws IllegalStateException if called on a restored Bundle
      */
-    public void put( String key, int val ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+    public void putInt( String key, int val ) {
+        validateKey( key );
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
         data.put( key, val );
@@ -62,9 +61,8 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      * @throws IllegalStateException if called on a restored Bundle
      */
-    public void put( String key, double val ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+    public void putDouble( String key, double val ) {
+        validateKey( key );
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
         data.put( key, val );
@@ -77,9 +75,8 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      * @throws IllegalStateException if called on a restored Bundle
      */
-    public void put( String key, boolean val ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+    public void putBoolean( String key, boolean val ) {
+        validateKey( key );
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
         data.put( key, val );
@@ -93,9 +90,8 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      * @throws IllegalStateException if called on a restored Bundle
      */
-    public void put( String key, String value ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+    public void putString( String key, String value ) {
+        validateKey( key );
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
         data.put( key, value );
@@ -110,9 +106,8 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      * @throws IllegalStateException if called on a restored Bundle
      */
-    public void put( String key, Bundlable object ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+    public void putBundlable( String key, Bundlable object ) {
+        validateKey( key );
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
         if ( object == null )
@@ -129,27 +124,25 @@ public class Bundle {
      * @throws IllegalStateException if the bundle is a restored bundle
      * @throws NullPointerException id key or bundle are null
      */
-    public void put( String key, Bundle bundle ) {
+    public void putBundle( String key, Bundle bundle ) {
         if ( bundle.lookup != this.lookup )
             throw new IllegalArgumentException( "cannot store a bundle with a different parent bundle" );
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
         data.put( key, bundle.data );
     }
 
     /**
-     * Stores a collection of Bundlables into the Bundle. If the Collecection was an ordered list,
+     * Stores a collection of Bundlables into the Bundle. If the Collection was a list,
      * then the order will be maintained.
-     * @param key the key to store the colection with
+     * @param key the key to store the collection with
      * @param collection the Collection to store
      */
-    public void put( String key, Collection<Bundlable> collection ) {
+    public void putBundlables( String key, Collection<? extends Bundlable> collection ) {
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         if ( collection == null ) {
             data.remove( key );
             return;
@@ -163,22 +156,61 @@ public class Bundle {
     }
 
     /**
-     * Gets a List of values from a key. If there is not a list of values in the key, then null
-     * is returned.
+     * Gets a List of values from a key. If there is not a list of values in the key, then an empty
+     * list is returned
      * @param key the key to look up
      * @return the List mapped to the key
      * @throws NullPointerException if key is null
+     * @throws ClassCastException if all the bundlables are not of type E
      */
-    public List<Bundlable> getList( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+    public <E extends Bundlable> List<E> getBundlables( String key ) {
+        validateKey( key );
         JSONArray array = data.optJSONArray( key );
+        if ( array == null )
+            return new ArrayList<>();
         int size = array.length();
-        List<Bundlable> bundlables = new ArrayList<>( size );
+        List<E> bundlables = new ArrayList<>( size );
         for ( int i = 0; i < size; i++ ) {
-            bundlables.add( (Bundlable)array.get( i ) );
+            bundlables.add( (E)lookup.get( (int)array.get( i ) ) );
         }
         return bundlables;
+    }
+
+    /**
+     * Adds a collection of boxed primitives (or Strings) to the bundle. The added collection does
+     * not need to contain objects of the same type. The objects must be a Integer, Double, Boolean
+     * or a String.
+     * @param key the key to add the list to
+     * @param objects the primitives to add
+     */
+    public void putPrimitives( String key, Collection<Object> objects ) {
+        if ( !editable )
+            throw new IllegalStateException( "cannot edit a restored bundle" );
+        validateKey( key );
+        if ( objects == null ) {
+            data.remove( key );
+            return;
+        }
+        data.put( key, objects );
+    }
+
+    /**
+     * Gets a list of boxed primitives (or Strings) from the bundle. If the key does not exist, an
+     * empty list is returned
+     * @param key the key to add the list to
+     * @return the stored objects
+     */
+    public List<Object> getPrimitives( String key ) {
+        validateKey( key );
+        JSONArray array = data.optJSONArray( key );
+        if ( array == null )
+            return new ArrayList<>();
+        int size = array.length();
+        List<Object> objects = new ArrayList<>( size );
+        for ( int i = 0; i < size; i++ ) {
+            objects.add( array.get( i ) );
+        }
+        return objects;
     }
 
     /**
@@ -186,8 +218,7 @@ public class Bundle {
      * @see #getInt(String, int)
      */
     public int getInt( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optInt( key, 0 );
     }
 
@@ -200,8 +231,7 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      */
     public int getInt( String key, int defaultValue ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optInt( key, defaultValue );
     }
 
@@ -210,8 +240,7 @@ public class Bundle {
      * @see #getDouble(String, double)
      */
     public double getDouble( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optDouble( key, 0.0 );
     }
 
@@ -224,8 +253,7 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      */
     public double getDouble( String key, double defaultValue ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optDouble( key, defaultValue );
     }
 
@@ -234,8 +262,7 @@ public class Bundle {
      * @see #getBoolean(String, boolean)
      */
     public boolean getBoolean( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optBoolean( key, false );
     }
 
@@ -249,8 +276,7 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      */
     public boolean getBoolean( String key, boolean defaultValue ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optBoolean( key, defaultValue );
     }
 
@@ -259,8 +285,7 @@ public class Bundle {
      * @see #getString(String, String)
      */
     public String getString( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optString( key, null );
     }
 
@@ -274,8 +299,7 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      */
     public String getString( String key, String defaultValue ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.optString( key, defaultValue );
     }
 
@@ -288,8 +312,7 @@ public class Bundle {
      * @throws ClassCastException if the bundlable is not of type T
      */
     public <T extends Bundlable> T getBundlable( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         int id = data.optInt( key, -1 );
         if ( id == -1 )
             return null;
@@ -303,8 +326,7 @@ public class Bundle {
      * @return the bundle stored into {@code key}
      */
     public Bundle getBundle( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         JSONObject data = this.data.optJSONObject( key );
         if ( data == null )
             return null;
@@ -318,8 +340,7 @@ public class Bundle {
      * @throws NullPointerException if key is null
      */
     public boolean contains( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         return data.has( key );
     }
 
@@ -329,8 +350,7 @@ public class Bundle {
      * @throws NullPointerException if {@code key} is null
      */
     public void remove( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
+        validateKey( key );
         data.remove( key );
     }
 
@@ -358,7 +378,41 @@ public class Bundle {
      * @return the bundle's keys
      */
     public Set<String> keys() {
-        return new HashSet<>( data.keySet() );
+        HashSet<String> keys = new HashSet<>( data.keySet() );
+        // remove reserved keys from the list
+        keys.remove( "__classname__" );
+        keys.remove( "__version__" );
+        keys.remove( "__lookuptable__" );
+        return keys;
+    }
+
+    private void validateKey( String key ) {
+        if ( key == null )
+            throw new NullPointerException( "key cannot be null" );
+
+        // don't let users see/edit reserved keys
+        if ( key.equals( "__classname__" ) )
+            throw new IllegalArgumentException( "The key '__classname__' is for internal use only" );
+        if ( key.equals( "__version__" ) )
+            throw new IllegalArgumentException( "The key '__version__' is for internal use only" );
+        if ( key.equals( "__lookuptable__" ) )
+            throw new IllegalArgumentException( "The key '__lookuptable__' is for internal use only" );
+    }
+
+    /**
+     * For internal use only - sets the class that this bundle is representing
+     * @param name the classes name
+     */
+    void putClassName( String name ) {
+        data.put( "__classname__", name );
+    }
+
+    /**
+     * For internal use only - gets the class that this bundle is representing
+     * @return the class that this bundle represents or null if it isn't representing anything
+     */
+    String getClassName() {
+        return data.getString( "__classname__" );
     }
 
 }

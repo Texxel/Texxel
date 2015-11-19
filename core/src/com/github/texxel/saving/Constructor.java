@@ -12,7 +12,7 @@ public interface Constructor<T extends Bundlable> {
      * from {@code bundle}! Doing so will result in undefined behaviour; only primitive/String values
      * should be read from the bundle. The majority of the Bundle configuration should be done in
      * the {@link Bundlable#restore(Bundle)} method.
-     * @return the created object
+     * @return the created object. Cannot return null
      */
     T newInstance( Bundle bundle );
 

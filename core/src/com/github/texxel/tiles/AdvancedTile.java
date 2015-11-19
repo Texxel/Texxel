@@ -29,9 +29,9 @@ public abstract class AdvancedTile extends AbstractTile {
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = super.bundle( topLevel );
-        bundle.put( "x", x );
-        bundle.put( "y", y );
-        bundle.put( "tileMap", tileMap );
+        bundle.putInt( "x", x );
+        bundle.putInt( "y", y );
+        bundle.putBundlable( "tileMap", tileMap );
         return bundle;
     }
 

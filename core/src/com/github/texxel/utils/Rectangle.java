@@ -164,10 +164,10 @@ public class Rectangle implements Bundlable {
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = topLevel.newBundle();
-        bundle.put( "x", x );
-        bundle.put( "y", y );
-        bundle.put( "x2", x2 );
-        bundle.put( "y2", y2 );
+        bundle.putInt( "x", x );
+        bundle.putInt( "y", y );
+        bundle.putInt( "x2", x2 );
+        bundle.putInt( "y2", y2 );
         return bundle;
     }
 

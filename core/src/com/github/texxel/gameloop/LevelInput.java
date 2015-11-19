@@ -5,14 +5,18 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.github.texxel.event.EventHandler;
+import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.event.events.input.ScreenTouchedEvent;
 import com.github.texxel.event.listeners.input.ScreenTouchedListener;
+import com.github.texxel.levels.Level;
+import com.github.texxel.saving.Bundle;
+import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.ui.InputHandler;
 
-class CameraMover implements ScreenTouchedListener {
+public class LevelInput implements GameInput, ScreenTouchedListener {
 
     /**
-     * The handler used to inform that the user has pressed a buttom
+     * The handler used to inform that the user has pressed a button
      */
     public interface ClickHandler {
         /**
@@ -36,11 +40,13 @@ class CameraMover implements ScreenTouchedListener {
      * The amount of before the action is considered a drag (arbitrary scale)
      */
     private static final float DRAG_THRESHOLD = 100f;
+    /**
+     * The maximum clicks that can happen in a single tick
+     */
+    private static final int MAX_TOUCHES = 5;
 
     /** The camera to manipulate */
-    private final OrthographicCamera camera;
-    /** The thing to call when the user clicks */
-    private final ClickHandler clickHandler;
+    private OrthographicCamera camera;
     /** When zooming, this is the starting distance between the fingers in screen distances */
     private float startSpan = -1;
     /** This is the zoom that the camera was at before pinching */
@@ -58,9 +64,17 @@ class CameraMover implements ScreenTouchedListener {
     /** A temporary vector for random use in math calculations */
     private Vector3 temp = new Vector3();
 
-    public CameraMover( OrthographicCamera camera, ClickHandler handler ) {
+    /** A buffered list of x clicks in the last tick */
+    private final int[] xTouches = new int[MAX_TOUCHES];
+    /** A buffered list of y clicks in the last tick */
+    private final int[] yTouches = new int[MAX_TOUCHES];
+    /** The index of the last touch read from the list */
+    private int touchIndex = 0;
+    /** The index of the last touch written to the list */
+    private int touchTop = 0;
+
+    public LevelInput( OrthographicCamera camera ) {
         this.camera = camera;
-        this.clickHandler = handler;
         InputHandler.getTouchHandler().addListener( this, EventHandler.NORMAL );
     }
 
@@ -192,12 +206,37 @@ class CameraMover implements ScreenTouchedListener {
         camera.unproject( temp );
         int x = (int)temp.x;
         int y = (int)temp.y;
-        clickHandler.onClick( x, y );
+        xTouches[touchTop] = x;
+        yTouches[touchTop] = y;
+        touchTop = (touchTop+1) % MAX_TOUCHES;
+    }
+
+    @Override
+    public void process( Level level ) {
+        int touchIndex = this.touchIndex;
+        int touchTop   = this.touchTop;
+        int[] xTouches = this.xTouches;
+        int[] yTouches = this.yTouches;
+        for ( ; touchIndex != touchTop; touchIndex = (touchIndex+1)%MAX_TOUCHES ) {
+            level.getCellSelectHandler().dispatch(
+                    new CellSelectedEvent( level, xTouches[touchIndex], yTouches[touchIndex] ) );
+        }
+        this.touchIndex = touchIndex;
     }
 
     private static float dist( ScreenTouchedEvent.Touch a, ScreenTouchedEvent.Touch b ) {
         float xDist = a.xCurrent() - b.xCurrent();
         float yDist = a.yCurrent() - b.yCurrent();
         return (float)Math.sqrt( xDist*xDist + yDist*yDist );
+    }
+
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        throw new UnsupportedOperationException( "Level input does not support being saved" );
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+        throw new UnsupportedOperationException( "Level input does not support being saved" );
     }
 }

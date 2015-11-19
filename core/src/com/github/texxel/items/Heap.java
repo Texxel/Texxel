@@ -1,10 +1,11 @@
 package com.github.texxel.items;
 
+import com.github.texxel.saving.Bundlable;
 import com.github.texxel.sprites.api.WorldVisual;
 
 import java.util.List;
 
-public interface Heap extends WorldVisual {
+public interface Heap extends WorldVisual, Bundlable {
 
     /**
      * Gets the item on the top of this stack

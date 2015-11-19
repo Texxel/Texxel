@@ -140,13 +140,13 @@ public class TileMap implements Bundlable {
     @Override
     public Bundle bundle( BundleGroup bundleGroup ) {
         Bundle bundle = bundleGroup.newBundle();
-        bundle.put( "width", width );
-        bundle.put( "height", height );
+        bundle.putInt( "width", width );
+        bundle.putInt( "height", height );
         Tile[][] tiles = this.tiles;
         for ( int i = 0; i < width; i++ ) {
             for ( int j = 0; j < height; j++ ) {
-                bundle.put( "t:" + i + ":" + j, tiles[i][j] );
-                bundle.put( "s:" + i + ":" + j, spawnables[i][j] );
+                bundle.putBundlable( "t:" + i + ":" + j, tiles[i][j] );
+                bundle.putBoolean( "s:" + i + ":" + j, spawnables[i][j] );
             }
         }
         return bundle;

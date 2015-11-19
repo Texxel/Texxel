@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.github.texxel.actors.Actor;
-import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.items.Heap;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.TileMap;
@@ -16,18 +15,12 @@ import com.github.texxel.tiles.Tile;
 
 import java.util.List;
 
-public class LevelRenderer {
+public class LevelRenderer implements GameRenderer {
 
-    private static class TileRenderer implements GameBatcher.OptimisedDrawer {
-        private final TileMap tileMap;
-
-        public TileRenderer( TileMap tileMap ) {
-            this.tileMap = tileMap;
-        }
-
+    private class TileRenderer implements GameBatcher.OptimisedDrawer {
         @Override
         public void onDraw( SpriteBatch batch ) {
-            TileMap tileMap = this.tileMap;
+            TileMap tileMap = LevelRenderer.this.tileMap;
             for ( int i = tileMap.width() - 1; i >= 0; i-- ) {
                 for ( int j = tileMap.height() - 1; j >= 0; j-- ) {
                     Tile tile = tileMap.getTile( i, j );
@@ -37,51 +30,35 @@ public class LevelRenderer {
         }
     }
 
-    private class ClickHandler implements CameraMover.ClickHandler {
-        @Override
-        public void onClick( int x, int y ) {
-            xTouches[touchTop] = x;
-            yTouches[touchTop] = y;
-            touchTop = (touchTop+1) % MAX_TOUCHES;
-        }
-    }
-
-    private static class FogRenderer implements GameBatcher.OptimisedDrawer {
-        private final FogOfWar fog;
-
-        public FogRenderer( FogOfWar fog ) {
-            this.fog = fog;
-        }
-
+    private class FogRenderer implements GameBatcher.OptimisedDrawer {
         @Override
         public void onDraw( SpriteBatch batch ) {
             fog.onDraw( batch );
         }
     }
 
-    private static final int MAX_TOUCHES = 5;
     private final OrthographicCamera camera;
     private final GameBatcher batch;
-    private final int[] xTouches = new int[MAX_TOUCHES];
-    private final int[] yTouches = new int[MAX_TOUCHES];
-    private int touchIndex = 0;
-    private int touchTop = 0;
+    TileMap tileMap;
+    FogOfWar fog;
 
-    public LevelRenderer( Level level ) {
+    public LevelRenderer( OrthographicCamera camera ) {
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
-        camera = new OrthographicCamera( 20, 20 * (h / w) );
+        this.camera = camera;
+        camera.setToOrtho( false, 20, 20 * h / w );
         camera.position.set( 6, 6, 0 );
         camera.update();
 
         batch = new GameBatcher( camera );
-        batch.addOptimisedDrawer( 0, new TileRenderer( level.getTileMap() ) );
-        batch.addOptimisedDrawer( 1000, new FogRenderer( level.getFogOfWar() ) );
-        new CameraMover( camera, new ClickHandler() );
+        batch.addOptimisedDrawer( 0, new TileRenderer() );
+        batch.addOptimisedDrawer( 1000, new FogRenderer() );
     }
 
+    @Override
     public void render( Level level ) {
-        processInput( level );
+        tileMap = level.getTileMap();
+        fog = level.getFogOfWar();
 
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
 
@@ -104,21 +81,10 @@ public class LevelRenderer {
         batch.flush();
     }
 
+    @Override
     public void resize( int width, int height ) {
         camera.viewportHeight = camera.viewportWidth * height / width;
         camera.update();
-    }
-
-    private void processInput( Level level ) {
-        int touchIndex = this.touchIndex;
-        int touchTop   = this.touchTop;
-        int[] xTouches = this.xTouches;
-        int[] yTouches = this.yTouches;
-        for ( ; touchIndex != touchTop; touchIndex = (touchIndex+1)%MAX_TOUCHES ) {
-            level.getCellSelectHandler().dispatch(
-                    new CellSelectedEvent( level, xTouches[touchIndex], yTouches[touchIndex] ) );
-        }
-        this.touchIndex = touchIndex;
     }
 
 }

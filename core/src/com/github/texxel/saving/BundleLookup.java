@@ -12,11 +12,12 @@ final class BundleLookup {
     private final HashMap<Integer, Bundlable> bundlablesBuffer = new HashMap<>();
 
     /**
-     * Loads all the Bundlables from a "lookup bundle".
+     * Loads all the Bundlables from a "lookup bundle". If a bundlable is found that has a non existent
+     * class, then that bundlable will get ignored.
      * @throws IllegalTypeException if the bundle does not have only integers as keys
      * @throws IllegalTypeException if the bundle contains a value that is not a Bundlable
-     * @throws RuntimeException if there was an issue loading a class
-     * @throws IllegalStateException if no constructor was registered for class
+     * @throws UnregisteredConstructorException if the class has not registered a constructor
+     * @throws NullPointerException if the constructor returned a null instance
      */
     @SuppressWarnings( "unchecked" )
     public void restore( Bundle data ) {
@@ -28,7 +29,7 @@ final class BundleLookup {
                 throw new IllegalTypeException( "Bundle lookups must only have integers as keys" );
             }
             Bundle bundle = data.getBundle( idString );
-            String className = bundle.getString( "classname" );
+            String className = bundle.getClassName();
             Class<Bundlable> clazz = null;
             try {
                 Class<?> classRaw = Class.forName( className );
@@ -37,13 +38,13 @@ final class BundleLookup {
                 System.err.println( "Couldn't find class: " + className + " in bundle lookup. Ignoring that bundlable" );
             } catch ( ClassCastException e ) {
                 throw new IllegalTypeException( "Classes in a bundle lookup must extend from Bundlable. Found: " + className );
-            } catch ( Exception e ) {
-                throw new RuntimeException( "Couldn't load class: " + className, e );
             }
             Constructor<Bundlable> constructor = ConstructorRegistry.get( clazz );
             if ( constructor == null )
-                throw new IllegalStateException( "No constructor registered for class: " + className );
-            Bundlable object = constructor.newInstance(bundle);
+                throw new UnregisteredConstructorException( "No constructor registered for class: " + className );
+            Bundlable object = constructor.newInstance( bundle );
+            if ( object == null )
+                throw new NullPointerException( "Constructor returned a null instance. Constructor of class: " + className );
             bundlables.put( id, object );
         }
         for ( Map.Entry<Integer, Bundlable> entry : bundlables.entrySet() ) {
@@ -58,6 +59,10 @@ final class BundleLookup {
         int id = System.identityHashCode( object );
         if ( bundlables.containsKey( id ) )
             return id;
+        if ( object != null )
+            if ( ConstructorRegistry.get( object.getClass() ) == null )
+                throw new UnregisteredConstructorException( "Bundlable " + object.getClass()
+                        + " is missing a registered constructor" );
         bundlablesBuffer.put( id, object );
         return id;
     }
@@ -89,8 +94,10 @@ final class BundleLookup {
             if ( object == null )
                 continue;
             Bundle bundle = object.bundle( bundleGroup );
-            bundle.put( "classname", object.getClass().getName() );
-            save.put( Integer.toString( id ), bundle );
+            if ( bundle == null )
+                throw new NullPointerException( "Bundlables must always return a bundle when saving. Class: '" + object.getClass() + "'. Object: " + object.toString()  );
+            bundle.putClassName( object.getClass().getName() );
+            save.putBundle( Integer.toString( id ), bundle );
         }
     }
 

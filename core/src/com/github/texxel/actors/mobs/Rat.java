@@ -9,15 +9,14 @@ import com.github.texxel.sprites.imp.mobvisuals.RatVisual;
 import com.github.texxel.utils.Point2D;
 
 public class Rat extends AbstractMob {
-    private static final Constructor<Rat> CONSTRUCTOR = new Constructor<Rat>() {
-        @Override
-        public Rat newInstance( Bundle bundle ) {
-            return new Rat( bundle );
-        }
 
-    };
     static {
-        ConstructorRegistry.put( Rat.class, CONSTRUCTOR );
+        ConstructorRegistry.put( Rat.class, new Constructor<Rat>() {
+            @Override
+            public Rat newInstance( Bundle bundle ) {
+                return new Rat( bundle );
+            }
+        });
     }
 
     private final RatVisual visual = new RatVisual();

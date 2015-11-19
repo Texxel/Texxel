@@ -24,10 +24,10 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = super.bundle( topLevel );
-        bundle.put( "x", x );
-        bundle.put( "y", y );
-        bundle.put( "target", targetLevel );
-        bundle.put( "dungeon", dungeon );
+        bundle.putInt( "x", x );
+        bundle.putInt( "y", y );
+        bundle.putInt( "target", targetLevel );
+        bundle.putBundlable( "dungeon", dungeon );
         return bundle;
     }
 
@@ -57,7 +57,7 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
 
     @Override
     public void interact( Char ch ) {
-        dungeon.goTo( targetLevel );
+        // dungeon.goTo( targetLevel );
     }
 
     @Override

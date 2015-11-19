@@ -10,12 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class LevelUpdater {
+public class LevelUpdater implements GameUpdater {
 
     private Map<Actor, Action> renderingActions = new HashMap<>();
     private boolean actionFinished;
     private Action currentAction;
 
+    @Override
     public void update( Level level ) {
         if ( currentAction == null || currentAction.update() ) {
             actionFinished = true;

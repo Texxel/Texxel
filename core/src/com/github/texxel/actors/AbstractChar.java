@@ -18,7 +18,7 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     private Point2D location;
     private Point2D target;
     private FieldOfVision fov;
-    private final EventHandler<CharMoveListener> moveHandler = new EventHandler<>();
+    private EventHandler<CharMoveListener> moveHandler = new EventHandler<>();
 
     /**
      * Constructs the char at the spawn point
@@ -48,10 +48,11 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = super.bundle( topLevel );
-        bundle.put( "location", location.bundle( topLevel ) );
-        bundle.put( "target", target.bundle( topLevel ) );
-        bundle.put( "health", health );
-        bundle.put( "max-health", maxHealth );
+        bundle.putBundle( "location", location.bundle( topLevel ) );
+        bundle.putBundle( "target", target.bundle( topLevel ) );
+        bundle.putDouble( "health", health );
+        bundle.putDouble( "maxHealth", maxHealth );
+        bundle.putBundlable( "moveHandler", moveHandler );
         return bundle;
     }
 
@@ -61,7 +62,8 @@ public abstract class AbstractChar extends AbstractActor implements Char {
         this.location = bundle.getBundlable( "location" );
         this.target = bundle.getBundlable( "target" );
         this.health = bundle.getInt( "health" );
-        this.maxHealth = bundle.getInt( "max-health" );
+        this.maxHealth = bundle.getInt( "maxHealth" );
+        this.moveHandler = bundle.getBundlable( "moveHandler" );
     }
 
     @Override

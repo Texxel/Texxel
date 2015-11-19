@@ -38,16 +38,18 @@ public abstract class AbstractLevel implements Level {
     private final ArrayList<Actor> actors = new ArrayList<>();
     private final ArrayList<Char> chars = new ArrayList<>();
     private final ArrayList<Heap> heaps = new ArrayList<>();
+
     private final List<Actor> actorImmutableList = Collections.unmodifiableList( actors );
     private final List<Char> charsImmutableList = Collections.unmodifiableList( chars );
     private final List<Heap> heapsImmutableList = Collections.unmodifiableList( heaps );
-    private final EventHandler<ActorSpawnListener> actorSpawnHandler = new EventHandler<>();
-    private final EventHandler<ActorDestroyListener> actorDestroyHandler = new EventHandler<>();
-    private final EventHandler<LevelDestructionListener> levelDestructionHandler = new EventHandler<>();
-    private final EventHandler<ItemDropListener> itemDropHandler = new EventHandler<>();
-    private final EventHandler<CellSelectedListener> cellSelectedHandler = new EventHandler<>();
 
-    private final Dungeon dungeon;
+    private EventHandler<ActorSpawnListener> actorSpawnHandler = new EventHandler<>();
+    private EventHandler<ActorDestroyListener> actorDestroyHandler = new EventHandler<>();
+    private EventHandler<LevelDestructionListener> levelDestructionHandler = new EventHandler<>();
+    private EventHandler<ItemDropListener> itemDropHandler = new EventHandler<>();
+    private EventHandler<CellSelectedListener> cellSelectedHandler = new EventHandler<>();
+
+    private Dungeon dungeon;
     private final int id;
     private final int width, height;
     private final FogOfWar fog;
@@ -74,7 +76,6 @@ public abstract class AbstractLevel implements Level {
      * {@link com.github.texxel.saving.Constructor#newInstance(Bundle)} method.
      */
     protected AbstractLevel( Bundle bundle ) {
-        dungeon = bundle.getBundlable( "dungeon" );
         id = bundle.getInt( "id" );
         width = bundle.getInt( "width" );
         height = bundle.getInt( "height" );
@@ -83,15 +84,38 @@ public abstract class AbstractLevel implements Level {
 
     @Override
     public void restore( Bundle bundle ) {
+        dungeon = bundle.getBundlable( "dungeon" );
         tileMap = bundle.getBundlable( "tilemap" );
+
+        List<Actor> actors = bundle.getBundlables( "actors" );
+        for ( Actor actor : actors ) {
+            this.actors.add( actor );
+            if ( actor instanceof Char )
+                this.chars.add( (Char)actor );
+        }
+        heaps.addAll( bundle.<Heap>getBundlables( "heaps" ) );
+        actorSpawnHandler = bundle.getBundlable( "actorSpawnHandler" );
+        actorDestroyHandler = bundle.getBundlable( "actorDestroyHandler" );
+        levelDestructionHandler = bundle.getBundlable( "levelDestructionHandler" );
+        itemDropHandler = bundle.getBundlable( "itemDropHandler" );
+        cellSelectedHandler = bundle.getBundlable( "cellSelectedHandler" );
     }
 
     @Override
     public Bundle bundle( BundleGroup topLevel) {
         Bundle bundle = topLevel.newBundle();
-        bundle.put( "width", width );
-        bundle.put( "height", height );
-        bundle.put( "tilemap", tileMap.bundle( topLevel ) );
+        bundle.putBundlable( "dungeon", dungeon );
+        bundle.putInt( "id", id );
+        bundle.putInt( "width", width );
+        bundle.putInt( "height", height );
+        bundle.putBundle( "tilemap", tileMap.bundle( topLevel ) );
+        bundle.putBundlables( "actors", actors );
+        bundle.putBundlables( "heaps", heaps );
+        bundle.putBundlable( "actorSpawnHandler", actorSpawnHandler );
+        bundle.putBundlable( "actorDestroyHandler", actorDestroyHandler );
+        bundle.putBundlable( "levelDestructionHandler", levelDestructionHandler );
+        bundle.putBundlable( "itemDropHandler", itemDropHandler );
+        bundle.putBundlable( "cellSelectedHandler", cellSelectedHandler );
         return bundle;
     }
 

@@ -48,22 +48,18 @@ public class BundleGroup extends Bundle {
         BundleLookup lookup = new BundleLookup();
         String version;
         try {
-            version = json.getString( "version" );
+            version = json.getString( "__version__" );
         } catch ( JSONException e ) {
             throw new IllegalFormatException( "All loaded bundles must have a version field" );
         }
-        Bundle bundleLookup = new Bundle( json.getJSONObject( "lookuptable" ), lookup, false, version );
-        try {
-            lookup.restore( bundleLookup );
-        } catch ( Exception e ) {
-            throw new IllegalFormatException( "data's bundle lookup was faulty", e );
-        }
+        Bundle bundleLookup = new Bundle( json.getJSONObject( "__lookuptable__" ), lookup, false, version );
+        lookup.restore( bundleLookup );
         return new BundleGroup( json, lookup, false, version );
     }
 
     private BundleGroup( JSONObject data, BundleLookup lookup, boolean editable, String rawVersion ) {
         super( data, lookup, editable, rawVersion );
-        data.put( "version", rawVersion );
+        data.put( "__version__", rawVersion );
     }
 
     public Bundle newBundle() {
@@ -79,7 +75,7 @@ public class BundleGroup extends Bundle {
      */
     @Override
     public String toString() {
-        put( "lookuptable", lookup.bundle( this ) );
+        data.put( "__lookuptable__", lookup.bundle( this ).data );
         return data.toString();
     }
 }
