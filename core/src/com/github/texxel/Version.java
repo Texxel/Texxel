@@ -2,6 +2,10 @@ package com.github.texxel;
 
 import java.util.HashMap;
 
+/**
+ * An enum of every released version of Texxel. Whenever another update released, this enum will be
+ * updated with the new version.
+ */
 public enum Version {
 
     V0_0_0( "0.0.0" ),
@@ -11,7 +15,8 @@ public enum Version {
      */
     UNKNOWN( "unknown" );
 
-    static class StaticAccess {
+    private static class VersionRegistry {
+        // a mapping of the display name to the version
         public static final HashMap<String, Version> versions = new HashMap<>();
     }
 
@@ -19,7 +24,7 @@ public enum Version {
 
     Version( String value ) {
         this.value = value;
-        StaticAccess.versions.put( value, this );
+        VersionRegistry.versions.put( value, this );
     }
 
     /**
@@ -39,7 +44,7 @@ public enum Version {
      * @see #valueOf(String)
      */
     public static Version fromString( String name ) {
-        Version value = StaticAccess.versions.get( name );
+        Version value = VersionRegistry.versions.get( name );
         if ( value == null )
             return UNKNOWN;
         else
