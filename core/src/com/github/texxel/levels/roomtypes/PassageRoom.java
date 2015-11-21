@@ -1,5 +1,6 @@
 package com.github.texxel.levels.roomtypes;
 
+import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.Room;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.tiles.DoorClosedTile;
@@ -13,8 +14,13 @@ import java.util.Map;
 
 public class PassageRoom implements RoomType {
 
+    private static final PassageRoom instance = new PassageRoom();
+    public static PassageRoom instance() {
+        return instance;
+    }
+
     @Override
-    public void decorate( TileMap tileMap, Room room ) {
+    public void decorate( Level level, TileMap tileMap, Room room ) {
         Point2D center = room.center();
 
         Rectangle bounds = room.bounds;

@@ -6,4 +6,5 @@ public interface GameInput {
 
     void process( Level level );
 
+    void onDestroy();
 }

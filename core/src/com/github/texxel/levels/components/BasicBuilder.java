@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.github.texxel.levels.roomtypes.BlankRoom;
 import com.github.texxel.levels.roomtypes.EntryRoom;
 import com.github.texxel.levels.roomtypes.ExitRoom;
-import com.github.texxel.levels.roomtypes.StandardRoom;
 import com.github.texxel.levels.roomtypes.PassageRoom;
+import com.github.texxel.levels.roomtypes.StandardRoom;
 import com.github.texxel.mechanics.Graph;
 import com.github.texxel.utils.Random;
 import com.github.texxel.utils.Rectangle;
@@ -50,13 +50,8 @@ public class BasicBuilder implements LevelBuilder {
      */
     private Room roomExit = null;
 
-    /**
-     * Builds the basic room structure. Room types are not assigned until later
-     * with the exception of the entrance and exit rooms
-     * @return true if the build was successful. False if a rebuild should happen
-     */
     @Override
-    public Collection<Room> buildRooms( int width, int height ) {
+    public Collection<Room> planRooms( int width, int height ) {
         Gdx.app.log( "RegularLevel", "Clearing the level" );
         // flush all the old data out
         clear();

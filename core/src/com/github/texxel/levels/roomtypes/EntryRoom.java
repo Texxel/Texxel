@@ -1,38 +1,19 @@
 package com.github.texxel.levels.roomtypes;
 
-import com.github.texxel.levels.components.Room;
-import com.github.texxel.levels.components.TileFiller;
-import com.github.texxel.levels.components.TileMap;
-import com.github.texxel.tiles.DoorClosedTile;
-import com.github.texxel.tiles.FloorDecorTile;
-import com.github.texxel.tiles.FloorTile;
+import com.github.texxel.levels.Level;
+import com.github.texxel.tiles.StairsUpTile;
 import com.github.texxel.tiles.Tile;
-import com.github.texxel.tiles.WallTile;
 import com.github.texxel.utils.Point2D;
 
-public class EntryRoom implements RoomType {
+public class EntryRoom extends StairsRoom {
 
-    @Override
-    public void decorate( TileMap tileMap, Room room ) {
-
-        new TileFiller.Border( room.bounds ) {
-            @Override
-            public Tile makeInnerTile( int x, int y ) {
-                return FloorTile.getInstance();
-            }
-
-            @Override
-            public Tile makeOuterTile( int x, int y ) {
-                return WallTile.getInstance();
-            }
-        }.paint( tileMap );
-
-        for ( Point2D door : room.connected.values() ) {
-            tileMap.setTile( door.x, door.y, DoorClosedTile.getInstance() );
-        }
-
-        Point2D center = room.center();
-        tileMap.setTile( center.x, center.y, FloorDecorTile.getInstance() );
+    private static final EntryRoom instance = new EntryRoom();
+    public static EntryRoom instance() {
+        return instance;
     }
 
+    @Override
+    protected Tile getStairs( Level level, Point2D location ) {
+        return new StairsUpTile( level.dungeon(), level.getLevelAbove(), location.x, location.y );
+    }
 }

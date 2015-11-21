@@ -1,24 +1,28 @@
 package com.github.texxel.tiles;
 
 import com.github.texxel.Dungeon;
+import com.github.texxel.Texxel;
 import com.github.texxel.actors.Char;
+import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
+import com.github.texxel.scenes.IntervalLevelScreen;
 
 public abstract class StairsTile extends AbstractTile implements Interactable {
 
     private Dungeon dungeon;
     private int x, y;
-    private int targetLevel;
+    private LevelDescriptor targetLevel;
 
-    public StairsTile( Dungeon dungeon, int targetLevel, int x, int y ) {
+    public StairsTile( Dungeon dungeon, LevelDescriptor nextLevel, int x, int y ) {
         this.dungeon = dungeon;
-        this.targetLevel = targetLevel;
+        this.targetLevel = nextLevel;
         this.x = x;
         this.y = y;
     }
 
     protected StairsTile( Bundle bundle ) {
+
     }
 
     @Override
@@ -26,7 +30,7 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
         Bundle bundle = super.bundle( topLevel );
         bundle.putInt( "x", x );
         bundle.putInt( "y", y );
-        bundle.putInt( "target", targetLevel );
+        bundle.putBundlable( "target", targetLevel );
         bundle.putBundlable( "dungeon", dungeon );
         return bundle;
     }
@@ -36,7 +40,7 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
         super.restore( bundle );
         x = bundle.getInt( "x" );
         y = bundle.getInt( "x" );
-        targetLevel = bundle.getInt( "target" );
+        targetLevel = bundle.getBundlable( "target" );
         dungeon = bundle.getBundlable( "dungeon" );
     }
 
@@ -57,8 +61,11 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
 
     @Override
     public void interact( Char ch ) {
-        // dungeon.goTo( targetLevel );
+        Texxel.getInstance().setScreen(
+                new IntervalLevelScreen( dungeon, targetLevel, transitionReason() ) );
     }
+
+    protected abstract IntervalLevelScreen.TransitionReason transitionReason();
 
     @Override
     public boolean canInteract( Char ch ) {
@@ -67,17 +74,19 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
 
     /**
      * Sets the level that will be descended to
-     * @param levelID the id of the level to descend to
+     * @param target where the stairs will go to
      */
-    void setTargetLevel( int levelID ) {
-        this.targetLevel = levelID;
+    void setTargetLevel( LevelDescriptor target ) {
+        if ( target == null )
+            throw new NullPointerException( "'target' cannot be null" );
+        this.targetLevel = target;
     }
 
     /**
      * Gets the id of the level that will be moved to
-     * @return the next level's id
+     * @return the next level's descriptor
      */
-    int getTargetLevel() {
+    LevelDescriptor getTargetLevel() {
         return targetLevel;
     }
 

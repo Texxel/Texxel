@@ -1,6 +1,7 @@
 package com.github.texxel.levels.components;
 
 import com.github.texxel.levels.Level;
+import com.github.texxel.saving.Bundlable;
 
 /**
  * LevelDescriptors describes the relationship between levels and how the hero should transverse
@@ -8,15 +9,17 @@ import com.github.texxel.levels.Level;
  * level data, it is much better to use a LevelDescriptor as the reference because it uses much less
  * memory and time to create and lets the garbage collector clean up the level data.
  */
-public interface LevelDescriptor {
+public interface LevelDescriptor extends Bundlable {
 
     /**
-     * Constructs the level. Note: implementations of this interface should <i>not</i> cache the
+     * <p>Constructs the level. This is only the very basic construction of the level; you should use
+     * {@link com.github.texxel.Dungeon#make(LevelDescriptor)} to get a fully furnished level.</p>
+     * <p>Note: implementations of this interface should <i>not</i> cache the
      * created level as it would mean that the garbage collector couldn't clean up. Thus, every call
-     * to this method must create/load a new Level (which is an expensive task!).
+     * to this method must create/load a new Level (which is an expensive task!).</p>
      * @return the created level
      */
-    Level constructLevel();
+    Level construct();
 
     int width();
 

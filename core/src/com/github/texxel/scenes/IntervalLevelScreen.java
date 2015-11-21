@@ -3,22 +3,42 @@ package com.github.texxel.scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.github.texxel.Dungeon;
 import com.github.texxel.Texxel;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.LevelDescriptor;
 
-public class IntervalLevelScreen implements Screen{
+public class IntervalLevelScreen implements Screen {
 
-    public static String DESCENDING_TEXT = "DESCENDING";
-    public static String FALLING_TEXT = "FALLING";
-    public static String ASCENDING_TEXT = "ASCENDING";
+    public interface TransitionReason {
+        String getText();
+    }
 
+    public enum StandardTransitionReason implements TransitionReason {
+
+        STAIRS_ASCEND( "ASCENDING" ),
+        STAIRS_DESCENDING( "DESCENDING" ),
+        STAIRS_FALLING( "FALLING" );
+
+        private final String text;
+        StandardTransitionReason( String text ) {
+            this.text = text;
+        }
+
+        @Override
+        public String getText() {
+            return text;
+        }
+    }
+
+    private final Dungeon dungeon;
     private final LevelDescriptor nextLevel;
-    private final String text;
+    private final TransitionReason reason;
 
-    public IntervalLevelScreen( LevelDescriptor nextLevel, String text ) {
+    public IntervalLevelScreen( Dungeon dungeon, LevelDescriptor nextLevel, TransitionReason reason ) {
+        this.dungeon = dungeon;
         this.nextLevel = nextLevel;
-        this.text = text;
+        this.reason = reason;
     }
 
     @Override
@@ -29,9 +49,8 @@ public class IntervalLevelScreen implements Screen{
     public void render( float delta ) {
         Gdx.gl.glClearColor( 0, 0, 0, 1 );
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
-
-        Level level = nextLevel.constructLevel(  );
-        Texxel.getInstance().setScreen( new GameScene() );
+        Level level = dungeon.loadLevel( nextLevel );
+        Texxel.getInstance().setScreen( new GameScene( dungeon, level ) );
     }
 
     @Override

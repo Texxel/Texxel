@@ -2,6 +2,7 @@ package com.github.texxel.levels;
 
 import com.github.texxel.Dungeon;
 import com.github.texxel.levels.components.AbstractDescriptor;
+import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
@@ -36,6 +37,24 @@ public class RegularLevel extends AbstractLevel {
 
     protected RegularLevel( Bundle bundle ) {
         super( bundle );
+    }
+
+    /**
+     * Returned the level descriptor registered in the dungeon with and id of {@code id+1}
+     * @return the previous level
+     */
+    @Override
+    public LevelDescriptor getLevelBelow() {
+        return dungeon().getDescriptor( id() + 1 );
+    }
+
+    /**
+     * Returned the level descriptor registered in the dungeon with and id of {@code id-1}
+     * @return the previous level
+     */
+    @Override
+    public LevelDescriptor getLevelAbove() {
+        return dungeon().getDescriptor( id() - 1 );
     }
 
 }

@@ -14,6 +14,7 @@ import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.saving.Bundlable;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
+import com.github.texxel.saving.BundleWriter;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
 
@@ -45,6 +46,8 @@ public class Dungeon implements Bundlable {
      * @param descriptor the constructor for the level
      */
     public void register( int id, LevelDescriptor descriptor ) {
+        if ( descriptor == null )
+            throw new NullPointerException( "Cannot register a null level" );
         levelRegistry.put( id, descriptor );
     }
 
@@ -58,16 +61,26 @@ public class Dungeon implements Bundlable {
     }
 
     /**
+     * Tests if a Level has been registered with the given id
+     * @param id the id to test for
+     * @return true if the level has been registered
+     */
+    public boolean isRegistered( int id ) {
+        return levelRegistry.containsKey( id );
+    }
+
+    /**
      * If the level has previously been visited, then the level will be read from memory. Otherwise,
      * the level will be created anew.
-     * @param id the ID of the level to create
+     * @param descriptor the ID of the level to create
      * @return the created level
+     * @throws NullPointerException if descriptor is null
      */
-    public Level loadLevel( int id ) {
-        Level level = load( id );
+    public Level loadLevel( LevelDescriptor descriptor ) {
+        Level level = load( descriptor.id() );
         if (level != null)
             return level;
-        return make( id );
+        return make( descriptor );
     }
 
     private static Level load( int id ) {
@@ -83,11 +96,11 @@ public class Dungeon implements Bundlable {
         return Gdx.files.local( "level" + id + ".json" );
     }
 
-    private Level make( int id ) {
-        LevelPlanEvent planEvent = new LevelPlanEvent( levelRegistry.get( id ), "hello" );
+    private Level make( LevelDescriptor id ) {
+        LevelPlanEvent planEvent = new LevelPlanEvent( id, "hello" );
         constructionHandler.dispatch( planEvent );
         LevelDescriptor descriptor = planEvent.getLevel();
-        Level level = descriptor.constructLevel();
+        Level level = descriptor.construct();
 
         LevelTilePlacedEvent tilePlacedEvent = new LevelTilePlacedEvent( level );
         constructionHandler.dispatch( tilePlacedEvent );
@@ -109,8 +122,7 @@ public class Dungeon implements Bundlable {
     public void save() {
         BundleGroup bundle = BundleGroup.newGroup();
         bundle( bundle );
-        FileHandle file = dungeonFile();
-        file.writeString( bundle.toString(), false );
+        BundleWriter.write( BundleWriter.file( "dungeon.json" ), bundle );
     }
 
     private static FileHandle dungeonFile() {

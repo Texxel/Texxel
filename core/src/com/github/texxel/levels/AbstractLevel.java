@@ -267,4 +267,5 @@ public abstract class AbstractLevel implements Level {
     public void destroy() {
         levelDestructionHandler.dispatch( new LevelDestructionEvent( this ) );
     }
+
 }

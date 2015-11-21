@@ -1,5 +1,6 @@
 package com.github.texxel.levels.roomtypes;
 
+import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.Room;
 import com.github.texxel.levels.components.TileMap;
 
@@ -8,8 +9,13 @@ import com.github.texxel.levels.components.TileMap;
  */
 public class BlankRoom implements RoomType {
 
+    private static final BlankRoom instance = new BlankRoom();
+    public static BlankRoom instance() {
+        return instance;
+    }
+
     @Override
-    public void decorate( TileMap tileMap, Room room ) {
+    public void decorate( Level level, TileMap tileMap, Room room ) {
     }
 
 }

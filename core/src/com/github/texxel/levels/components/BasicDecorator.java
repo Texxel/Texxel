@@ -10,7 +10,7 @@ public class BasicDecorator implements LevelDecorator {
     public void decorate( Level level, Collection<Room> rooms ) {
         // TODO better level decoration
         for ( Room room : rooms ) {
-            room.type.decorate( level.getTileMap(), room );
+            room.type.decorate( level, level.getTileMap(), room );
         }
     }
 

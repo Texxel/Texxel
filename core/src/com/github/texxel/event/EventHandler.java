@@ -102,7 +102,10 @@ public final class EventHandler<L extends Listener> implements Bundlable {
         if ( listener == null )
             throw new NullPointerException( "Listener cannot be null" );
         HashSet<Listener> set = listeners.get( priority );
-        return set != null && set.remove( listener );
+        boolean found = set != null && set.remove( listener );
+        if ( found )
+            listenersBaked = null;
+        return found;
     }
 
     /**
@@ -118,10 +121,13 @@ public final class EventHandler<L extends Listener> implements Bundlable {
         if ( listener == null )
             throw new IllegalArgumentException( "Listener cannot be null" );
 
-        listenersBaked = null;
         boolean found = false;
         for ( HashSet<Listener> set : listeners.values() )
             found = set.remove( listener ) || found;
+
+        if ( found )
+            listenersBaked = null;
+
         return found;
     }
 

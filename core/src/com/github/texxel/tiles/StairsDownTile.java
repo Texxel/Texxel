@@ -2,9 +2,11 @@ package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.Dungeon;
+import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
+import com.github.texxel.scenes.IntervalLevelScreen;
 import com.github.texxel.sprites.TileAssets;
 
 public class StairsDownTile extends StairsTile implements Interactable {
@@ -17,7 +19,7 @@ public class StairsDownTile extends StairsTile implements Interactable {
         ConstructorRegistry.put( StairsDownTile.class, constructor );
     }
 
-    public StairsDownTile( Dungeon dungeon, int targetLevel, int x, int y ) {
+    public StairsDownTile( Dungeon dungeon, LevelDescriptor targetLevel, int x, int y ) {
         super( dungeon, targetLevel, x, y );
     }
 
@@ -40,4 +42,8 @@ public class StairsDownTile extends StairsTile implements Interactable {
         return TileAssets.STAIRS_DOWN;
     }
 
+    @Override
+    protected IntervalLevelScreen.TransitionReason transitionReason() {
+        return IntervalLevelScreen.StandardTransitionReason.STAIRS_DESCENDING;
+    }
 }

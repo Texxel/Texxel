@@ -4,6 +4,7 @@ import com.github.texxel.actors.AbstractChar;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.brains.HeroHuntAI;
 import com.github.texxel.actors.ai.brains.HeroIdleAI;
+import com.github.texxel.actors.ai.brains.HeroInteractAI;
 import com.github.texxel.actors.ai.brains.HeroMoveAI;
 import com.github.texxel.actors.ai.sensors.HeroDangerSensor;
 import com.github.texxel.event.EventHandler;
@@ -18,6 +19,7 @@ import com.github.texxel.saving.Bundle;
 import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.saving.Constructor;
 import com.github.texxel.saving.ConstructorRegistry;
+import com.github.texxel.tiles.Interactable;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.utils.ColorMaths;
 import com.github.texxel.utils.Point2D;
@@ -54,8 +56,13 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
                     return;
                 }
             }
-            if ( x >= 0 && x < level.width() && y >= 0 && y < level.height()  )
-                hero.setBrain( new HeroMoveAI( hero, new Point2D( x, y ) ) );
+            if ( x >= 0 && x < level.width() && y >= 0 && y < level.height()  ) {
+                Tile tile = level.getTileMap().getTile( x, y );
+                if ( tile instanceof Interactable )
+                    hero.setBrain( new HeroInteractAI( hero, new Point2D( x, y ) ) );
+                else
+                    hero.setBrain( new HeroMoveAI( hero, new Point2D( x, y ) ) );
+            }
         }
 
         @Override
@@ -78,7 +85,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     }
 
     public AbstractHero( Level level, Point2D spawn ) {
-        super( level, spawn, 10 );
+        super( level, spawn, 100 );
         updateFog();
         setBrain( new HeroIdleAI( this ) );
         addSensor( new HeroDangerSensor( this ) );
@@ -90,8 +97,6 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     protected AbstractHero( Bundle bundle ) {
         super( bundle );
     }
-
-
 
     @Override
     public HeroFOV getVision() {

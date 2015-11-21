@@ -15,16 +15,19 @@ import com.github.texxel.utils.GameTimer;
 
 public class GameScene implements Screen {
 
-    private Dungeon dungeon;
-    private Level level;
+    private final Dungeon dungeon;
+    private final Level level;
     private GameUpdater updater;
     private GameRenderer renderer;
     private GameInput input;
 
+    public GameScene( Dungeon dungeon, Level level ) {
+        this.dungeon = dungeon;
+        this.level = level;
+    }
+
     @Override
     public void show() {
-        dungeon = new Dungeon();
-        level = dungeon.loadLevel( 1 );
         updater = new LevelUpdater();
         OrthographicCamera camera = new OrthographicCamera();
         renderer = new LevelRenderer( camera );
@@ -57,10 +60,12 @@ public class GameScene implements Screen {
 
     @Override
     public void hide() {
+        input.onDestroy();
+        dungeon.save();
     }
 
     @Override
     public void dispose() {
-        dungeon.save();
+
     }
 }

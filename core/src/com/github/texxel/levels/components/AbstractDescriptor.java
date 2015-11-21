@@ -2,6 +2,8 @@ package com.github.texxel.levels.components;
 
 import com.github.texxel.Dungeon;
 import com.github.texxel.levels.Level;
+import com.github.texxel.saving.Bundle;
+import com.github.texxel.saving.BundleGroup;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,11 +23,11 @@ public abstract class AbstractDescriptor implements LevelDescriptor {
     }
 
     @Override
-    public Level constructLevel() {
+    public Level construct() {
         Level level = constructLevel( dungeon, id, width, height );
         Collection<Room> rooms = null;
         while ( rooms == null )
-            rooms = builder.buildRooms( width, height );
+            rooms = builder.planRooms( width, height );
         decorator.decorate( level, Collections.unmodifiableCollection( rooms ) );
         return level;
     }
@@ -75,5 +77,16 @@ public abstract class AbstractDescriptor implements LevelDescriptor {
     @Override
     public int id() {
         return id;
+    }
+
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        // TODO bundle abstract descriptor
+        return null;
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+
     }
 }

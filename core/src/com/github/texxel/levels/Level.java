@@ -11,6 +11,7 @@ import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
 import com.github.texxel.items.Heap;
 import com.github.texxel.items.Item;
+import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FogOfWar;
 import com.github.texxel.saving.Bundlable;
@@ -166,4 +167,19 @@ public interface Level extends Bundlable {
      */
     boolean isInBounds( int x, int y );
 
+    /**
+     * Gets the level that that this level will naturally descend to. However, there is no
+     * requirement that this suggestion is used. There is also no requirement that the level this
+     * returns suggests to ascend to this level.
+     * @return the suggested next level
+     */
+    LevelDescriptor getLevelBelow();
+
+    /**
+     * Gets the level that that this level will naturally ascend to. However, there is no
+     * requirement that this suggestion is used. There is also no requirement that the level this
+     * returns suggests to descend to this level.
+     * @return the suggested next level
+     */
+    LevelDescriptor getLevelAbove();
 }

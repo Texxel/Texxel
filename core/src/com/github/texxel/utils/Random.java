@@ -113,9 +113,7 @@ public class Random {
      * @throws IllegalArgumentException if sides < 0
      */
     public static boolean roll( int sides ) {
-        if ( sides == 0 )
-            return false;
-        return Random.Int( sides ) == 0;
+        return sides != 0 && Random.Int( sides ) == 0;
     }
 
     /**
@@ -129,7 +127,7 @@ public class Random {
             return selectList( (List<? extends T>) collection );
         int size = collection.size();
         if ( size > 0 )
-            return (T)collection.toArray()[Int( size )];
+            return (T)collection.toArray(new Object[size])[Int( size )];
         else
             return null;
     }

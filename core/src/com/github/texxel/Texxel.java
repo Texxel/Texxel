@@ -2,6 +2,7 @@ package com.github.texxel;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.github.texxel.levels.Level;
 import com.github.texxel.scenes.GameScene;
 
 public class Texxel extends Game {
@@ -17,7 +18,9 @@ public class Texxel extends Game {
 
 	@Override
 	public void create() {
-		super.setScreen( new GameScene() );
+		Dungeon dungeon = new Dungeon();
+		Level level = dungeon.loadLevel( dungeon.getDescriptor( 1 ) );
+		super.setScreen( new GameScene( dungeon, level ) );
 	}
 
 	@Override

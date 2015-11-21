@@ -34,7 +34,7 @@ public class LevelUpdater implements GameUpdater {
         // update the actors sensors
         List<Sensor> sensors = actor.getSensors();
         int size = sensors.size();
-        for ( int i = 0; i < sensors.size(); i++ )
+        for ( int i = 0; i < size; i++ )
             sensors.get( i ).update();
 
         // update the actors actions

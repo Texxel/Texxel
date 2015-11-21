@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Room implements Graph.Node {
+public final class Room implements Graph.Node {
 
     private int distance;
     private int price;
@@ -95,7 +95,7 @@ public class Room implements Graph.Node {
         return false;
     }
 
-    public Point2D center( ) {
+    public Point2D center() {
         Point2D center = this.center;
         if ( center == null )
             return this.center = new Point2D( bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 );

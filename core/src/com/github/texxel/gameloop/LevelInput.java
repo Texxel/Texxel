@@ -74,6 +74,7 @@ public class LevelInput implements GameInput, ScreenTouchedListener {
     private int touchTop = 0;
 
     public LevelInput( OrthographicCamera camera ) {
+        System.out.println( "Creating " + this );
         this.camera = camera;
         InputHandler.getTouchHandler().addListener( this, EventHandler.NORMAL );
     }
@@ -104,6 +105,7 @@ public class LevelInput implements GameInput, ScreenTouchedListener {
 
     @Override
     public boolean onTouchDown( ScreenTouchedEvent.Touch touch ) {
+        System.out.println( "touch down: " + this );
         if ( touchA == null ) {
             // start dragging
             initiateDrag( touch );
@@ -238,5 +240,11 @@ public class LevelInput implements GameInput, ScreenTouchedListener {
     @Override
     public void restore( Bundle bundle ) {
         throw new UnsupportedOperationException( "Level input does not support being saved" );
+    }
+
+    @Override
+    public void onDestroy() {
+        System.out.println( "Destroying " + this );
+        InputHandler.getTouchHandler().removeAll( this );
     }
 }
