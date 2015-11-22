@@ -116,7 +116,7 @@ public class Point2D implements Bundlable {
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = topLevel.newBundle();
         bundle.putInt( "x", x );
-        bundle.putInt( "x", y );
+        bundle.putInt( "y", y );
         return bundle;
     }
 
