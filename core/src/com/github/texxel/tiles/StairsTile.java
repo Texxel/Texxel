@@ -4,14 +4,14 @@ import com.github.texxel.Dungeon;
 import com.github.texxel.Texxel;
 import com.github.texxel.actors.Char;
 import com.github.texxel.levels.components.LevelDescriptor;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.scenes.IntervalLevelScreen;
 
 public abstract class StairsTile extends AbstractTile implements Interactable {
 
-    private Dungeon dungeon;
-    private int x, y;
+    private static final long serialVersionUID = -335016907648851199L;
+
+    private final Dungeon dungeon;
+    private final int x, y;
     private LevelDescriptor targetLevel;
 
     public StairsTile( Dungeon dungeon, LevelDescriptor nextLevel, int x, int y ) {
@@ -23,29 +23,6 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
         this.targetLevel = nextLevel;
         this.x = x;
         this.y = y;
-    }
-
-    protected StairsTile( Bundle bundle ) {
-
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = super.bundle( topLevel );
-        bundle.putInt( "x", x );
-        bundle.putInt( "y", y );
-        bundle.putBundlable( "target", targetLevel );
-        bundle.putBundlable( "dungeon", dungeon );
-        return bundle;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        super.restore( bundle );
-        x = bundle.getInt( "x" );
-        y = bundle.getInt( "y" );
-        targetLevel = bundle.getNNBundlable( "target" );
-        dungeon = bundle.getNNBundlable( "dungeon" );
     }
 
     @Override
@@ -80,7 +57,7 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
      * Sets the level that will be descended to
      * @param target where the stairs will go to
      */
-    void setTargetLevel( LevelDescriptor target ) {
+    public void setTargetLevel( LevelDescriptor target ) {
         if ( target == null )
             throw new NullPointerException( "'target' cannot be null" );
         this.targetLevel = target;
@@ -90,7 +67,7 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
      * Gets the id of the level that will be moved to
      * @return the next level's descriptor
      */
-    LevelDescriptor getTargetLevel() {
+    public LevelDescriptor getTargetLevel() {
         return targetLevel;
     }
 

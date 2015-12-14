@@ -9,8 +9,6 @@ import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.event.events.input.ScreenTouchedEvent;
 import com.github.texxel.event.listeners.input.ScreenTouchedListener;
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.ui.InputHandler;
 
 public class LevelInput implements GameInput, ScreenTouchedListener {
@@ -230,16 +228,6 @@ public class LevelInput implements GameInput, ScreenTouchedListener {
         float xDist = a.xCurrent() - b.xCurrent();
         float yDist = a.yCurrent() - b.yCurrent();
         return (float)Math.sqrt( xDist*xDist + yDist*yDist );
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        throw new UnsupportedOperationException( "Level input does not support being saved" );
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        throw new UnsupportedOperationException( "Level input does not support being saved" );
     }
 
     @Override

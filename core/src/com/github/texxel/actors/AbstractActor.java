@@ -4,8 +4,6 @@ import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,12 +11,14 @@ import java.util.List;
 
 public abstract class AbstractActor implements Actor {
 
+    private static final long serialVersionUID = 4744979006380058760L;
+
     private float time;
     private Brain brain;
     private Goal goal;
-    private List<Sensor> sensors = new ArrayList<>();
-    private List<Sensor> unmodifiableSensors = Collections.unmodifiableList( sensors );
-    private Level level;
+    private final List<Sensor> sensors = new ArrayList<>();
+    private final List<Sensor> unmodifiableSensors = Collections.unmodifiableList( sensors );
+    private final Level level;
 
     /**
      * Constructs an actor who's time is at 0. Make sure to set the actor's brain as well
@@ -28,38 +28,9 @@ public abstract class AbstractActor implements Actor {
         this.level = level;
     }
 
-    /**
-     * Constructs the actor from a bundle
-     * @param bundle the bundle to restore from
-     */
-    protected AbstractActor( Bundle bundle ) {
-        if ( !bundle.contains( "time" ) )
-            throw new IllegalArgumentException( "bundle must have 'time' mapping" );
-        this.time = (float)bundle.getDouble( "time" );
-    }
-
     @Override
     public Level level() {
         return level;
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        bundle.putDouble( "time", time );
-        bundle.putBundlable( "level", level );
-        bundle.putBundlable( "brain", brain );
-        bundle.putBundlable( "goal", goal );
-        bundle.putBundlables( "sensors", sensors );
-        return bundle;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        level = bundle.getBundlable( "level" );
-        brain = bundle.getBundlable( "brain" );
-        goal = bundle.getBundlable( "goal" );
-        sensors.addAll( bundle.<Sensor>getBundlables( "sensors" ) );
     }
 
     @Override

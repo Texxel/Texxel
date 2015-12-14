@@ -3,33 +3,22 @@ package com.github.texxel.levels.components;
 import com.github.texxel.event.Event;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.level.TileSetListener;
-import com.github.texxel.saving.Bundlable;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.tiles.Tile;
 
-public class TileMap implements Bundlable {
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 
-    static {
-        ConstructorRegistry.put( TileMap.class, new Constructor<TileMap>() {
+public final class TileMap implements Serializable {
 
-            @Override
-            public TileMap newInstance( Bundle bundle ) {
-                final int width = bundle.getInt( "width" );
-                final int height = bundle.getInt( "height" );
-                return new TileMap( width, height );
-            }
-        } );
-    }
+    private static final long serialVersionUID = -695512766342524434L;
 
     private final Tile[][] tiles;
     private final int width, height;
     private final boolean[][] losBlocking;
     private final boolean[][] passables;
     private final boolean[][] spawnables;
-    private final TileSetEvent tileSetEvent = new TileSetEvent();
+    private transient TileSetEvent tileSetEvent = new TileSetEvent();
     private final EventHandler<TileSetListener> tileSetHandler = new EventHandler<>();
 
     public TileMap( final int width, final int height ) {
@@ -137,34 +126,6 @@ public class TileMap implements Bundlable {
         return true;
     }
 
-    @Override
-    public Bundle bundle( BundleGroup bundleGroup ) {
-        Bundle bundle = bundleGroup.newBundle();
-        bundle.putInt( "width", width );
-        bundle.putInt( "height", height );
-        Tile[][] tiles = this.tiles;
-        for ( int i = 0; i < width; i++ ) {
-            for ( int j = 0; j < height; j++ ) {
-                bundle.putBundlable( "t:" + i + ":" + j, tiles[i][j] );
-                bundle.putBoolean( "s:" + i + ":" + j, spawnables[i][j] );
-            }
-        }
-        return bundle;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        for ( int i = 0; i < width; i++ ) {
-            for ( int j = 0; j < height; j++ ) {
-                Tile tile = bundle.getBundlable( "t:" + i + ":" + j );
-                tiles[i][j] = tile;
-                losBlocking[i][j] = tile.isOpaque();
-                passables[i][j] = tile.isPassable();
-                spawnables[i][j] = bundle.getBoolean( "s:" + i + ":" + j );
-            }
-        }
-    }
-
     /**
      * Gets the handler that fire events when a tile is changed
      */
@@ -180,6 +141,11 @@ public class TileMap implements Bundlable {
         public boolean dispatch( TileSetListener listener ) {
             return listener.onTileSet( TileMap.this, tile, x, y );
         }
+    }
+
+    private void readObject( ObjectInputStream inputStream ) throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+        tileSetEvent = new TileSetEvent();
     }
 
 }

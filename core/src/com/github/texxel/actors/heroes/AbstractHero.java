@@ -15,10 +15,6 @@ import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FieldOfVision;
 import com.github.texxel.mechanics.FogOfWar;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.tiles.Interactable;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.utils.ColorMaths;
@@ -26,22 +22,11 @@ import com.github.texxel.utils.Point2D;
 
 public abstract class AbstractHero extends AbstractChar implements Hero {
 
-    private static class Listener implements CellSelectedListener, TileSetListener {
+    private static final long serialVersionUID = -1893036218210928887L;
 
-        static {
-            ConstructorRegistry.put( Listener.class, new Constructor<Listener>() {
-                @Override
-                public Listener newInstance( Bundle bundle ) {
-                    return new Listener( null );
-                }
-            } );
-        }
+    private class Listener implements CellSelectedListener, TileSetListener {
 
-        private AbstractHero hero;
-
-        public Listener( AbstractHero hero ) {
-            this.hero = hero;
-        }
+        private static final long serialVersionUID = 8094447892497757267L;
 
         @Override
         public void onCellSelected( CellSelectedEvent e ) {
@@ -52,7 +37,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
             Level level = e.getLevel();
             for ( Char c : level.getCharacters()) {
                 if ( c.isOver( x, y ) ) {
-                    hero.setBrain( new HeroHuntAI( hero, c ) );
+                    setBrain( new HeroHuntAI( AbstractHero.this, c ) );
                     return;
                 }
             }
@@ -61,30 +46,18 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
                 Tile tile = level.getTileMap().getTile( x, y );
                 if ( tile instanceof Interactable ) {
                     System.out.println( "Interact" );
-                    hero.setBrain( new HeroInteractAI( hero, new Point2D( x, y ) ) );
+                    setBrain( new HeroInteractAI( AbstractHero.this, new Point2D( x, y ) ) );
                 } else {
-                    hero.setBrain( new HeroMoveAI( hero, new Point2D( x, y ) ) );
+                    setBrain( new HeroMoveAI( AbstractHero.this, new Point2D( x, y ) ) );
                 }
             }
-            hero.updateFog();
+            updateFog();
         }
 
         @Override
         public boolean onTileSet( TileMap tileMap, Tile tile, int x, int y ) {
-            hero.updateFog();
+            updateFog();
             return false;
-        }
-
-        @Override
-        public Bundle bundle( BundleGroup topLevel ) {
-            Bundle bundle = topLevel.newBundle();
-            bundle.putBundlable( "hero", hero );
-            return bundle;
-        }
-
-        @Override
-        public void restore( Bundle bundle ) {
-            hero = bundle.getBundlable( "hero" );
         }
     }
 
@@ -93,13 +66,9 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         updateFog();
         setBrain( new HeroIdleAI( this ) );
         addSensor( new HeroDangerSensor( this ) );
-        Listener listener = new Listener( this );
+        Listener listener = new Listener();
         level.getCellSelectHandler().addListener( listener, EventHandler.LATE );
         level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
-    }
-
-    protected AbstractHero( Bundle bundle ) {
-        super( bundle );
     }
 
     @Override

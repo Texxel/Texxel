@@ -1,25 +1,10 @@
 package com.github.texxel.utils;
 
-import com.github.texxel.saving.Bundlable;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
+import java.io.Serializable;
 
-public class Point2D implements Bundlable {
+public final class Point2D implements Serializable {
 
-    private static final Constructor<Point2D> CONSTRUCTOR = new Constructor<Point2D>() {
-        @Override
-        public Point2D newInstance( Bundle bundle ) {
-            int x = bundle.getInt( "x" );
-            int y = bundle.getInt( "y" );
-            return new Point2D( x, y );
-        }
-
-    };
-    static {
-        ConstructorRegistry.put( Point2D.class, CONSTRUCTOR );
-    }
+    private static final long serialVersionUID = -1608448177701663986L;
 
     public static final Point2D
             UP          = new Point2D(  0,  1 ),
@@ -110,19 +95,6 @@ public class Point2D implements Bundlable {
     @Override
     public String toString() {
         return "Point: (" + x + "," + y + ')';
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        bundle.putInt( "x", x );
-        bundle.putInt( "y", y );
-        return bundle;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        // nothing to do
     }
 
     /**

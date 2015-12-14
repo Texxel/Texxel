@@ -4,34 +4,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.actors.Char;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.PathFinder;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.sprites.TileAssets;
 import com.github.texxel.utils.Point2D;
 
 public class DoorLockedTile extends AdvancedTile implements Interactable {
 
-    private static Constructor<DoorLockedTile> constructor = new Constructor<DoorLockedTile>() {
-        @Override
-        public DoorLockedTile newInstance( Bundle bundle ) { return new DoorLockedTile( bundle ); }
-    };
-    static {
-        ConstructorRegistry.put( DoorLockedTile.class, constructor );
-    }
+    private static final long serialVersionUID = -7244160734305878864L;
 
     public DoorLockedTile( TileMap tileMap, int x, int y ) {
         super( tileMap, x, y );
-    }
-
-    protected DoorLockedTile( Bundle bundle ) {
-        super( bundle );
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        return super.bundle( topLevel );
     }
 
     @Override
@@ -75,4 +56,5 @@ public class DoorLockedTile extends AdvancedTile implements Interactable {
         Point2D p = ch.getLocation();
         return PathFinder.isNextTo( x(), y(), p.x, p.y );
     }
+
 }

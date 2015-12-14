@@ -1,10 +1,6 @@
 package com.github.texxel.utils;
 
-import com.github.texxel.saving.Bundlable;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
+import java.io.Serializable;
 
 /**
  * An immutable representation of a rectangle where all corners are at integer values. The rectangle
@@ -12,21 +8,9 @@ import com.github.texxel.saving.ConstructorRegistry;
  * Standards dictate that the x and y2 edges (the edges with the smaller values) are included
  * in the rectangle but the x2 and y edges are not included.
  */
-public class Rectangle implements Bundlable {
+public final class Rectangle implements Serializable {
 
-    private static final Constructor<Rectangle> CONSTRUCTOR = new Constructor<Rectangle>() {
-        @Override
-        public Rectangle newInstance( Bundle bundle ) {
-            int x = bundle.getInt( "x" );
-            int y = bundle.getInt( "y" );
-            int x2 = bundle.getInt( "x2" );
-            int y2 = bundle.getInt( "y2" );
-            return Rectangle.fromBounds( x, y, x2, y2 );
-        }
-    };
-    static {
-        ConstructorRegistry.put( Rectangle.class, CONSTRUCTOR );
-    }
+    private static final long serialVersionUID = -7721561066995669559L;
 
     public static Rectangle fromSize( int x, int y, int width, int height ) {
         return new Rectangle( x, y, x + width - 1, y + height - 1, width, height );
@@ -161,18 +145,4 @@ public class Rectangle implements Bundlable {
         return hashcode;
     }
 
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        bundle.putInt( "x", x );
-        bundle.putInt( "y", y );
-        bundle.putInt( "x2", x2 );
-        bundle.putInt( "y2", y2 );
-        return bundle;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        // everything done by the constructor
-    }
 }

@@ -15,7 +15,7 @@ public interface Item extends WorldVisual, Examinable {
 
     boolean canStackWith( Item item );
 
-    boolean perform( Action action );
+    boolean perform( ItemAction action );
 
     // TODO burning and freezing (and any custom event I want?) of items
 

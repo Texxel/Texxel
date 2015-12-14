@@ -1,7 +1,8 @@
 package com.github.texxel.levels.components;
 
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundlable;
+
+import java.io.Serializable;
 
 /**
  * LevelDescriptors describes the relationship between levels and how the hero should transverse
@@ -9,7 +10,7 @@ import com.github.texxel.saving.Bundlable;
  * level data, it is much better to use a LevelDescriptor as the reference because it uses much less
  * memory and time to create and lets the garbage collector clean up the level data.
  */
-public interface LevelDescriptor extends Bundlable {
+public interface LevelDescriptor extends Serializable {
 
     /**
      * <p>Constructs the level. This is only the very basic construction of the level; you should use

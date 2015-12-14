@@ -5,7 +5,9 @@ import com.github.texxel.utils.Point2D;
 
 public class BasicHeroFOV extends BasicFOV implements HeroFOV {
 
-    private boolean[][] discovered;
+    private static final long serialVersionUID = 2536539835420855944L;
+
+    private final boolean[][] discovered;
 
     public BasicHeroFOV( boolean[][] solids, Point2D location ) {
         super( solids, location );

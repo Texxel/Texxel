@@ -6,11 +6,11 @@ import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.actions.StepAction;
 import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.PathFinder;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.utils.Arrays2D;
 import com.github.texxel.utils.Point2D;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.List;
 
 /**
@@ -18,10 +18,12 @@ import java.util.List;
  */
 public abstract class CharMoveGoal implements Goal {
 
-    private Char character;
+    private static final long serialVersionUID = -434380692957738700L;
+
+    private final Char character;
     private Point2D target;
-    private boolean[][] passable;
-    private Level level;
+    private transient boolean[][] passable;
+    private final Level level;
 
     public CharMoveGoal( Char character, Point2D target ) {
         if ( character == null )
@@ -32,10 +34,6 @@ public abstract class CharMoveGoal implements Goal {
         this.character = character;
         this.target = target;
         passable = new boolean[level.width()][level.height()];
-    }
-
-    public CharMoveGoal( Bundle bundle ) {
-
     }
 
     @Override
@@ -92,7 +90,7 @@ public abstract class CharMoveGoal implements Goal {
         return pathFinder.getNextStep( loc.x, loc.y );
     }
 
-    public void setPassables( boolean[][] passables ) {
+    private void setPassables( boolean[][] passables ) {
         Level level = this.level;
         Arrays2D.copy( level.getTileMap().getPassables(), passables );
         List<Char> characters = level.getCharacters();
@@ -116,21 +114,10 @@ public abstract class CharMoveGoal implements Goal {
      */
     public abstract Action onCannotReachTarget();
 
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        bundle.putNNBundlable( "character", character );
-        bundle.putNNBundlable( "target", target );
-        bundle.put( "passable", passable );
-        bundle.putNNBundlable( "level", level );
-        return bundle;
+    private void readObject( ObjectInputStream inputStream )
+            throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+        passable = new boolean[level.width()][level.height()];
     }
 
-    @Override
-    public void restore( Bundle bundle ) {
-        character = bundle.getNNBundlable( "character" );
-        target = bundle.getNNBundlable( "target" );
-        passable = bundle.getBooleanArray( "passable" );
-        level = bundle.getNNBundlable( "level" );
-    }
 }

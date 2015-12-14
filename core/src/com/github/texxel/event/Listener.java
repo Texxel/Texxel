@@ -1,10 +1,9 @@
 package com.github.texxel.event;
 
-import com.github.texxel.saving.Bundlable;
+import java.io.Serializable;
 
 /**
- * All event listeners should extend this interface. Listeners must implement the bundlable interface
- * so that the {@link EventHandler} class be saved
+ * All event listeners should extend this interface.
  */
-public interface Listener extends Bundlable {
+public interface Listener extends Serializable {
 }

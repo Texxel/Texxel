@@ -1,22 +1,13 @@
 package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
 
 /**
  * Pre defines the methods that will be the same for all tiles.
  */
 public abstract class AbstractTile implements Tile {
 
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        return topLevel.newBundle();
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-    }
+    private static final long serialVersionUID = 9063335581952836068L;
 
     @Override
     public Animation getLogo() {

@@ -4,22 +4,11 @@ import com.github.texxel.actors.Actor;
 import com.github.texxel.event.events.input.CellSelectedEvent;
 import com.github.texxel.event.listeners.input.CellSelectedListener;
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.tiles.Tile;
 
 public class ExamineMaker implements CellSelectedListener {
 
-    static {
-        ConstructorRegistry.put( ExamineMaker.class, new Constructor<ExamineMaker>() {
-            @Override
-            public ExamineMaker newInstance( Bundle bundle ) {
-                return new ExamineMaker();
-            }
-        } );
-    }
+    private static final long serialVersionUID = 5631469402460467111L;
 
     @Override
     public void onCellSelected( CellSelectedEvent e ) {
@@ -50,13 +39,4 @@ public class ExamineMaker implements CellSelectedListener {
         System.out.print( examinable.name() );
     }
 
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        return topLevel.newBundle();
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-
-    }
 }

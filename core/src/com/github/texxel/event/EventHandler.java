@@ -1,32 +1,18 @@
 package com.github.texxel.event;
 
-import com.github.texxel.saving.Bundlable;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
-
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
  * The EventHandler assists with dispatching events to a set of listeners.
  * @param <L> the type of listener that can be added
  */
-public final class EventHandler<L extends Listener> implements Bundlable {
+public final class EventHandler<L extends Listener> implements Serializable {
 
-    private static final Constructor<EventHandler> constructor = new Constructor<EventHandler>() {
-        @Override
-        public EventHandler newInstance( Bundle bundle ) {
-            return new EventHandler();
-        }
-    };
-    static {
-        ConstructorRegistry.put( EventHandler.class, constructor );
-    }
+    private static final long serialVersionUID = 4177507508521495393L;
 
     /**
      * Priority to use for making big changes to an event.
@@ -49,7 +35,7 @@ public final class EventHandler<L extends Listener> implements Bundlable {
      */
     public static final int VERY_LATE = -1000;
 
-    Listener[] listenersBaked = null;
+    transient Listener[] listenersBaked = null;
     TreeMap<Integer, HashSet<Listener>> listeners = new TreeMap<>();
 
     /**
@@ -145,25 +131,9 @@ public final class EventHandler<L extends Listener> implements Bundlable {
         }
     }
 
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        for ( Map.Entry<Integer, HashSet<Listener>> entry : listeners.entrySet() ) {
-            int priority = entry.getKey();
-            bundle.putBundlables( Integer.toString( priority ), entry.getValue() );
-        }
-        return bundle;
+    private void readObject( ObjectInputStream inputStream ) throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+        listenersBaked = null;
     }
 
-    @Override
-    public void restore( Bundle bundle ) {
-        Set<String> keys = bundle.keys();
-        for ( String key : keys ) {
-            int priority = Integer.valueOf( key );
-            List<L> list = bundle.getBundlables( key );
-            for ( L l : list ) {
-                addListener( l, priority );
-            }
-        }
-    }
 }

@@ -4,11 +4,11 @@ import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundlable;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Actor extends Bundlable {
+public interface Actor extends Serializable {
 
     /**
      * Gets the level the actor is on

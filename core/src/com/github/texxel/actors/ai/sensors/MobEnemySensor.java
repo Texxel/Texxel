@@ -3,30 +3,16 @@ package com.github.texxel.actors.ai.sensors;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.brains.MobHuntAI;
 import com.github.texxel.mechanics.PathFinder;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.utils.Point2D;
 
 import java.util.Set;
 
 public class MobEnemySensor extends AbstractEnemySensor {
 
-    static {
-        ConstructorRegistry.put( MobEnemySensor.class, new Constructor<MobEnemySensor>() {
-            @Override
-            public MobEnemySensor newInstance( Bundle bundle ) {
-                return new MobEnemySensor( bundle );
-            }
-        } );
-    }
+    private static final long serialVersionUID = -8424558011723944818L;
 
     public MobEnemySensor( Char mob ) {
         super( mob );
-    }
-
-    protected MobEnemySensor( Bundle bundle ) {
-        super( bundle );
     }
 
     private void updateHuntedEnemy() {

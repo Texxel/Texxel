@@ -11,40 +11,22 @@ import com.github.texxel.event.listeners.level.LevelConstructionListener;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.RegularLevel;
 import com.github.texxel.levels.components.LevelDescriptor;
-import com.github.texxel.saving.Bundlable;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.BundleWriter;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Dungeon implements Bundlable {
-
-    static {
-        ConstructorRegistry.put( Dungeon.class, new Constructor<Dungeon>() {
-            @Override
-            public Dungeon newInstance( Bundle bundle ) {
-                int id = bundle.getInt( "id" );
-                if ( dungeonRegistry.containsKey( id ) ) {
-                    return dungeonRegistry.get( id );
-                } else {
-                    Dungeon dungeon = new Dungeon( id );
-                    String location = bundle.getString( "location" );
-                    BundleGroup group = BundleWriter.load( location );
-                    dungeon.actuallyRestore( group.getBundle( "dungeon" ) );
-                    return dungeon;
-                }
-            }
-        } );
-    }
+public class Dungeon implements Serializable {
 
     private static final HashMap<Integer, Dungeon> dungeonRegistry = new HashMap<>();
+    private static final long serialVersionUID = -2168020760891847785L;
     private final EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
     private final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
     private final int id;
-    private boolean constructed;
 
     {
         for ( int i = 1; i <= 10; i++ ) {
@@ -100,7 +82,7 @@ public class Dungeon implements Bundlable {
      */
     public Level loadLevel( LevelDescriptor descriptor ) {
         Level level = load( descriptor.id() );
-        if (level != null)
+        if ( level != null )
             return level;
         return make( descriptor );
     }
@@ -109,9 +91,23 @@ public class Dungeon implements Bundlable {
         FileHandle file = levelFile( id );
         if ( !file.exists() )
             return null;
-        String data = file.readString();
-        Bundle levelBundle = BundleGroup.loadGroup( data );
-        return levelBundle.getBundlable( "level" );
+        ObjectInputStream ois = null;
+        Level level;
+        try {
+            ois = new ObjectInputStream( new BufferedInputStream( file.read() ) );
+            level = (Level) ois.readObject();
+        } catch ( IOException | ClassNotFoundException e ) {
+            e.printStackTrace();
+            // TODO better level loading exption handling
+            throw new RuntimeException( "Couldn't load level" );
+        } finally {
+            if ( ois != null )
+                try {
+                    ois.close();
+                } catch ( IOException ignored ) {
+                }
+        }
+        return level;
     }
 
     private static FileHandle levelFile( int id ) {
@@ -154,31 +150,22 @@ public class Dungeon implements Bundlable {
      * Saves the dungeon to a file. Note: this does <b>not</b> save any levels - they must manually
      * be saved separately
      */
-    public void save() {
-        BundleGroup topLevel = BundleGroup.newGroup();
-        Bundle bundle = actuallyBundle( topLevel );
-        topLevel.putBundle( "dungeon", bundle );
-        BundleWriter.write( saveLocation(), topLevel );
+    public void save() throws IOException {
+        ObjectOutputStream oos = null;
+        try {
+            FileHandle output = Gdx.files.local( saveLocation() );
+            oos = new ObjectOutputStream( new BufferedOutputStream( output.write( false ) ) );
+            oos.writeObject( this );
+        } finally {
+            if ( oos != null ) {
+                try {
+                    oos.close();
+                } catch ( IOException ignored ) {
+                    // just let the memory leak...
+                }
+            }
+        }
     }
 
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        bundle.putInt( "id", id );
-        bundle.putString( "location", saveLocation() );
-        return bundle;
-    }
 
-    @Override
-    public void restore( Bundle bundle ) {
-    }
-
-    private Bundle actuallyBundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        return bundle;
-    }
-
-    private void actuallyRestore( Bundle bundle ) {
-
-    }
 }

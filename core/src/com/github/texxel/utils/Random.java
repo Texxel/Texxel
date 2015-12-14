@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class Random {
+public final class Random {
 
     private static java.util.Random random = new java.util.Random();
 

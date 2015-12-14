@@ -8,17 +8,16 @@ import com.github.texxel.event.listeners.actor.CharMoveListener;
 import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.BasicFOV;
 import com.github.texxel.mechanics.FieldOfVision;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.utils.Point2D;
 
 public abstract class AbstractChar extends AbstractActor implements Char {
 
+    private static final long serialVersionUID = -5708961990001314051L;
+
     private float health, maxHealth;
     private Point2D location;
-    private Point2D target;
     private FieldOfVision fov;
-    private EventHandler<CharMoveListener> moveHandler = new EventHandler<>();
+    private final EventHandler<CharMoveListener> moveHandler = new EventHandler<>();
 
     /**
      * Constructs the char at the spawn point
@@ -35,35 +34,6 @@ public abstract class AbstractChar extends AbstractActor implements Char {
             throw new IllegalArgumentException( "health cannot be <= 0" );
         this.location = spawn;
         maxHealth = this.health = health;
-    }
-
-    /**
-     * Constructs the char from a Bundle
-     * @param bundle the bundle to construct from
-     */
-    protected AbstractChar( Bundle bundle ) {
-        super( bundle );
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = super.bundle( topLevel );
-        bundle.putBundlable( "location", location );
-        bundle.putBundlable( "target", target );
-        bundle.putDouble( "health", health );
-        bundle.putDouble( "maxHealth", maxHealth );
-        bundle.putBundlable( "moveHandler", moveHandler );
-        return bundle;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        super.restore( bundle );
-        this.location = bundle.getBundlable( "location" );
-        this.target = bundle.getBundlable( "target" );
-        this.health = bundle.getInt( "health" );
-        this.maxHealth = bundle.getInt( "maxHealth" );
-        this.moveHandler = bundle.getBundlable( "moveHandler" );
     }
 
     @Override

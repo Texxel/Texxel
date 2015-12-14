@@ -1,25 +1,15 @@
 package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.sprites.TileAssets;
 
 public class DoorOpenTile extends AbstractTile implements Trampleable {
 
     private static final DoorOpenTile instance = new DoorOpenTile();
+    private static final long serialVersionUID = -5210319587033934807L;
 
     public static DoorOpenTile getInstance() {
         return instance;
-    }
-
-    private static Constructor<DoorOpenTile> constructor = new Constructor<DoorOpenTile>() {
-        @Override
-        public DoorOpenTile newInstance( Bundle bundle ) { return instance; }
-    };
-    static {
-        ConstructorRegistry.put( DoorOpenTile.class, constructor );
     }
 
     @Override
@@ -60,6 +50,10 @@ public class DoorOpenTile extends AbstractTile implements Trampleable {
     @Override
     public TextureRegion getDefaultImage() {
         return TileAssets.DOOR_OPEN;
+    }
+
+    private Object readResolve() {
+        return instance;
     }
 
 }

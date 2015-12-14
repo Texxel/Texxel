@@ -1,25 +1,16 @@
 package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.sprites.TileAssets;
 
 public class DoorClosedTile extends AbstractTile implements Trampleable {
+
+    private static final long serialVersionUID = -985997027086983197L;
 
     private static final DoorClosedTile instance = new DoorClosedTile();
 
     public static DoorClosedTile getInstance() {
         return instance;
-    }
-
-    private static Constructor<DoorClosedTile> constructor = new Constructor<DoorClosedTile>() {
-        @Override
-        public DoorClosedTile newInstance( Bundle bundle ) { return instance; }
-    };
-    static {
-        ConstructorRegistry.put( DoorClosedTile.class, constructor );
     }
 
     @Override
@@ -60,5 +51,9 @@ public class DoorClosedTile extends AbstractTile implements Trampleable {
     @Override
     public Tile onLeave( Object source ) {
         return this;
+    }
+
+    private Object readResolve() {
+        return instance;
     }
 }

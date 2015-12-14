@@ -6,17 +6,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 /**
  * A simple implementation of the FogOfWar interface
  */
 public class SimpleFog implements FogOfWar {
 
+    private static final long serialVersionUID = 2017304830112013067L;
+
     final int width, height;
-    final int textureWidth, textureHeight;
-    final Pixmap pixmap;
-    final Sprite sprite;
-    Texture texture;
-    private boolean dirty = false;
+    transient Pixmap pixmap;
+    transient Sprite sprite;
+    transient Texture texture;
+    transient private boolean dirty = false;
 
     public SimpleFog( int width, int height ) {
         if ( width <= 0 || height <= 0 )
@@ -27,23 +31,33 @@ public class SimpleFog implements FogOfWar {
         this.width = width;
         this.height = height;
 
+        init();
+    }
+
+    private void readObject( ObjectInputStream inputStream ) throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+        init();
+    }
+
+    private void init() {
         int textureWidth = 2;
         int textureHeight = 2;
         while ( textureWidth < width )
             textureWidth <<= 1;
         while ( textureHeight < height )
             textureHeight <<= 1;
-        this.textureWidth = textureWidth;
-        this.textureHeight = textureHeight;
 
         pixmap = new Pixmap( textureWidth, textureHeight, Pixmap.Format.RGBA8888 );
-        Pixmap.setBlending( Pixmap.Blending.None );
         pixmap.setColor( Color.BLACK );
         pixmap.fill();
 
         sprite = new Sprite( texture = new Texture( pixmap ));
         sprite.setPosition( -0.5f, -0.5f );
-        //sprite.setSize( textureWidth, height );
+        System.out.println( "texture height: " + textureHeight );
+        // must flip the y axis because drawn texture uses the opposite y axis convention
+        sprite.setScale( 1, -1 );
+
+        dirty = true;
     }
 
     @Override
@@ -58,10 +72,10 @@ public class SimpleFog implements FogOfWar {
 
     @Override
     public void setColor( int x, int y, int color ) {
-        if ( 0 > x || x >= width || y < 0 || width <= y )
-            throw new IndexOutOfBoundsException( "x or y was out of bounds. Passed x="+ x + " y=" + y );
-        pixmap.drawPixel( x, textureHeight - y - 1, color );
+        Pixmap.setBlending( Pixmap.Blending.None );
+        pixmap.drawPixel( x, y - 1, color );
         dirty = true;
+        Pixmap.setBlending( Pixmap.Blending.SourceOver );
     }
 
     @Override
@@ -71,12 +85,11 @@ public class SimpleFog implements FogOfWar {
 
     @Override
     public void setColorAroundTile( int x, int y, int color ) {
-        if ( x < 0 || x >= width-1 || y < 0 || y >= height-1 )
-            throw new IndexOutOfBoundsException( "x or y out of bounds. Passed x=" + x + " y=" + y
-                    +". width=" + width + " height=" + height );
+        Pixmap.setBlending( Pixmap.Blending.None );
         pixmap.setColor( color );
-        pixmap.drawRectangle( x, textureHeight - y - 2, 2, 2 );
+        pixmap.drawRectangle( x, y, 2, 2 );
         dirty = true;
+        Pixmap.setBlending( Pixmap.Blending.SourceOver );
     }
 
     @Override

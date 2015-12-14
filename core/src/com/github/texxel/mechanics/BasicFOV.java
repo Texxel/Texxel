@@ -3,21 +3,26 @@ package com.github.texxel.mechanics;
 import com.github.texxel.utils.Arrays2D;
 import com.github.texxel.utils.Point2D;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 /**
  * The BasicFOV class determines a FieldOfVision through a INSERT FORMULA USED HERE. The BasicFOV
  * can only operate on an rectangular grid.
  */
 public class BasicFOV implements FieldOfVision {
+    private static final long serialVersionUID = -8194245029904709243L;
 
     // TODO BasicFOV doesn't see correctly
     // see BasicFOVTest.testNormalRoom() for errors
 
+    protected final int width, height;
     Point2D location;
     boolean[][] solid;
-    boolean[][] visible;
     int radius;
-    boolean dirty;
-    protected final int width, height;
+
+    transient boolean[][] visible;
+    transient boolean dirty;
 
     /**
      * Exact same as {@code BasicFOV( solids, location, 8 )}.
@@ -100,10 +105,7 @@ public class BasicFOV implements FieldOfVision {
         // translate world units to vision units
         x -= location.x - radius;
         y -= location.y - radius;
-        if ( Arrays2D.contains( visible, x, y ) )
-            return visible[x][y];
-        else
-            return false;
+        return Arrays2D.contains( visible, x, y ) && visible[x][y];
     }
 
     @Override
@@ -239,6 +241,11 @@ public class BasicFOV implements FieldOfVision {
         }
     }
 
+    private void readObject( ObjectInputStream inputStream ) throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+        dirty = true;
+        this.visible = new boolean[radius*2+1][radius*2+1];
+    }
 
     //private void print( String message, int depth ) {
         //for ( int k = 0; k < depth; k++ )

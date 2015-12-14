@@ -32,6 +32,7 @@ public class BasicBuilder implements LevelBuilder {
      * The minimum amount of rectangles that might get turned into rooms.
      */
     private static final int minSplitRectangles = 8;
+
     /**
      * A list of all the rooms that get generated. Many rooms are not used
      */

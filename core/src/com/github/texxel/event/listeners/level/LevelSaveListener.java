@@ -2,22 +2,19 @@ package com.github.texxel.event.listeners.level;
 
 import com.github.texxel.event.Listener;
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.BundleGroup;
 
 public interface LevelSaveListener extends Listener {
 
     /**
-     * Called when a level is loaded from a save file. The passed bundle is read-only.
+     * Called when a level is loaded from a save file.
      * @param level the Level that was loaded
-     * @param data the BundleGroup the level was restored from.
      */
-    void onLevelLoaded( Level level, BundleGroup data );
+    void onLevelLoaded( Level level );
 
     /**
      * Called whenever a level is saved.
      * @param level the level that gets saved
-     * @param data the BundleGroup that the level is saved into
      */
-    void onLevelSaved( Level level, BundleGroup data );
+    void onLevelSaved( Level level );
 
 }

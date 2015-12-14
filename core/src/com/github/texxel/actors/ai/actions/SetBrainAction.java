@@ -12,7 +12,6 @@ public class SetBrainAction implements Action {
 
     private final Actor actor;
     private final Brain nextBrain;
-    private boolean firstUpdate;
 
     public SetBrainAction( Actor actor, Brain nextBrain ) {
         if ( actor == null )
@@ -21,7 +20,6 @@ public class SetBrainAction implements Action {
             throw new NullPointerException( "'nextBrain' cannot be null" );
         this.actor = actor;
         this.nextBrain = nextBrain;
-        firstUpdate = true;
     }
 
     @Override
@@ -31,9 +29,6 @@ public class SetBrainAction implements Action {
 
     @Override
     public boolean update() {
-        //if ( !firstUpdate )
-        //   throw new IllegalStateException( "A switch brain action was updated twice!" );
-        firstUpdate = false;
         return true;
     }
 

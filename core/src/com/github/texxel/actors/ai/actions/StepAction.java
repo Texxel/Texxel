@@ -3,7 +3,6 @@ package com.github.texxel.actors.ai.actions;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
-import com.github.texxel.saving.Bundle;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.tiles.Trampleable;
@@ -14,11 +13,11 @@ public class StepAction implements Action {
 
     private static final float STEP_TIME = 0.1f;
 
-    private Char character;
+    private final Char character;
     private CharVisual charVisual;
     private float xDelta, yDelta;
     private float xStart, yStart;
-    private Point2D target;
+    private final Point2D target;
     private float timeElapsed = 0;
     private boolean finishImmediately;
 
@@ -29,10 +28,6 @@ public class StepAction implements Action {
             throw new NullPointerException( "'target' cannot be null" );
         this.character = character;
         this.target = target;
-    }
-
-    public StepAction( Bundle bundle ) {
-
     }
 
     @Override
@@ -49,7 +44,7 @@ public class StepAction implements Action {
 
         // trample the tiles
         Tile tile = character.level().getTileMap().getTile( end.x, end.y );
-        Tile trampleTo = null;
+        Tile trampleTo;
         if ( tile instanceof Trampleable ) {
             trampleTo = ( (Trampleable) tile ).onTrample( character );
             if ( trampleTo == null )

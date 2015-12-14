@@ -1,33 +1,22 @@
 package com.github.texxel.actors.heroes;
 
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.sprites.api.HeroVisual;
 import com.github.texxel.sprites.imp.herovisuals.WarriorVisual;
 import com.github.texxel.utils.Point2D;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 public class Warrior extends AbstractHero {
 
-    private static Constructor<Warrior> constructor = new Constructor<Warrior>() {
-        @Override
-        public Warrior newInstance( Bundle bundle ) { return new Warrior( bundle ); }
+    private static final long serialVersionUID = -7409895294651892890L;
 
-    };
-    static {
-        ConstructorRegistry.put( Warrior.class, constructor );
-    }
-
-    private final WarriorVisual sprite = new WarriorVisual();
+    private transient WarriorVisual sprite = new WarriorVisual();
 
     public Warrior( Level level, Point2D spawn ) {
         super( level, spawn );
         sprite.setLocation( spawn.x, spawn.y );
-    }
-
-    protected Warrior( Bundle bundle ) {
-        super( bundle );
     }
 
     @Override
@@ -43,5 +32,11 @@ public class Warrior extends AbstractHero {
     @Override
     public String description() {
         return "me";
+    }
+
+    private void readObject( ObjectInputStream input )
+            throws IOException, ClassNotFoundException {
+        input.defaultReadObject();
+        sprite = new WarriorVisual();
     }
 }

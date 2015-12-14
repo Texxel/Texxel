@@ -1,6 +1,6 @@
 package com.github.texxel.items;
 
-public interface Action {
+public interface ItemAction {
 
 
 }

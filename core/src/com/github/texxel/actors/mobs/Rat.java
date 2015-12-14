@@ -1,29 +1,17 @@
 package com.github.texxel.actors.mobs;
 
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.sprites.api.MobVisual;
 import com.github.texxel.sprites.imp.mobvisuals.RatVisual;
 import com.github.texxel.utils.Point2D;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 public class Rat extends AbstractMob {
 
-    static {
-        ConstructorRegistry.put( Rat.class, new Constructor<Rat>() {
-            @Override
-            public Rat newInstance( Bundle bundle ) {
-                return new Rat( bundle );
-            }
-        });
-    }
-
-    private final RatVisual visual = new RatVisual();
-
-    protected Rat( Bundle bundle ) {
-        super( bundle );
-    }
+    private static final long serialVersionUID = 3845310651972049210L;
+    private transient RatVisual visual = new RatVisual();
 
     public Rat( Level level, Point2D spawn ) {
         super( level, spawn, 6 );
@@ -43,4 +31,11 @@ public class Rat extends AbstractMob {
     public String description() {
         return "EEK! A icky rat!";
     }
+
+    private void readObject( ObjectInputStream inputStream )
+            throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+        visual = new RatVisual();
+    }
+
 }

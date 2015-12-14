@@ -2,45 +2,31 @@ package com.github.texxel.levels.components;
 
 import com.github.texxel.Dungeon;
 import com.github.texxel.levels.Level;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Collection;
 import java.util.Collections;
 
 public abstract class AbstractDescriptor implements LevelDescriptor {
 
+    private static final long serialVersionUID = 3231534207288622150L;
+
     private Dungeon dungeon;
     private final int id;
     private int width = 32, height = 32;
-    private LevelBuilder builder = new BasicBuilder();
-    private LevelDecorator decorator = new BasicDecorator();
-
+    private transient LevelBuilder builder = new BasicBuilder();
+    private transient LevelDecorator decorator = new BasicDecorator();
 
     public AbstractDescriptor( Dungeon dungeon, int id ) {
         this.dungeon = dungeon;
         this.id = id;
     }
 
-    public AbstractDescriptor( Bundle bundle ) {
-        this.id = bundle.getInt( "id" );
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        Bundle bundle = topLevel.newBundle();
-        bundle.putBundlable( "dungeon", dungeon );
-        bundle.putInt( "id", id );
-        bundle.putInt( "width", width );
-        bundle.putInt( "height", height );
-        return bundle;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-        dungeon = bundle.getBundlable( "dungeon" );
-        width = bundle.getInt( "width" );
-        height = bundle.getInt( "height" );
+    private void readObject( ObjectInputStream ois ) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        builder = new BasicBuilder();
+        decorator = new BasicDecorator();
     }
 
     @Override

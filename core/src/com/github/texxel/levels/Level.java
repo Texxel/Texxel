@@ -14,12 +14,12 @@ import com.github.texxel.items.Item;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FogOfWar;
-import com.github.texxel.saving.Bundlable;
 import com.github.texxel.utils.Point2D;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Level extends Bundlable {
+public interface Level extends Serializable {
 
     /**
      * Gets the TileMap that backs this level. Any changes that are made to this TileMap will be

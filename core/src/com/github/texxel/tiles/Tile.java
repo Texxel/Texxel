@@ -1,16 +1,17 @@
 package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.texxel.saving.Bundlable;
 import com.github.texxel.sprites.api.WorldVisual;
 import com.github.texxel.ui.Examinable;
+
+import java.io.Serializable;
 
 /**
  * A Tile is what composes the majority of a Level. Because of the large amount of tiles that may
  * be present all at once, Tiles should have very fast implementations. Almost all the default tiles
  * in Texxel are immutable and singletons, however, it is not required that either of these be true.
  */
-public interface Tile extends Examinable, Bundlable {
+public interface Tile extends Examinable, Serializable {
 
     /**
      * Tests if the tile if the tile is solid, ie will it stop something from moving pass it. The

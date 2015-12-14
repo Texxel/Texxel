@@ -2,6 +2,8 @@ package com.github.texxel.tiles;
 
 public abstract class GrassTile extends AbstractTile implements Flammable {
 
+    private static final long serialVersionUID = -1725204081281718365L;
+
     @Override
     public boolean isSolid() {
         return false;

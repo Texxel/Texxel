@@ -3,38 +3,17 @@ package com.github.texxel.levels;
 import com.github.texxel.Dungeon;
 import com.github.texxel.levels.components.AbstractDescriptor;
 import com.github.texxel.levels.components.LevelDescriptor;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
 
 public class RegularLevel extends AbstractLevel {
 
-    static {
-        ConstructorRegistry.put( RegularLevel.class, new Constructor<RegularLevel>() {
-            @Override
-            public RegularLevel newInstance( Bundle bundle ) {
-                return new RegularLevel( bundle );
-            }
-        } );
-    }
+    private static final long serialVersionUID = -7459864167674779762L;
 
     public static class RegularDescriptor extends AbstractDescriptor {
 
-        static {
-            ConstructorRegistry.put( RegularDescriptor.class, new Constructor<RegularDescriptor>() {
-                @Override
-                public RegularDescriptor newInstance( Bundle bundle ) {
-                    return new RegularDescriptor( bundle );
-                }
-            } );
-        }
+        private static final long serialVersionUID = -6931904725512777814L;
 
         public RegularDescriptor( Dungeon dungeon, int id ) {
             super( dungeon, id );
-        }
-
-        public RegularDescriptor( Bundle bundle ) {
-            super( bundle );
         }
 
         @Override
@@ -46,10 +25,6 @@ public class RegularLevel extends AbstractLevel {
 
     public RegularLevel( Dungeon dungeon, int id, int width, int height ) {
         super( dungeon, id, width, height );
-    }
-
-    protected RegularLevel( Bundle bundle ) {
-        super( bundle );
     }
 
     /**
