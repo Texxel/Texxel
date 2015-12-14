@@ -26,11 +26,7 @@ public class DieAction implements Action {
     @Override
     public boolean update() {
         timeToFinish -= GameTimer.tickTime();
-        if ( timeToFinish <= 0 ) {
-            character.level().removeActor( character );
-            return true;
-        } else
-            return false;
+        return timeToFinish <= 0;
     }
 
     @Override
@@ -41,6 +37,15 @@ public class DieAction implements Action {
 
     @Override
     public void onFinish() {
+        finish();
+    }
 
+    @Override
+    public void forceFinish() {
+        finish();
+    }
+
+    private void finish() {
+        character.level().removeActor( character );
     }
 }

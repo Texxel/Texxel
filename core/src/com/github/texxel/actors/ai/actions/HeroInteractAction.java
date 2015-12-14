@@ -43,7 +43,7 @@ public class HeroInteractAction implements Action {
 
     @Override
     public boolean render() {
-        return false;
+        return true;
     }
 
     @Override
@@ -51,4 +51,10 @@ public class HeroInteractAction implements Action {
         CharVisual visual = hero.getVisual();
         visual.play( visual.getIdleAnimation() );
     }
+
+    @Override
+    public void forceFinish() {
+        tile.interact( hero );
+    }
+
 }

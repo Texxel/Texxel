@@ -15,6 +15,10 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
     private LevelDescriptor targetLevel;
 
     public StairsTile( Dungeon dungeon, LevelDescriptor nextLevel, int x, int y ) {
+        if ( dungeon == null )
+            throw new NullPointerException( "'dungeon' cannot be null" );
+        if ( nextLevel == null )
+            throw new NullPointerException( "'nextLevel' cannot be null" );
         this.dungeon = dungeon;
         this.targetLevel = nextLevel;
         this.x = x;
@@ -39,9 +43,9 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
     public void restore( Bundle bundle ) {
         super.restore( bundle );
         x = bundle.getInt( "x" );
-        y = bundle.getInt( "x" );
-        targetLevel = bundle.getBundlable( "target" );
-        dungeon = bundle.getBundlable( "dungeon" );
+        y = bundle.getInt( "y" );
+        targetLevel = bundle.getNNBundlable( "target" );
+        dungeon = bundle.getNNBundlable( "dungeon" );
     }
 
     @Override

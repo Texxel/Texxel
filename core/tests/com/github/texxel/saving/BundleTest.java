@@ -5,6 +5,7 @@ import com.github.texxel.Version;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BundleTest extends TestCase {
@@ -355,5 +356,17 @@ public class BundleTest extends TestCase {
 
         group = BundleGroup.loadGroup( group.toString() );
         assertEquals( expected, group.getVersion() );
+    }
+
+    public void testDoubleArray() {
+        BundleGroup group = BundleGroup.newGroup();
+        double[][] array = {{ 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+        group.put( "array", array );
+
+        group = BundleGroup.loadGroup( group.toString() );
+
+        double[][] result = group.getDoubleArray( "array" );
+
+        assertTrue( Arrays.deepEquals( array, result ) );
     }
 }

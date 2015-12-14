@@ -19,7 +19,7 @@ public class Warrior extends AbstractHero {
         ConstructorRegistry.put( Warrior.class, constructor );
     }
 
-    private WarriorVisual sprite = new WarriorVisual();
+    private final WarriorVisual sprite = new WarriorVisual();
 
     public Warrior( Level level, Point2D spawn ) {
         super( level, spawn );

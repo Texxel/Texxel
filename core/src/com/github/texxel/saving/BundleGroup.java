@@ -62,6 +62,11 @@ public class BundleGroup extends Bundle {
         data.put( "__version__", rawVersion );
     }
 
+    /**
+     * Gets a new bundle that shares this parent bundle. The returned bundle can then be stored into
+     * other bundles that are created with this same parent bundle.
+     * @return the new bundle
+     */
     public Bundle newBundle() {
         if ( !editable )
             throw new IllegalStateException( "Cannot make a new Bundle from a restored bundle" );

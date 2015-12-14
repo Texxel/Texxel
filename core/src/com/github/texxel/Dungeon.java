@@ -26,18 +26,35 @@ public class Dungeon implements Bundlable {
         ConstructorRegistry.put( Dungeon.class, new Constructor<Dungeon>() {
             @Override
             public Dungeon newInstance( Bundle bundle ) {
-                return new Dungeon();
+                int id = bundle.getInt( "id" );
+                if ( dungeonRegistry.containsKey( id ) ) {
+                    return dungeonRegistry.get( id );
+                } else {
+                    Dungeon dungeon = new Dungeon( id );
+                    String location = bundle.getString( "location" );
+                    BundleGroup group = BundleWriter.load( location );
+                    dungeon.actuallyRestore( group.getBundle( "dungeon" ) );
+                    return dungeon;
+                }
             }
         } );
     }
 
-    private EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
+    private static final HashMap<Integer, Dungeon> dungeonRegistry = new HashMap<>();
+    private final EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
     private final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
+    private final int id;
+    private boolean constructed;
 
     {
         for ( int i = 1; i <= 10; i++ ) {
             register( i, new RegularLevel.RegularDescriptor( this, i ) );
         }
+    }
+
+    public Dungeon( int id ) {
+        this.id = id;
+        dungeonRegistry.put( id, this );
     }
 
     /**
@@ -52,12 +69,17 @@ public class Dungeon implements Bundlable {
     }
 
     /**
-     * Gets the level that will be constructed when the given id is requested
+     * Gets the level that will be constructed when the given id is requested. If the id has not
+     * been registered, then a missing room descriptor will be given.
      * @param id the level's id
-     * @return the constructor for the id
+     * @return the constructor for the id. Never null
      */
     public LevelDescriptor getDescriptor( int id ) {
-        return levelRegistry.get( id );
+        LevelDescriptor descriptor = levelRegistry.get( id );
+        if ( descriptor == null )
+            return new RegularLevel.RegularDescriptor( this, id );
+        else
+            return descriptor;
     }
 
     /**
@@ -93,7 +115,7 @@ public class Dungeon implements Bundlable {
     }
 
     private static FileHandle levelFile( int id ) {
-        return Gdx.files.local( "level" + id + ".json" );
+        return Gdx.files.local( "level-" + id + ".json" );
     }
 
     private Level make( LevelDescriptor id ) {
@@ -115,29 +137,48 @@ public class Dungeon implements Bundlable {
         return level;
     }
 
+    /**
+     * Gets the construction handler for levels. Any time a level is created in this dungeon, the
+     * given handler will be notified. Note: The construction handler is not saved!
+     * @return the construction handler
+     */
     public EventHandler<LevelConstructionListener> levelConstructionHandler() {
         return constructionHandler;
     }
 
-    public void save() {
-        BundleGroup bundle = BundleGroup.newGroup();
-        bundle( bundle );
-        BundleWriter.write( BundleWriter.file( "dungeon.json" ), bundle );
+    private String saveLocation() {
+        return "dungeon-" + id + ".json";
     }
 
-    private static FileHandle dungeonFile() {
-        return Gdx.files.local( "dungeon.json" );
+    /**
+     * Saves the dungeon to a file. Note: this does <b>not</b> save any levels - they must manually
+     * be saved separately
+     */
+    public void save() {
+        BundleGroup topLevel = BundleGroup.newGroup();
+        Bundle bundle = actuallyBundle( topLevel );
+        topLevel.putBundle( "dungeon", bundle );
+        BundleWriter.write( saveLocation(), topLevel );
     }
 
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = topLevel.newBundle();
-        bundle.putBundlable( "constructionHandler", constructionHandler );
+        bundle.putInt( "id", id );
+        bundle.putString( "location", saveLocation() );
         return bundle;
     }
 
     @Override
     public void restore( Bundle bundle ) {
-        constructionHandler = bundle.getBundlable( "constructionHandler" );
+    }
+
+    private Bundle actuallyBundle( BundleGroup topLevel ) {
+        Bundle bundle = topLevel.newBundle();
+        return bundle;
+    }
+
+    private void actuallyRestore( Bundle bundle ) {
+
     }
 }

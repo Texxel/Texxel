@@ -84,4 +84,9 @@ public class LevelUpdater implements GameUpdater {
         return userControlled;
     }
 
+    @Override
+    public void quit() {
+        currentAction.forceFinish();
+    }
+
 }

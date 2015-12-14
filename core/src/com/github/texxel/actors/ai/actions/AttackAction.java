@@ -55,4 +55,9 @@ public class AttackAction implements Action {
         CharVisual visual = attacker.getVisual();
         visual.play( visual.getIdleAnimation() );
     }
+
+    @Override
+    public void forceFinish() {
+        attacker.attack( defender );
+    }
 }

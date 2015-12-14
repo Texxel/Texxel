@@ -48,8 +48,8 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     @Override
     public Bundle bundle( BundleGroup topLevel ) {
         Bundle bundle = super.bundle( topLevel );
-        bundle.putBundle( "location", location.bundle( topLevel ) );
-        bundle.putBundle( "target", target.bundle( topLevel ) );
+        bundle.putBundlable( "location", location );
+        bundle.putBundlable( "target", target );
         bundle.putDouble( "health", health );
         bundle.putDouble( "maxHealth", maxHealth );
         bundle.putBundlable( "moveHandler", moveHandler );

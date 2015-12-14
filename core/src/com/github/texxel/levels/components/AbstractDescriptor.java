@@ -10,7 +10,7 @@ import java.util.Collections;
 
 public abstract class AbstractDescriptor implements LevelDescriptor {
 
-    private final Dungeon dungeon;
+    private Dungeon dungeon;
     private final int id;
     private int width = 32, height = 32;
     private LevelBuilder builder = new BasicBuilder();
@@ -20,6 +20,27 @@ public abstract class AbstractDescriptor implements LevelDescriptor {
     public AbstractDescriptor( Dungeon dungeon, int id ) {
         this.dungeon = dungeon;
         this.id = id;
+    }
+
+    public AbstractDescriptor( Bundle bundle ) {
+        this.id = bundle.getInt( "id" );
+    }
+
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        Bundle bundle = topLevel.newBundle();
+        bundle.putBundlable( "dungeon", dungeon );
+        bundle.putInt( "id", id );
+        bundle.putInt( "width", width );
+        bundle.putInt( "height", height );
+        return bundle;
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+        dungeon = bundle.getBundlable( "dungeon" );
+        width = bundle.getInt( "width" );
+        height = bundle.getInt( "height" );
     }
 
     @Override
@@ -77,16 +98,5 @@ public abstract class AbstractDescriptor implements LevelDescriptor {
     @Override
     public int id() {
         return id;
-    }
-
-    @Override
-    public Bundle bundle( BundleGroup topLevel ) {
-        // TODO bundle abstract descriptor
-        return null;
-    }
-
-    @Override
-    public void restore( Bundle bundle ) {
-
     }
 }

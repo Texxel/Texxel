@@ -4,6 +4,8 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.FieldOfVision;
+import com.github.texxel.saving.Bundle;
+import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.utils.Point2D;
 
 import java.util.Collections;
@@ -14,12 +16,16 @@ import java.util.Set;
 
 public abstract class AbstractEnemySensor implements Sensor {
 
-    protected final Char character;
+    protected Char character;
     private final HashMap<Char, Point2D> knownEnemies = new HashMap<>();
     private final Set<Char> publicEnemies = Collections.unmodifiableSet( knownEnemies.keySet() );
 
     public AbstractEnemySensor( Char character ) {
         this.character = character;
+    }
+
+    protected AbstractEnemySensor( Bundle bundle ) {
+
     }
 
     @Override
@@ -89,11 +95,28 @@ public abstract class AbstractEnemySensor implements Sensor {
      * @param enemy the enemy that was killed
      */
     protected void onEnemyDie( Char enemy ) {
-
     }
 
     @Override
     public void onRemove() {
 
+    }
+
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        Bundle bundle = topLevel.newBundle();
+        bundle.putNNBundlable( "character", character );
+        bundle.putBundlables( "knownenemieskey", knownEnemies.keySet() );
+        bundle.putBundlables( "knownenemiesvalues", knownEnemies.values() );
+        return bundle;
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+        character = bundle.getNNBundlable( "character" );
+        List<Char> keys = bundle.getBundlables( "knownenemieskey" );
+        List<Point2D> values = bundle.getBundlables( "knownenemiesvalues" );
+        for ( int i = 0; i < keys.size(); i++ )
+            knownEnemies.put( keys.get( i ), values.get( i ) );
     }
 }

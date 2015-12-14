@@ -5,31 +5,57 @@ import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.actions.IdleAction;
 import com.github.texxel.actors.ai.goals.CharMoveGoal;
+import com.github.texxel.saving.Bundle;
+import com.github.texxel.saving.BundleGroup;
+import com.github.texxel.saving.Constructor;
+import com.github.texxel.saving.ConstructorRegistry;
 import com.github.texxel.utils.Point2D;
 
 public class MobWanderAI implements Brain {
 
-    private class Mover extends CharMoveGoal {
+    static {
+        ConstructorRegistry.put( MobWanderAI.class, new Constructor<MobWanderAI>() {
+            @Override
+            public MobWanderAI newInstance( Bundle bundle ) {
+                return new MobWanderAI( bundle );
+            }
+        } );
+    }
+
+    private static class Mover extends CharMoveGoal {
+
+        static {
+            ConstructorRegistry.put( Mover.class, new Constructor<Mover>() {
+                @Override
+                public Mover newInstance( Bundle bundle ) {
+                    return new Mover( bundle );
+                }
+            } );
+        }
 
         public Mover( Char character, Point2D target ) {
             super( character, target );
         }
 
+        private Mover( Bundle bundle ) {
+            super( bundle );
+        }
+
         @Override
         public Action onTargetReached() {
-            setTarget( mob.level().randomRespawnCell() );
-            return new IdleAction( mob );
+            setTarget( getCharacter().level().randomRespawnCell() );
+            return new IdleAction( getCharacter() );
         }
 
         @Override
         public Action onCannotReachTarget() {
-            setTarget( mob.level().randomRespawnCell() );
-            return new IdleAction( mob );
+            setTarget( getCharacter().level().randomRespawnCell() );
+            return new IdleAction( getCharacter() );
         }
     }
 
-    final Char mob;
-    final Mover mover;
+    Char mob;
+    Mover mover;
 
     /**
      * Constructs a wandering ai
@@ -40,6 +66,10 @@ public class MobWanderAI implements Brain {
         this.mob = mob;
         mover = new Mover( mob, target );
         mob.setGoal( mover );
+    }
+
+    protected MobWanderAI( Bundle bundle ) {
+
     }
 
     /**
@@ -53,5 +83,19 @@ public class MobWanderAI implements Brain {
     @Override
     public void update() {
         // just keep moving
+    }
+
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        Bundle bundle = topLevel.newBundle();
+        bundle.putBundlable( "mob", mob );
+        bundle.putBundlable( "mover", mover );
+        return bundle;
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+        mob = bundle.getBundlable( "mob" );
+        mover = bundle.getBundlable( "mover" );
     }
 }

@@ -29,6 +29,14 @@ public interface Action {
     boolean render();
 
     /**
+     * An action is called to force finish when the game quits. Actions cannot be stored into bundles,
+     * thus, they receive this call to finish the current action. This method only needs to change
+     * the worlds state (but not the render state) so the the action has completely finished and can
+     * safely be forgotten about.
+     */
+    void forceFinish();
+
+    /**
      * Called when the action is completely finished
      */
     void onFinish();

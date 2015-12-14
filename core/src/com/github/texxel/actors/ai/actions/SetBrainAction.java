@@ -43,8 +43,14 @@ public class SetBrainAction implements Action {
     }
 
     @Override
+    public void forceFinish() {
+        actor.setBrain( nextBrain );
+    }
+
+    @Override
     public void onFinish() {
 
     }
+
 }
 

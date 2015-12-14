@@ -36,6 +36,12 @@ public class IntervalLevelScreen implements Screen {
     private final TransitionReason reason;
 
     public IntervalLevelScreen( Dungeon dungeon, LevelDescriptor nextLevel, TransitionReason reason ) {
+        if ( dungeon == null )
+            throw new NullPointerException( "'dungeon' cannot be null" );
+        if ( nextLevel == null )
+            throw new NullPointerException( "'nextLevel' cannot be null" );
+        if ( reason == null )
+            throw new NullPointerException( "'reason' cannot be null" );
         this.dungeon = dungeon;
         this.nextLevel = nextLevel;
         this.reason = reason;

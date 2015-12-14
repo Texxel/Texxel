@@ -18,7 +18,7 @@ public class Texxel extends Game {
 
 	@Override
 	public void create() {
-		Dungeon dungeon = new Dungeon();
+		Dungeon dungeon = new Dungeon( 1 );
 		Level level = dungeon.loadLevel( dungeon.getDescriptor( 1 ) );
 		super.setScreen( new GameScene( dungeon, level ) );
 	}

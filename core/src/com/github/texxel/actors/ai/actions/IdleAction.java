@@ -11,7 +11,7 @@ import com.github.texxel.utils.Point2D;
 public class IdleAction implements Action {
 
     private final Char character;
-    private final float idleTime;
+    private float idleTime;
 
     public IdleAction( Char character, float idleTime ) {
         if ( character == null )
@@ -46,5 +46,10 @@ public class IdleAction implements Action {
     @Override
     public void onFinish() {
 
+    }
+
+    @Override
+    public void forceFinish() {
+        character.spend( idleTime );
     }
 }

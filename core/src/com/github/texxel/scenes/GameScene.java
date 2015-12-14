@@ -11,6 +11,8 @@ import com.github.texxel.gameloop.LevelInput;
 import com.github.texxel.gameloop.LevelRenderer;
 import com.github.texxel.gameloop.LevelUpdater;
 import com.github.texxel.levels.Level;
+import com.github.texxel.saving.BundleGroup;
+import com.github.texxel.saving.BundleWriter;
 import com.github.texxel.utils.GameTimer;
 
 public class GameScene implements Screen {
@@ -61,6 +63,9 @@ public class GameScene implements Screen {
     @Override
     public void hide() {
         input.onDestroy();
+        BundleGroup group = BundleGroup.newGroup();
+        group.putBundlable( "level", level );
+        BundleWriter.write( BundleWriter.file( "level-" + level.id() + ".json" ), group );
         dungeon.save();
     }
 

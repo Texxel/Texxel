@@ -30,12 +30,13 @@ final class BundleLookup {
             }
             Bundle bundle = data.getBundle( idString );
             String className = bundle.getClassName();
-            Class<Bundlable> clazz = null;
+            Class<Bundlable> clazz;
             try {
                 Class<?> classRaw = Class.forName( className );
                 clazz = (Class<Bundlable>) classRaw;
             } catch ( ClassNotFoundException e ) {
                 System.err.println( "Couldn't find class: " + className + " in bundle lookup. Ignoring that bundlable" );
+                continue;
             } catch ( ClassCastException e ) {
                 throw new IllegalTypeException( "Classes in a bundle lookup must extend from Bundlable. Found: " + className );
             }

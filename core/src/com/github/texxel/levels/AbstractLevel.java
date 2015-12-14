@@ -108,7 +108,7 @@ public abstract class AbstractLevel implements Level {
         bundle.putInt( "id", id );
         bundle.putInt( "width", width );
         bundle.putInt( "height", height );
-        bundle.putBundle( "tilemap", tileMap.bundle( topLevel ) );
+        bundle.putBundlable( "tilemap", tileMap );
         bundle.putBundlables( "actors", actors );
         bundle.putBundlables( "heaps", heaps );
         bundle.putBundlable( "actorSpawnHandler", actorSpawnHandler );

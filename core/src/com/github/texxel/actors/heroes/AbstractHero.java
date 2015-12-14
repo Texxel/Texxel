@@ -57,12 +57,16 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
                 }
             }
             if ( x >= 0 && x < level.width() && y >= 0 && y < level.height()  ) {
+                System.out.println( "Hello" );
                 Tile tile = level.getTileMap().getTile( x, y );
-                if ( tile instanceof Interactable )
+                if ( tile instanceof Interactable ) {
+                    System.out.println( "Interact" );
                     hero.setBrain( new HeroInteractAI( hero, new Point2D( x, y ) ) );
-                else
+                } else {
                     hero.setBrain( new HeroMoveAI( hero, new Point2D( x, y ) ) );
+                }
             }
+            hero.updateFog();
         }
 
         @Override

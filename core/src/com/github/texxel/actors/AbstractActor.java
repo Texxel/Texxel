@@ -48,12 +48,18 @@ public abstract class AbstractActor implements Actor {
         Bundle bundle = topLevel.newBundle();
         bundle.putDouble( "time", time );
         bundle.putBundlable( "level", level );
+        bundle.putBundlable( "brain", brain );
+        bundle.putBundlable( "goal", goal );
+        bundle.putBundlables( "sensors", sensors );
         return bundle;
     }
 
     @Override
     public void restore( Bundle bundle ) {
         level = bundle.getBundlable( "level" );
+        brain = bundle.getBundlable( "brain" );
+        goal = bundle.getBundlable( "goal" );
+        sensors.addAll( bundle.<Sensor>getBundlables( "sensors" ) );
     }
 
     @Override

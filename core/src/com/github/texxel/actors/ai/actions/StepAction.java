@@ -3,6 +3,7 @@ package com.github.texxel.actors.ai.actions;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
+import com.github.texxel.saving.Bundle;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.tiles.Trampleable;
@@ -13,7 +14,7 @@ public class StepAction implements Action {
 
     private static final float STEP_TIME = 0.1f;
 
-    private final Char character;
+    private Char character;
     private CharVisual charVisual;
     private float xDelta, yDelta;
     private float xStart, yStart;
@@ -28,6 +29,10 @@ public class StepAction implements Action {
             throw new NullPointerException( "'target' cannot be null" );
         this.character = character;
         this.target = target;
+    }
+
+    public StepAction( Bundle bundle ) {
+
     }
 
     @Override
@@ -95,12 +100,6 @@ public class StepAction implements Action {
         float y = yStart + yDelta * factorComplete;
         charVisual.setLocation( x, y );
 
-        // TODO camera following hero is very hacky
-        //if ( character instanceof Hero ) {
-        //    CameraMover.instance.camera.position.set( x, y, 0 );
-        //    CameraMover.instance.camera.update();
-        //}
-
         // finished if we're over on the next step
         return (timeElapsed + GameTimer.tickTime()) / STEP_TIME >= 1;
     }
@@ -111,5 +110,10 @@ public class StepAction implements Action {
 
         // note: the sprite will not be perfectly aligned to the grid when finished and we do not
         // want to align it because it causes the movement to look very choppy.
+    }
+
+    @Override
+    public void forceFinish() {
+
     }
 }

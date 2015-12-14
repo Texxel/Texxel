@@ -20,8 +20,21 @@ public class RegularLevel extends AbstractLevel {
 
     public static class RegularDescriptor extends AbstractDescriptor {
 
+        static {
+            ConstructorRegistry.put( RegularDescriptor.class, new Constructor<RegularDescriptor>() {
+                @Override
+                public RegularDescriptor newInstance( Bundle bundle ) {
+                    return new RegularDescriptor( bundle );
+                }
+            } );
+        }
+
         public RegularDescriptor( Dungeon dungeon, int id ) {
             super( dungeon, id );
+        }
+
+        public RegularDescriptor( Bundle bundle ) {
+            super( bundle );
         }
 
         @Override

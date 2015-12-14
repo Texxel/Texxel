@@ -41,6 +41,88 @@ public class Bundle {
     }
 
     /**
+     * Tests if the bundle contains a value
+     * @param key the key to test for
+     * @return true if the bundle contains the key
+     * @throws NullPointerException if key is null
+     */
+    public boolean contains( String key ) {
+        validateKey( key );
+        return data.has( key );
+    }
+
+    /**
+     * Removes a key from the mapping
+     * @param key the key to remove
+     * @throws NullPointerException if {@code key} is null
+     */
+    public void remove( String key ) {
+        validateKey( key );
+        data.remove( key );
+    }
+
+    /**
+     * Gets the version that the Bundle was saved at
+     * @return the Bundle's save version
+     */
+    public Version getVersion() {
+        return version;
+    }
+
+    /**
+     * Gets the String representation of the version that the Bundle was saved at.
+     * This string will be the same as {@code getVersion().toString()} in all
+     * cases except for unknown versions where is will return the string that
+     * caused the unknown version.
+     * @return the version string
+     */
+    public String getVersionRaw() {
+        return versionRaw;
+    }
+
+    /**
+     * Gets a clone of all the keys in the bundle
+     * @return the bundle's keys
+     */
+    public Set<String> keys() {
+        HashSet<String> keys = new HashSet<>( data.keySet() );
+        // remove reserved keys from the list
+        keys.remove( "__classname__" );
+        keys.remove( "__version__" );
+        keys.remove( "__lookuptable__" );
+        return keys;
+    }
+
+    private void validateKey( String key ) {
+        if ( key == null )
+            throw new NullPointerException( "key cannot be null" );
+
+        // don't let users see/edit reserved keys
+        if ( key.equals( "__classname__" ) )
+            throw new IllegalArgumentException( "The key '__classname__' is for internal use only" );
+        if ( key.equals( "__version__" ) )
+            throw new IllegalArgumentException( "The key '__version__' is for internal use only" );
+        if ( key.equals( "__lookuptable__" ) )
+            throw new IllegalArgumentException( "The key '__lookuptable__' is for internal use only" );
+    }
+
+    /**
+     * For internal use only - sets the class that this bundle is representing
+     * @param name the classes name
+     */
+    void putClassName( String name ) {
+        data.put( "__classname__", name );
+    }
+
+    /**
+     * For internal use only - gets the class that this bundle is representing
+     * @return the class that this bundle represents or null if it isn't representing anything
+     */
+    String getClassName() {
+        return data.getString( "__classname__" );
+    }
+
+    /**
      * Maps an integer to a key
      * @param key the key store the value into
      * @param val the value to store
@@ -115,6 +197,12 @@ public class Bundle {
         data.put( key, lookup.add( object ) );
     }
 
+    public void putNNBundlable( String key, Bundlable object ) {
+        if ( object == null )
+            throw new NullPointerException( "Attempted to add a null object as not null" );
+        putBundlable( key, object );
+    }
+
     /**
      * Puts a Bundle into the list. Only Bundles with the same parent bundle can be stored
      * @param key the key to store with
@@ -131,86 +219,6 @@ public class Bundle {
         if ( !editable )
             throw new IllegalStateException( "cannot edit a restored bundle" );
         data.put( key, bundle.data );
-    }
-
-    /**
-     * Stores a collection of Bundlables into the Bundle. If the Collection was a list,
-     * then the order will be maintained.
-     * @param key the key to store the collection with
-     * @param collection the Collection to store
-     */
-    public void putBundlables( String key, Collection<? extends Bundlable> collection ) {
-        if ( !editable )
-            throw new IllegalStateException( "cannot edit a restored bundle" );
-        validateKey( key );
-        if ( collection == null ) {
-            data.remove( key );
-            return;
-        }
-        List<Object> list = new ArrayList<>( collection.size() );
-        for ( Bundlable bundlable : collection ) {
-            int id = lookup.add( bundlable );
-            list.add( id );
-        }
-        data.put( key, list );
-    }
-
-    /**
-     * Gets a List of values from a key. If there is not a list of values in the key, then an empty
-     * list is returned
-     * @param key the key to look up
-     * @return the List mapped to the key
-     * @throws NullPointerException if key is null
-     * @throws ClassCastException if all the bundlables are not of type E
-     */
-    public <E extends Bundlable> List<E> getBundlables( String key ) {
-        validateKey( key );
-        JSONArray array = data.optJSONArray( key );
-        if ( array == null )
-            return new ArrayList<>();
-        int size = array.length();
-        List<E> bundlables = new ArrayList<>( size );
-        for ( int i = 0; i < size; i++ ) {
-            bundlables.add( (E)lookup.get( (int)array.get( i ) ) );
-        }
-        return bundlables;
-    }
-
-    /**
-     * Adds a collection of boxed primitives (or Strings) to the bundle. The added collection does
-     * not need to contain objects of the same type. The objects must be a Integer, Double, Boolean
-     * or a String.
-     * @param key the key to add the list to
-     * @param objects the primitives to add
-     */
-    public void putPrimitives( String key, Collection<Object> objects ) {
-        if ( !editable )
-            throw new IllegalStateException( "cannot edit a restored bundle" );
-        validateKey( key );
-        if ( objects == null ) {
-            data.remove( key );
-            return;
-        }
-        data.put( key, objects );
-    }
-
-    /**
-     * Gets a list of boxed primitives (or Strings) from the bundle. If the key does not exist, an
-     * empty list is returned
-     * @param key the key to add the list to
-     * @return the stored objects
-     */
-    public List<Object> getPrimitives( String key ) {
-        validateKey( key );
-        JSONArray array = data.optJSONArray( key );
-        if ( array == null )
-            return new ArrayList<>();
-        int size = array.length();
-        List<Object> objects = new ArrayList<>( size );
-        for ( int i = 0; i < size; i++ ) {
-            objects.add( array.get( i ) );
-        }
-        return objects;
     }
 
     /**
@@ -319,6 +327,13 @@ public class Bundle {
         return (T)lookup.get( id );
     }
 
+    public <T extends Bundlable> T getNNBundlable( String key ) {
+        T b = getBundlable( key );
+        if ( b == null )
+            throw new NullPointerException( "Bundlable was null" );
+        return b;
+    }
+
     /**
      * Gets the Bundle that is mapped to the key. If there is nothing mapped to
      * the key or the mapping is not a Bundle, then null is returned.
@@ -334,85 +349,215 @@ public class Bundle {
     }
 
     /**
-     * Tests if the bundle contains a value
-     * @param key the key to test for
-     * @return true if the bundle contains the key
+     * Stores a collection of Bundlables into the Bundle. If the Collection was a list,
+     * then the order will be maintained.
+     * @param key the key to store the collection with
+     * @param collection the Collection to store
+     */
+    public void putBundlables( String key, Collection<? extends Bundlable> collection ) {
+        if ( !editable )
+            throw new IllegalStateException( "cannot edit a restored bundle" );
+        validateKey( key );
+        if ( collection == null ) {
+            data.remove( key );
+            return;
+        }
+        List<Object> list = new ArrayList<>( collection.size() );
+        for ( Bundlable bundlable : collection ) {
+            int id = lookup.add( bundlable );
+            list.add( id );
+        }
+        data.put( key, list );
+    }
+
+    /**
+     * Gets a List of values from a key. If there is not a list of values in the key, then an empty
+     * list is returned
+     * @param key the key to look up
+     * @return the List mapped to the key
      * @throws NullPointerException if key is null
+     * @throws ClassCastException if all the bundlables are not of type E
      */
-    public boolean contains( String key ) {
+    public <E extends Bundlable> List<E> getBundlables( String key ) {
         validateKey( key );
-        return data.has( key );
+        JSONArray array = data.optJSONArray( key );
+        if ( array == null )
+            return new ArrayList<>();
+        int size = array.length();
+        List<E> bundlables = new ArrayList<>( size );
+        for ( int i = 0; i < size; i++ ) {
+            bundlables.add( (E)lookup.get( (int)array.get( i ) ) );
+        }
+        return bundlables;
     }
 
     /**
-     * Removes a key from the mapping
-     * @param key the key to remove
-     * @throws NullPointerException if {@code key} is null
+     * Adds a collection of boxed primitives (or Strings) to the bundle. The added collection does
+     * not need to contain objects of the same type. The objects must be a Integer, Double, Boolean
+     * or a String.
+     * @param key the key to add the list to
+     * @param objects the primitives to add
      */
-    public void remove( String key ) {
+    public void putPrimitives( String key, Collection<Object> objects ) {
+        if ( !editable )
+            throw new IllegalStateException( "cannot edit a restored bundle" );
         validateKey( key );
-        data.remove( key );
+        if ( objects == null ) {
+            data.remove( key );
+            return;
+        }
+        data.put( key, objects );
     }
 
     /**
-     * Gets the version that the Bundle was saved at
-     * @return the Bundle's save version
+     * Gets a list of boxed primitives (or Strings) from the bundle. If the key does not exist, an
+     * empty list is returned
+     * @param key the key to add the list to
+     * @return the stored objects
      */
-    public Version getVersion() {
-        return version;
+    public List<Object> getPrimitives( String key ) {
+        validateKey( key );
+        JSONArray array = data.optJSONArray( key );
+        if ( array == null )
+            return new ArrayList<>();
+        int size = array.length();
+        List<Object> objects = new ArrayList<>( size );
+        for ( int i = 0; i < size; i++ ) {
+            objects.add( array.get( i ) );
+        }
+        return objects;
     }
 
-    /**
-     * Gets the String representation of the version that the Bundle was saved at.
-     * This string will be the same as {@code getVersion().toString()} in all
-     * cases except for unknown versions where is will return the string that
-     * caused the unknown version.
-     * @return the version string
-     */
-    public String getVersionRaw() {
-        return versionRaw;
+    public void put( String key, boolean[][] array ) {
+        validateKey( key );
+        if ( !editable )
+            throw new IllegalStateException( "cannot edit a restored bundle" );
+        JSONArray jsonArray = new JSONArray();
+        for ( boolean[] a : array ) {
+            jsonArray.put( new JSONArray( a ) );
+        }
+        data.put( key, jsonArray );
     }
 
-    /**
-     * Gets a clone of all the keys in the bundle
-     * @return the bundle's keys
-     */
-    public Set<String> keys() {
-        HashSet<String> keys = new HashSet<>( data.keySet() );
-        // remove reserved keys from the list
-        keys.remove( "__classname__" );
-        keys.remove( "__version__" );
-        keys.remove( "__lookuptable__" );
-        return keys;
+    public void put( String key, int[][] array ) {
+        validateKey( key );
+        if ( !editable )
+            throw new IllegalStateException( "cannot edit a restored bundle" );
+        JSONArray jsonArray = new JSONArray();
+        for ( int[] a : array ) {
+            jsonArray.put( new JSONArray( a ) );
+        }
+        data.put( key, jsonArray );
     }
 
-    private void validateKey( String key ) {
-        if ( key == null )
-            throw new NullPointerException( "key cannot be null" );
-
-        // don't let users see/edit reserved keys
-        if ( key.equals( "__classname__" ) )
-            throw new IllegalArgumentException( "The key '__classname__' is for internal use only" );
-        if ( key.equals( "__version__" ) )
-            throw new IllegalArgumentException( "The key '__version__' is for internal use only" );
-        if ( key.equals( "__lookuptable__" ) )
-            throw new IllegalArgumentException( "The key '__lookuptable__' is for internal use only" );
+    public void put( String key, float[][] array ) {
+        validateKey( key );
+        if ( !editable )
+            throw new IllegalStateException( "cannot edit a restored bundle" );
+        JSONArray jsonArray = new JSONArray();
+        for ( float[] a : array ) {
+            jsonArray.put( new JSONArray( a ) );
+        }
+        data.put( key, jsonArray );
     }
 
-    /**
-     * For internal use only - sets the class that this bundle is representing
-     * @param name the classes name
-     */
-    void putClassName( String name ) {
-        data.put( "__classname__", name );
+    public void put( String key, double[][] array ) {
+        validateKey( key );
+        if ( !editable )
+            throw new IllegalStateException( "cannot edit a restored bundle" );
+        JSONArray jsonArray = new JSONArray();
+        for ( double[] a : array ) {
+            jsonArray.put( new JSONArray( a ) );
+        }
+        data.put( key, jsonArray );
     }
 
-    /**
-     * For internal use only - gets the class that this bundle is representing
-     * @return the class that this bundle represents or null if it isn't representing anything
-     */
-    String getClassName() {
-        return data.getString( "__classname__" );
+    public boolean[][] getBooleanArray( String key ) {
+        validateKey( key );
+        if ( !contains( key ) )
+            return null;
+        JSONArray array = (JSONArray)data.get( key );
+        if ( array == null )
+            return null;
+        int size = array.length();
+        boolean[][] result = new boolean[size][];
+        for ( int i = 0; i < size; i++ ) {
+            JSONArray array2 = array.getJSONArray( i );
+            int size2 = array2.length();
+            boolean[] result2 = new boolean[size2];
+            for ( int j = 0; j < size2; j++ ) {
+                result2[j] = array2.getBoolean( j );
+            }
+            result[i] = result2;
+        }
+        return result;
+    }
+
+    public int[][] getIntArray( String key ) {
+        validateKey( key );
+        if ( !contains( key ) )
+            return null;
+        JSONArray array = (JSONArray)data.get( key );
+        if ( array == null )
+            return null;
+        int size = array.length();
+        int[][] result = new int[size][];
+        for ( int i = 0; i < size; i++ ) {
+            JSONArray array2 = array.getJSONArray( i );
+            int size2 = array2.length();
+            int[] result2 = new int[size2];
+            for ( int j = 0; j < size2; j++ ) {
+                result2[j] = array2.getInt( j );
+            }
+            result[i] = result2;
+        }
+        return result;
+    }
+
+    public float[][] getFloatArray( String key ) {
+        validateKey( key );
+        if ( !contains( key ) )
+            return null;
+        JSONArray array = (JSONArray)data.get( key );
+        if ( array == null )
+            return null;
+        int size = array.length();
+        float[][] result = new float[size][];
+        for ( int i = 0; i < size; i++ ) {
+            JSONArray array2 = array.getJSONArray( i );
+            int size2 = array2.length();
+            float[] result2 = new float[size2];
+            for ( int j = 0; j < size2; j++ ) {
+                result2[j] = (float)array2.getDouble( j );
+            }
+            result[i] = result2;
+        }
+        return result;
+    }
+
+    public double[][] getDoubleArray( String key ) {
+        validateKey( key );
+        if ( !contains( key ) )
+            return null;
+        JSONArray array = (JSONArray)data.get( key );
+        if ( array == null )
+            return null;
+        int size = array.length();
+        double[][] result = new double[size][];
+        for ( int i = 0; i < size; i++ ) {
+            JSONArray array2 = array.getJSONArray( i );
+            int size2 = array2.length();
+            double[] result2 = new double[size2];
+            for ( int j = 0; j < size2; j++ ) {
+                result2[j] = array2.getDouble( j );
+            }
+            result[i] = result2;
+        }
+        return result;
+    }
+
+    public void put( String key, Object[][] bundlables ) {
+
     }
 
 }

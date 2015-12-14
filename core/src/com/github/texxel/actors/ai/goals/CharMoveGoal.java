@@ -6,6 +6,8 @@ import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.actions.StepAction;
 import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.PathFinder;
+import com.github.texxel.saving.Bundle;
+import com.github.texxel.saving.BundleGroup;
 import com.github.texxel.utils.Arrays2D;
 import com.github.texxel.utils.Point2D;
 
@@ -16,9 +18,9 @@ import java.util.List;
  */
 public abstract class CharMoveGoal implements Goal {
 
-    private final Char character;
+    private Char character;
     private Point2D target;
-    private final boolean[][] passable;
+    private boolean[][] passable;
     private Level level;
 
     public CharMoveGoal( Char character, Point2D target ) {
@@ -30,6 +32,10 @@ public abstract class CharMoveGoal implements Goal {
         this.character = character;
         this.target = target;
         passable = new boolean[level.width()][level.height()];
+    }
+
+    public CharMoveGoal( Bundle bundle ) {
+
     }
 
     @Override
@@ -110,4 +116,21 @@ public abstract class CharMoveGoal implements Goal {
      */
     public abstract Action onCannotReachTarget();
 
+    @Override
+    public Bundle bundle( BundleGroup topLevel ) {
+        Bundle bundle = topLevel.newBundle();
+        bundle.putNNBundlable( "character", character );
+        bundle.putNNBundlable( "target", target );
+        bundle.put( "passable", passable );
+        bundle.putNNBundlable( "level", level );
+        return bundle;
+    }
+
+    @Override
+    public void restore( Bundle bundle ) {
+        character = bundle.getNNBundlable( "character" );
+        target = bundle.getNNBundlable( "target" );
+        passable = bundle.getBooleanArray( "passable" );
+        level = bundle.getNNBundlable( "level" );
+    }
 }
