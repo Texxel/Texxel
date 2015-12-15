@@ -31,6 +31,7 @@ public abstract class StatusVisual extends AbstractVisual implements TemporaryVi
         this.parent = parent;
         this.behaviour = behaviour;
         setDepth( -500 );
+        setLocation( parent.x(), parent.y() + parent.height() + height() );
     }
 
     @Override
@@ -47,11 +48,13 @@ public abstract class StatusVisual extends AbstractVisual implements TemporaryVi
         color = ColorMaths.setAlpha( color, alpha );
         setColor( color );
 
-        if ( behaviour == Behaviour.FLOAT ) {
-            setLocation( parent.x(), parent.y() + FLOAT_DISTANCE * timeAlive / LIFE_TIME );
-        } else {
-            setLocation( parent.x(), parent.y() );
-        }
+        float x = parent.x();
+        float y = parent.y() + parent.height() + height();
+
+        if ( behaviour == Behaviour.FLOAT )
+            y += FLOAT_DISTANCE * timeAlive / LIFE_TIME;
+
+        setLocation( x, y );
 
         if ( timeAlive > LIFE_TIME )
             destroy();

@@ -18,9 +18,9 @@ public class TextStatus extends StatusVisual implements CustomRenderer {
     boolean started = false;
 
     public TextStatus( Visual parent, String text ) {
-        super( parent, StatusVisual.Behaviour.HOVER );
-        TextureRegion region = new TextureRegion( new Texture( "font1.png" ) );
-        font = new BitmapFont( Gdx.files.internal( "font1.fnt" ), region );
+        super( parent, Behaviour.FLOAT );
+        TextureRegion region = new TextureRegion( new Texture( "font3.png" ) );
+        font = new BitmapFont( Gdx.files.internal( "font3.fnt" ), region );
         this.text = text;
     }
 
@@ -29,7 +29,7 @@ public class TextStatus extends StatusVisual implements CustomRenderer {
         int color = getColor();
         font.getData().setScale( 0.2f );
         font.getColor().set( ColorMaths.ARGBtoRGBA( color ) );
-        font.draw( batch, text, x(), y(), 1, Align.center, false );
+        font.draw( batch, text, x() - 2, y(), 4, Align.center, false );
         return false;
     }
 
