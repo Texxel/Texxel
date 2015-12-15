@@ -37,10 +37,10 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
-    public void attack( Char enemy ) {
+    public float attack( Char enemy ) {
         System.out.println( name() + " attacked " + enemy.name() );
         spend( 1.0f );
-        enemy.damage( 3, this );
+        return enemy.damage( 3, this );
     }
 
     @Override

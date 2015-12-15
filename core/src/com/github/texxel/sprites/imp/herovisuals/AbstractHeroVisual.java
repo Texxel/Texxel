@@ -6,6 +6,14 @@ import com.github.texxel.sprites.imp.AbstractCharVisual;
 
 public abstract class AbstractHeroVisual extends AbstractCharVisual implements HeroVisual {
 
+    public AbstractHeroVisual() {
+        super();
+    }
+
+    public AbstractHeroVisual( int pixelWidth, int pixelHeight ) {
+        super( pixelWidth, pixelHeight );
+    }
+
     @Override
     protected Animation makeIdleAnimation() {
         return makeAnimation( 1, 0, Animation.PlayMode.LOOP, 0, 0, 0, 1, 0, 0, 1, 1 );

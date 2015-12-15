@@ -68,7 +68,7 @@ public class TileAssets {
     public static final TextureRegion WATER_NESW      = makeTexture( 15, 3  );
 
     private static TextureRegion makeTexture( int x, int y ) {
-        return new   TextureRegion( texture, SIZE * x, SIZE * y, SIZE, SIZE );
+        return new TextureRegion( texture, SIZE * x, SIZE * y, SIZE, SIZE );
     }
     
 }

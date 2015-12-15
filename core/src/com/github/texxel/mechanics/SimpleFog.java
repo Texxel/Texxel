@@ -3,8 +3,8 @@ package com.github.texxel.mechanics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -93,7 +93,7 @@ public class SimpleFog implements FogOfWar {
     }
 
     @Override
-    public void onDraw( SpriteBatch batch ) {
+    public boolean render( Batch batch ) {
         // FIXME very inefficient fog drawing
         if ( dirty ) {
             texture.dispose();
@@ -103,5 +103,6 @@ public class SimpleFog implements FogOfWar {
             dirty = false;
         }
         sprite.draw( batch );
+        return false;
     }
 }

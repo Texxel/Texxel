@@ -1,6 +1,6 @@
 package com.github.texxel.mechanics;
 
-import com.github.texxel.gameloop.GameBatcher;
+import com.github.texxel.sprites.api.CustomRenderer;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import java.io.Serializable;
  * co-ordinate system that is offset by half a cell from the level that it is overlaying. This is to
  * ensure that tiles that are behind solid tiles cannot be seen
  */
-public interface FogOfWar extends GameBatcher.OptimisedDrawer, Serializable {
+public interface FogOfWar extends CustomRenderer, Serializable {
 
     /**
      * The amount of cells vertically in the fog

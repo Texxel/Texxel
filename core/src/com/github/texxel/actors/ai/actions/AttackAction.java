@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.sprites.api.CharVisual;
+import com.github.texxel.sprites.imp.status.DamageStatus;
 import com.github.texxel.utils.GameTimer;
 import com.github.texxel.utils.Point2D;
 
@@ -37,7 +38,8 @@ public class AttackAction implements Action {
     public boolean update() {
         timeToFinish -= GameTimer.tickTime();
         if ( timeToFinish <= 0 ) {
-            attacker.attack( defender );
+            float damage = attacker.attack( defender );
+            defender.getVisual().attach( new DamageStatus( defender.getVisual(), damage ) );
             return true;
         } else {
             return false;

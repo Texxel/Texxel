@@ -54,8 +54,9 @@ public interface Char extends Actor, WorldVisual, Examinable {
     /**
      * Launches an attack at an enemy.
      * @param enemy the enemy to attack
+     * @return the damage done
      */
-    void attack( Char enemy );
+    float attack( Char enemy );
 
     /**
      * Does some damage to this char. The damage will be reduced by things such as armor or

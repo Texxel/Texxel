@@ -3,14 +3,38 @@ package com.github.texxel.sprites.imp;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.sprites.api.CharVisual;
+import com.github.texxel.sprites.api.TemporaryVisual;
 
-public abstract class AbstractCharVisual extends AbstractVisual implements CharVisual {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+public abstract class AbstractCharVisual extends AbstractAnimation implements CharVisual {
 
     private Animation idleAnimation = null;
     private Animation operateAnimation = null;
     private Animation walkAnimation = null;
     private Animation dieAnimation = null;
     private Animation attackAnimation = null;
+
+    private List<TemporaryVisual> attached = new ArrayList<>();
+    private List<TemporaryVisual> publicAttached = Collections.unmodifiableList( attached );
+
+    public AbstractCharVisual() {
+    }
+
+    /**
+     * Sets the width and height to size/16f. The divide by 16 is to convert the texture size into
+     * world sizes. The offsets are also set so the character will be in the middle of the cell and
+     * alligned to the pixel grid.
+     * @param pixelWidth the width of the texture in pixels
+     * @param pixelHeight the height of the texture in pixels
+     */
+    public AbstractCharVisual( int pixelWidth, int pixelHeight ) {
+        setSize( pixelWidth / 16f, pixelHeight / 16f );
+        setOffset( ( 16 - pixelWidth ) / 2 / 16f, ( 16 - pixelHeight ) / 2 / 16f );
+    }
 
     /**
      * Gets the images used to draw this Hero. This method is only called once to construct
@@ -50,8 +74,8 @@ public abstract class AbstractCharVisual extends AbstractVisual implements CharV
     }
 
     @Override
-    protected void playStartAction() {
-        play( getIdleAnimation() );
+    protected Animation getStartAnimation() {
+        return getIdleAnimation();
     }
 
     @Override
@@ -98,5 +122,26 @@ public abstract class AbstractCharVisual extends AbstractVisual implements CharV
     protected abstract Animation makeOperateAnimation();
 
     protected abstract Animation makeWalkAnimation();
+
+    @Override
+    public CharVisual attach( TemporaryVisual visual ) {
+        if ( visual == null )
+            throw new NullPointerException( "'visual' cannot be null" );
+        attached.add( visual );
+        return this;
+    }
+
+    @Override
+    public List<TemporaryVisual> attachedVisuals() {
+        // remove any destroyed visuals first
+        Iterator<TemporaryVisual> i = attached.iterator();
+        while ( i.hasNext() ) {
+            TemporaryVisual child = i.next();
+            if ( child.isDestroyed() )
+                i.remove();
+        }
+
+        return publicAttached;
+    }
 
 }

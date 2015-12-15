@@ -2,12 +2,17 @@ package com.github.texxel.gameloop;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.github.texxel.sprites.GameSprite;
+import com.badlogic.gdx.utils.NumberUtils;
+import com.github.texxel.sprites.api.CustomRenderer;
+import com.github.texxel.sprites.api.GroupVisual;
+import com.github.texxel.sprites.api.Visual;
+import com.github.texxel.utils.GameTimer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The GameBatcher is much like a SpriteBatcher but it will not flush when the texture is switched.
@@ -17,17 +22,8 @@ import java.util.Map;
  */
 public class GameBatcher {
 
-    public interface OptimisedDrawer {
-        void onDraw( SpriteBatch batch );
-    }
-
-    // TODO determine if a GameBatcher is actually faster than a SpriteBatcher
-    // game batcher is nicer to the OpenGl but makes more objects (in iteration) and stops texture
-    // garbage collection by holding them in lists.
-
-    private HashMap<Integer, HashMap<Texture, ArrayList<GameSprite>>> collections = new HashMap<>();
-    private HashMap<Integer, OptimisedDrawer> optimisedDrawers = new HashMap<>();
-    private final SpriteBatch batch;
+    private TreeMap<Integer, HashMap<Texture, ArrayList<Visual>>> collections = new TreeMap<>();
+    public final SpriteBatch batch;
     private Camera camera;
 
     public GameBatcher( Camera camera ) {
@@ -35,29 +31,27 @@ public class GameBatcher {
         batch = new SpriteBatch();
     }
 
-    public void addOptimisedDrawer( int depth, OptimisedDrawer drawer ) {
-        this.optimisedDrawers.put( depth, drawer );
-        // make sure there is an entry at the same position
-        // needed so the draw method can find the optimised drawer
-        if ( !this.collections.containsKey( depth ) )
-            collections.put( depth, null );
-    }
-
     /**
      * Adds a Visual to the batch.
-     * @param sprite the sprite to add
+     * @param visual the sprite to add
      * @throws NullPointerException if the sprite is null
      */
-    public void draw( GameSprite sprite ) {
-        int depth = sprite.getDepth();
-        HashMap<Texture, ArrayList<GameSprite>> set = collections.get( depth );
+    public void draw( Visual visual ) {
+        int depth = visual.depth();
+        HashMap<Texture, ArrayList<Visual>> set = collections.get( depth );
         if ( set == null )
             collections.put( depth, set = new HashMap<>() );
-        Texture texture = sprite.getTexture();
-        ArrayList<GameSprite> sprites = set.get( texture );
+        Texture texture = visual.getRegion().getTexture();
+        ArrayList<Visual> sprites = set.get( texture );
         if ( sprites == null )
             set.put( texture, sprites = new ArrayList<>() );
-        sprites.add( sprite );
+        sprites.add( visual );
+
+        if ( visual instanceof GroupVisual ) {
+            for ( Visual child : ( (GroupVisual) visual ).attachedVisuals() ) {
+                draw( child );
+            }
+        }
     }
 
     /**
@@ -67,26 +61,50 @@ public class GameBatcher {
      * drawn for the frame have been added.
      */
     public void flush() {
+        Batch batch = this.batch;
+        float dt = GameTimer.tickTime();
+
         batch.setProjectionMatrix( camera.combined );
 
         batch.begin();
-        for ( Map.Entry<Integer, HashMap<Texture, ArrayList<GameSprite>>> entry : collections.entrySet() ) {
-            int depth = entry.getKey();
-            OptimisedDrawer drawer = optimisedDrawers.get( depth );
-            if ( drawer != null )
-                drawer.onDraw( batch );
-
-            HashMap<Texture, ArrayList<GameSprite>> set = entry.getValue();
+        for ( HashMap<Texture, ArrayList<Visual>> set : collections.descendingMap().values() ) {
             if ( set == null )
                 continue;
-            for ( ArrayList<GameSprite> sprites : set.values() ) {
-                for ( GameSprite sprite : sprites ) {
-                    sprite.draw( batch );
+            for ( ArrayList<Visual> sprites : set.values() ) {
+                for ( Visual sprite : sprites ) {
+                    actuallyDraw( sprite, batch, dt );
                 }
                 sprites.clear();
             }
         }
         batch.end();
+    }
+
+    /**
+     * Actually draws the sprite to the batch
+     * @param visual the visual to draw
+     */
+    private void actuallyDraw( Visual visual, Batch batch, float dt ) {
+        visual.update( dt );
+
+        if ( visual instanceof CustomRenderer ) {
+            // visual can do it's own rendering
+            if ( ( (CustomRenderer) visual ).render( batch ) )
+                doDefaultDraw( visual, batch );
+        } else {
+            // do a basic drawing for the visual
+            doDefaultDraw( visual, batch );
+        }
+    }
+
+    private void doDefaultDraw( Visual visual, Batch batch ) {
+        batch.setColor( NumberUtils.intToFloatColor( visual.getColor() ) );
+        batch.draw( visual.getRegion(),
+                visual.x()+visual.xOffset(), visual.y()+visual.yOffset(),
+                visual.width()/2, visual.height()/2,
+                visual.width(), visual.height(),
+                1, 1,
+                visual.getRotation() );
     }
 
 }

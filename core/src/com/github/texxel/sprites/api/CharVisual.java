@@ -2,7 +2,7 @@ package com.github.texxel.sprites.api;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 
-public interface CharVisual extends Visual {
+public interface CharVisual extends AnimationVisual, GroupVisual {
 
     Animation getAttackAnimation();
 

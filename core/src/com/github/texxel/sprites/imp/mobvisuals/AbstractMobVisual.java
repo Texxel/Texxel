@@ -5,4 +5,11 @@ import com.github.texxel.sprites.imp.AbstractCharVisual;
 
 public abstract class AbstractMobVisual extends AbstractCharVisual implements MobVisual {
 
+    public AbstractMobVisual() {
+        super();
+    }
+
+    public AbstractMobVisual( int pixelWidth, int pixelHeight ) {
+        super( pixelWidth, pixelHeight );
+    }
 }

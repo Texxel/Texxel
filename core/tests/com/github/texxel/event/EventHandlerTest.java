@@ -1,26 +1,11 @@
 package com.github.texxel.event;
 
-import com.github.texxel.saving.Bundlable;
-import com.github.texxel.saving.Bundle;
-import com.github.texxel.saving.BundleGroup;
-import com.github.texxel.saving.Constructor;
-import com.github.texxel.saving.ConstructorRegistry;
-
 import junit.framework.TestCase;
 
 public class EventHandlerTest extends TestCase {
 
-    private static class TestListener implements Listener, Bundlable {
-
-        private static final Constructor<TestListener> constructor = new Constructor<TestListener>() {
-            @Override
-            public TestListener newInstance( Bundle bundle ) {
-                return new TestListener( bundle.getString( "id" ) );
-            }
-        };
-        static {
-            ConstructorRegistry.put( TestListener.class, constructor );
-        }
+    private static class TestListener implements Listener {
+        private static final long serialVersionUID = -6383987784609461608L;
 
         public final String id;
         public TestListener( String id ) {
@@ -30,17 +15,6 @@ public class EventHandlerTest extends TestCase {
         public boolean onCall() {
             testString = testString + id;
             return false;
-        }
-
-        @Override
-        public Bundle bundle( BundleGroup topLevel ) {
-            Bundle bundle = topLevel.newBundle();
-            bundle.putString( "id", id );
-            return bundle;
-        }
-
-        @Override
-        public void restore( Bundle bundle ) {
         }
     }
 
@@ -52,33 +26,6 @@ public class EventHandlerTest extends TestCase {
     }
 
     private static String testString = "";
-
-    public void testSaveRestore() throws Exception {
-
-        EventHandler<TestListener> in = new EventHandler<>();
-        in.addListener( new TestListener( "A5" ), 5 );
-        in.addListener( new TestListener( "B4" ), 4 );
-        in.addListener( new TestListener( "A3" ), 3 );
-        in.addListener( new TestListener( "B2" ), 2 );
-        in.addListener( new TestListener( "A0" ), 0 );
-        in.addListener( new TestListener( "B-10" ), -10 );
-
-        BundleGroup group = BundleGroup.newGroup();
-        group.putBundlable( "handler", in );
-
-        testString = "";
-        in.dispatch( new TestEvent() );
-        String inResult = testString;
-
-        group = BundleGroup.loadGroup( group.toString() );
-
-        EventHandler<TestListener> out = group.getBundlable( "handler" );
-        testString = "";
-        out.dispatch( new TestEvent() );
-        String outResult = testString;
-
-        assertEquals( inResult, outResult );
-    }
 
     public void testAddListener() throws Exception {
         EventHandler<TestListener> handler = new EventHandler<>();

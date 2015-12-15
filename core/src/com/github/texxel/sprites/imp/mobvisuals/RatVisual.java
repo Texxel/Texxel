@@ -8,6 +8,10 @@ public class RatVisual extends AbstractMobVisual {
 
     private static TextureRegion[][] frames = TextureRegion.split( new Texture( "rat.png" ), 16, 15 );
 
+    public RatVisual() {
+        super( 16, 15 );
+    }
+
     @Override
     protected TextureRegion[][] frames() {
         return frames;
