@@ -63,7 +63,6 @@ public class LevelRenderer implements GameRenderer {
         }
     }
 
-    private final OrthographicCamera camera;
     private final GameBatcher batch;
     private final Visual[] specialVisuals;
 
@@ -71,13 +70,6 @@ public class LevelRenderer implements GameRenderer {
     FogOfWar fog;
 
     public LevelRenderer( OrthographicCamera camera ) {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-        this.camera = camera;
-        camera.setToOrtho( false, 20, 20 * h / w );
-        camera.position.set( 6, 6, 0 );
-        camera.update();
-
         batch = new GameBatcher( camera );
 
         specialVisuals = new Visual[] {
@@ -117,12 +109,6 @@ public class LevelRenderer implements GameRenderer {
             batch.draw( visual );
 
         batch.flush();
-    }
-
-    @Override
-    public void resize( int width, int height ) {
-        camera.viewportHeight = camera.viewportWidth * height / width;
-        camera.update();
     }
 
 }

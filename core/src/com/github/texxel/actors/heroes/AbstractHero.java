@@ -1,21 +1,14 @@
 package com.github.texxel.actors.heroes;
 
 import com.github.texxel.actors.AbstractChar;
-import com.github.texxel.actors.Char;
-import com.github.texxel.actors.ai.brains.HeroHuntAI;
 import com.github.texxel.actors.ai.brains.HeroIdleAI;
-import com.github.texxel.actors.ai.brains.HeroInteractAI;
-import com.github.texxel.actors.ai.brains.HeroMoveAI;
 import com.github.texxel.actors.ai.sensors.HeroDangerSensor;
 import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.events.input.CellSelectedEvent;
-import com.github.texxel.event.listeners.input.CellSelectedListener;
 import com.github.texxel.event.listeners.level.TileSetListener;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FieldOfVision;
 import com.github.texxel.mechanics.FogOfWar;
-import com.github.texxel.tiles.Interactable;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.utils.ColorMaths;
 import com.github.texxel.utils.Point2D;
@@ -24,35 +17,9 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
 
     private static final long serialVersionUID = -1893036218210928887L;
 
-    private class Listener implements CellSelectedListener, TileSetListener {
+    private class Listener implements TileSetListener {
 
         private static final long serialVersionUID = 8094447892497757267L;
-
-        @Override
-        public void onCellSelected( CellSelectedEvent e ) {
-            if ( e.isCancelled() )
-                return;
-            int x = e.getX();
-            int y = e.getY();
-            Level level = e.getLevel();
-            for ( Char c : level.getCharacters()) {
-                if ( c.isOver( x, y ) ) {
-                    setBrain( new HeroHuntAI( AbstractHero.this, c ) );
-                    return;
-                }
-            }
-            if ( x >= 0 && x < level.width() && y >= 0 && y < level.height()  ) {
-                System.out.println( "Hello" );
-                Tile tile = level.getTileMap().getTile( x, y );
-                if ( tile instanceof Interactable ) {
-                    System.out.println( "Interact" );
-                    setBrain( new HeroInteractAI( AbstractHero.this, new Point2D( x, y ) ) );
-                } else {
-                    setBrain( new HeroMoveAI( AbstractHero.this, new Point2D( x, y ) ) );
-                }
-            }
-            updateFog();
-        }
 
         @Override
         public boolean onTileSet( TileMap tileMap, Tile tile, int x, int y ) {
@@ -67,7 +34,6 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         setBrain( new HeroIdleAI( this ) );
         addSensor( new HeroDangerSensor( this ) );
         Listener listener = new Listener();
-        level.getCellSelectHandler().addListener( listener, EventHandler.LATE );
         level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
     }
 

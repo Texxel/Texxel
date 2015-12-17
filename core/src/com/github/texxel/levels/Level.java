@@ -6,7 +6,6 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.actor.ActorDestroyListener;
 import com.github.texxel.event.listeners.actor.ActorSpawnListener;
-import com.github.texxel.event.listeners.input.CellSelectedListener;
 import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
 import com.github.texxel.items.Heap;
@@ -133,21 +132,12 @@ public interface Level extends Serializable {
      * collected</b>. Any instances that hold a reference to a level must listen to this event and
      * null/switch the reference out on this event (unless the only references to that instance by
      * the level). Failure to remove references could very quickly result in a stack overflow error!
-     * Pay very careful attention to this when using static references or persistent event handlers
-     * (e.g. the {@link com.github.texxel.ui.InputHandler}).It is the responsibility of
-     * implementations of Level to fire the event.
+     * Pay very careful attention to this when using static references or persistent event handlers.
+     * It is the responsibility of implementations of Level to fire the event.
      * @return a EventHandler
      */
     // TODO make it harder to keep a level alive
     EventHandler<LevelDestructionListener> getDestructionHandler();
-
-    /**
-     * Gets the EventHandler that will fire a CellSelectedEvent whenever the user touches a cell.
-     * It is <b>not</b> the responsibility for implementations of Level to handle firing of selection
-     * events (that's done by the rendering/user input classes)
-     * @return a EventHandler
-     */
-    EventHandler<CellSelectedListener> getCellSelectHandler();
 
     /**
      * A call to destroy the level. This should only need to be called by the core framework.

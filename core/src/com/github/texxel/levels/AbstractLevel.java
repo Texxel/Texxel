@@ -12,7 +12,6 @@ import com.github.texxel.event.events.actor.ActorSpawnEvent;
 import com.github.texxel.event.events.level.LevelDestructionEvent;
 import com.github.texxel.event.listeners.actor.ActorDestroyListener;
 import com.github.texxel.event.listeners.actor.ActorSpawnListener;
-import com.github.texxel.event.listeners.input.CellSelectedListener;
 import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
 import com.github.texxel.items.Heap;
@@ -23,7 +22,6 @@ import com.github.texxel.mechanics.FogOfWar;
 import com.github.texxel.mechanics.SimpleFog;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.tiles.WallTile;
-import com.github.texxel.ui.ExamineMaker;
 import com.github.texxel.utils.Point2D;
 import com.github.texxel.utils.Random;
 
@@ -47,7 +45,6 @@ public abstract class AbstractLevel implements Level {
     private final EventHandler<ActorDestroyListener> actorDestroyHandler = new EventHandler<>();
     private final EventHandler<LevelDestructionListener> levelDestructionHandler = new EventHandler<>();
     private final EventHandler<ItemDropListener> itemDropHandler = new EventHandler<>();
-    private final EventHandler<CellSelectedListener> cellSelectedHandler = new EventHandler<>();
 
     private final Dungeon dungeon;
     private final int id;
@@ -68,7 +65,6 @@ public abstract class AbstractLevel implements Level {
         };
         this.tileMap = new TileMap( width, height, filler );
         this.fog = new SimpleFog( width, height );
-        cellSelectedHandler.addListener( new ExamineMaker(), EventHandler.NORMAL );
     }
 
     @Override
@@ -203,11 +199,6 @@ public abstract class AbstractLevel implements Level {
     @Override
     public EventHandler<LevelDestructionListener> getDestructionHandler() {
         return levelDestructionHandler;
-    }
-
-    @Override
-    public EventHandler<CellSelectedListener> getCellSelectHandler() {
-        return cellSelectedHandler;
     }
 
     @Override

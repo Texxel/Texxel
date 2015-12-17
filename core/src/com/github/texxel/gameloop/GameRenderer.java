@@ -6,6 +6,4 @@ public interface GameRenderer {
 
     void render( Level level );
 
-    void resize( int width, int height );
-
 }

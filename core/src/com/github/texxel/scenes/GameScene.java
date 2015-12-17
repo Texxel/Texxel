@@ -4,14 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.texxel.Dungeon;
-import com.github.texxel.gameloop.GameInput;
+import com.github.texxel.actors.Char;
+import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.gameloop.GameRenderer;
 import com.github.texxel.gameloop.GameUpdater;
-import com.github.texxel.gameloop.LevelInput;
 import com.github.texxel.gameloop.LevelRenderer;
 import com.github.texxel.gameloop.LevelUpdater;
 import com.github.texxel.levels.Level;
+import com.github.texxel.ui.CameraControl;
+import com.github.texxel.ui.HeroControl;
+import com.github.texxel.ui.HeroFollower;
+import com.github.texxel.ui.StatusPane;
 import com.github.texxel.utils.GameTimer;
 
 import java.io.BufferedOutputStream;
@@ -24,34 +30,98 @@ public class GameScene implements Screen {
     private final Level level;
     private GameUpdater updater;
     private GameRenderer renderer;
-    private GameInput input;
+    private Hero player;
+    private OrthographicCamera gameCamera;
+
+    private Stage ui;
+    private ScreenViewport viewport;
+
 
     public GameScene( Dungeon dungeon, Level level ) {
         this.dungeon = dungeon;
+        System.out.println( level.id() );
         this.level = level;
+
+        // super hacky method to find hero
+        for ( Char c : level.getCharacters() ) {
+            if ( c instanceof Hero ) {
+                setPlayer( (Hero)c );
+                break;
+            }
+        }
+        assert getPlayer() != null;
     }
 
     @Override
     public void show() {
-        updater = new LevelUpdater();
-        OrthographicCamera camera = new OrthographicCamera();
-        renderer = new LevelRenderer( camera );
-        input = new LevelInput( camera );
 
-        Gdx.input.setOnscreenKeyboardVisible( false );
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+        float aspectRatio = h / w;
+
+        // set up the world
+        OrthographicCamera gameCamera = this.gameCamera = new OrthographicCamera();
+        gameCamera.setToOrtho( false, 34, 34 * aspectRatio );
+        gameCamera.position.set( 17, 17, 0 );
+        gameCamera.update();
+
+        updater = new LevelUpdater();
+        renderer = new LevelRenderer( gameCamera );
+
+
+        // Set up the ui
+        viewport = new ScreenViewport();
+        ui = new Stage( viewport );
+        Gdx.input.setInputProcessor( ui );
+
+        ui.addListener( new HeroControl( this ) );
+        ui.addListener( new CameraControl( gameCamera, ui.getCamera() ) );
+        ui.addActor( new HeroFollower( this ) );
+
+        ui.addActor( new StatusPane( this ) );
     }
 
     @Override
     public void render( float delta ) {
         GameTimer.update();
-        input.process( level );
+
+        Gdx.gl.glViewport( 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() );
         updater.update( level );
         renderer.render( level );
+
+        ui.getViewport().apply();
+        ui.act( delta );
+        ui.draw();
+    }
+
+    public Stage getUserInterface() {
+        return ui;
+    }
+
+    public Hero getPlayer() {
+        return player;
+    }
+
+    public void setPlayer( Hero player ) {
+        if ( player == null )
+            throw new NullPointerException( "'player' cannot be null" );
+        this.player = player;
+    }
+
+    public OrthographicCamera getGameCamera() {
+        return gameCamera;
     }
 
     @Override
     public void resize( int width, int height ) {
-        renderer.resize( width, height );
+        gameCamera.viewportHeight = gameCamera.viewportWidth * height / width;
+        gameCamera.update();
+
+        // set the viewport so there are 100 units along the smallest axis
+        float unitPerPixels = 10f / Math.min( width, height );
+        viewport.setUnitsPerPixel( unitPerPixels );
+        viewport.update( width, height, true );
+        System.out.println( unitPerPixels );
     }
 
     @Override
@@ -60,12 +130,11 @@ public class GameScene implements Screen {
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-        input.onDestroy();
+        ui.dispose();
         ObjectOutputStream oos = null;
         try {
             dungeon.save();
