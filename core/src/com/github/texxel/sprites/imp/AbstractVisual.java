@@ -10,6 +10,7 @@ public abstract class AbstractVisual implements Visual {
     private int depth;
     private float width = 1, height = 1;
     private float xOffset, yOffset;
+    private float xScale = 1, yScale = 1;
     private Point2D direction = Point2D.RIGHT;
     private float rotation;
     private int color = Color.WHITE.toIntBits();
@@ -57,6 +58,23 @@ public abstract class AbstractVisual implements Visual {
         this.width = width;
         this.height = height;
         return this;
+    }
+
+    @Override
+    public Visual setScale( float x, float y ) {
+        xScale = x;
+        yScale = y;
+        return this;
+    }
+
+    @Override
+    public float yScale() {
+        return yScale;
+    }
+
+    @Override
+    public float xScale() {
+        return xScale;
     }
 
     @Override

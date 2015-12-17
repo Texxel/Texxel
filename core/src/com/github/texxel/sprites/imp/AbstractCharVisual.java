@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.sprites.api.TemporaryVisual;
+import com.github.texxel.sprites.api.Visual;
+import com.github.texxel.utils.Point2D;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,4 +146,26 @@ public abstract class AbstractCharVisual extends AbstractAnimation implements Ch
         return publicAttached;
     }
 
+    @Override
+    public Visual setDirection( Point2D dir ) {
+        Point2D old = getDirection();
+        super.setDirection( dir );
+        doFacingDirection( old, dir );
+        return this;
+    }
+
+    /**
+     * Faces the sprite in the correction direction. By default, this will alter the sign of the
+     * xScale when the character changes x direction.
+     * @param oldDirection the direction the sprite was facing
+     * @param newDirection the direction the sprite is facing now
+     */
+    protected void doFacingDirection( Point2D oldDirection, Point2D newDirection ) {
+        int pre = Integer.signum( oldDirection.x );
+        int now = Integer.signum( newDirection.x );
+        if ( pre != now && now != 0 ) {
+            float scale = now * Math.abs( xScale() );
+            setScale( scale, yScale() );
+        }
+    }
 }

@@ -103,7 +103,7 @@ public class GameBatcher {
                 visual.x()+visual.xOffset(), visual.y()+visual.yOffset(),
                 visual.width()/2, visual.height()/2,
                 visual.width(), visual.height(),
-                1, 1,
+                visual.xScale(), visual.yScale(),
                 visual.getRotation() );
     }
 

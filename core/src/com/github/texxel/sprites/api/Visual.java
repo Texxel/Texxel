@@ -79,6 +79,26 @@ public interface Visual {
     Visual setSize( float width, float height );
 
     /**
+     * The images x scale
+     * @return the images x scale
+     */
+    float xScale();
+
+    /**
+     * The images y scale
+     * @return the images y scale
+     */
+    float yScale();
+
+    /**
+     * Sets the x and y scale.
+     * @param x the x scale
+     * @param y the y scale
+     * @return this
+     */
+    Visual setScale( float x, float y );
+
+    /**
      * Gets the offset that the image will be drawn at
      * @return the x offset
      */
@@ -99,7 +119,9 @@ public interface Visual {
     Visual setOffset( float x, float y );
 
     /**
-     * Sets the direction that the visual is facing (y positive is up)
+     * Sets the direction that the visual is facing (y positive is up). It is undefined what this
+     * actually does, but different visuals can use it for different purposes. Texxel uses this
+     * to flip the CharVisuals by modifying the xScale.
      * @param dir the direction to face
      * @return this
      * @throws NullPointerException if dir is null
@@ -108,7 +130,7 @@ public interface Visual {
 
     /**
      * Gets the direction the visual is facing (positive y is up). The returned point does not
-     * need to be a "unit vector"
+     * need to be a "unit vector". See {@link #setDirection(Point2D)} for more info.
      * @return the visuals direction (never null)
      */
     Point2D getDirection();
