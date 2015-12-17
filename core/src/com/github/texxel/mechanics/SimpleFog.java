@@ -1,10 +1,10 @@
 package com.github.texxel.mechanics;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,14 +48,19 @@ public class SimpleFog implements FogOfWar {
             textureHeight <<= 1;
 
         pixmap = new Pixmap( textureWidth, textureHeight, Pixmap.Format.RGBA8888 );
-        pixmap.setColor( Color.BLACK );
+        Pixmap.setBlending( Pixmap.Blending.None );
+        pixmap.setColor( 0, 0, 0, 0 );
         pixmap.fill();
+        Pixmap.setBlending( Pixmap.Blending.SourceOver );
+
+        texture = new Texture( pixmap );
 
         sprite = new Sprite( texture = new Texture( pixmap ));
         sprite.setPosition( -0.5f, -0.5f );
         System.out.println( "texture height: " + textureHeight );
         // must flip the y axis because drawn texture uses the opposite y axis convention
         sprite.setScale( 1, -1 );
+        sprite.setTexture( texture );
 
         dirty = true;
     }
@@ -94,12 +99,9 @@ public class SimpleFog implements FogOfWar {
 
     @Override
     public boolean render( Batch batch ) {
-        // FIXME very inefficient fog drawing
         if ( dirty ) {
-            texture.dispose();
-            texture = new Texture( pixmap );
+            texture.load( new PixmapTextureData( pixmap, pixmap.getFormat(), false, false ) );
             texture.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
-            sprite.setTexture( texture );
             dirty = false;
         }
         sprite.draw( batch );
