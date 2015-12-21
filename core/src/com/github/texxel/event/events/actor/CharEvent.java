@@ -5,15 +5,20 @@ import com.github.texxel.event.Listener;
 
 public abstract class CharEvent<T extends Listener> extends ActorEvent<T> {
 
-    protected Char character;
-
     public CharEvent( Char character ) {
         super( character );
-        this.character = character;
     }
 
     @Override
     public Char getActor() {
+        return (Char)super.getActor();
+    }
+
+    /**
+     * The exact same as {@link #getActor()} but with a better name
+     * @return the character of this event
+     */
+    public Char getCharacter() {
         return (Char)super.getActor();
     }
 }

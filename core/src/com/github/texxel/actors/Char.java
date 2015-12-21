@@ -1,6 +1,7 @@
 package com.github.texxel.actors;
 
 import com.github.texxel.event.EventHandler;
+import com.github.texxel.event.listeners.actor.CharDamagedListener;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
 import com.github.texxel.mechanics.FieldOfVision;
 import com.github.texxel.sprites.api.CharVisual;
@@ -60,9 +61,10 @@ public interface Char extends Actor, WorldVisual, Examinable {
 
     /**
      * Does some damage to this char. The damage will be reduced by things such as armor or
-     * resistances
+     * resistances. The damage can be altered/cancelled through {@link #getDamageHandler()}
      * @param damage the damage to do
-     * @param source the source of the damage
+     * @param source the source of the damage (may be null for no source)
+     * @return the damage done. 0 if it was cancelled
      */
     float damage( float damage, Object source );
 
@@ -84,20 +86,16 @@ public interface Char extends Actor, WorldVisual, Examinable {
     CharVisual getVisual();
 
     /**
-     * EventHandler that fires events whenever {@link #setLocation(Point2D)} is called
-     */
-    EventHandler<CharMoveListener> getMoveHandler();
-
-    /**
      * Gets the character's current health
      * @return the chars health
      */
     float getHealth();
 
     /**
-     * Directly sets the characters health. If the health is <= 0, then the char will be killed
+     * Directly sets the characters health. If the health is <= 0, then the char will be killed. If
+     * the health is greater than the maximum health, then the character will be set to maximum
+     * health. This method bypasses damage listeners sop careful use is advised.
      * @param health the chars new health
-     * @throws IllegalArgumentException if health is greater than the max health
      */
     void setHealth( float health );
 
@@ -122,5 +120,15 @@ public interface Char extends Actor, WorldVisual, Examinable {
      * @return true if the character is dead
      */
     boolean isDead();
+
+    /**
+     * EventHandler that fires events whenever {@link #setLocation(Point2D)} is called
+     */
+    EventHandler<CharMoveListener> getMoveHandler();
+
+    /**
+     * EventHandler that fires events whenever {@link #damage(float, Object)} is called
+     */
+    EventHandler<CharDamagedListener> getDamageHandler();
 
 }

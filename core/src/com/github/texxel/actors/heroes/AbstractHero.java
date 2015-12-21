@@ -2,6 +2,7 @@ package com.github.texxel.actors.heroes;
 
 import com.github.texxel.actors.AbstractChar;
 import com.github.texxel.actors.ai.goals.HeroIdleGoal;
+import com.github.texxel.actors.ai.sensors.HeroDamageSensor;
 import com.github.texxel.actors.ai.sensors.HeroDangerSensor;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.level.TileSetListener;
@@ -42,8 +43,9 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         updateFog();
         setGoal( new HeroIdleGoal( this ) );
         addSensor( new HeroDangerSensor( this ) );
+        addSensor( new HeroDamageSensor( this ) );
         Listener listener = new Listener();
-        level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
+        level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.TEXXEL_LISTEN );
 
         backPack = new BackPack( 12 );
         List<Slot> slots = backPack.getContents();

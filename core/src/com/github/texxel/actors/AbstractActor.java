@@ -60,7 +60,10 @@ public abstract class AbstractActor implements Actor {
 
     @Override
     public void addSensor( Sensor sensor ) {
+        if ( sensor == null )
+            throw new NullPointerException( "'sensor' cannot be null" );
         sensors.add( sensor );
+        sensor.onStart();
     }
 
     @Override

@@ -3,7 +3,9 @@ package com.github.texxel.actors;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.actors.ai.goals.CharDieGoal;
 import com.github.texxel.event.EventHandler;
+import com.github.texxel.event.events.actor.CharDamagedEvent;
 import com.github.texxel.event.events.actor.CharMoveEvent;
+import com.github.texxel.event.listeners.actor.CharDamagedListener;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
 import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.BasicFOV;
@@ -18,6 +20,7 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     private Point2D location;
     private FieldOfVision fov;
     private final EventHandler<CharMoveListener> moveHandler = new EventHandler<>();
+    private final EventHandler<CharDamagedListener> damageHandler = new EventHandler<>();
 
     /**
      * Constructs the char at the spawn point
@@ -81,17 +84,19 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
-    public EventHandler<CharMoveListener> getMoveHandler() {
-        return moveHandler;
-    }
-
-    @Override
     public Animation getLogo() {
         return getVisual().getIdleAnimation();
     }
 
     @Override
     public float damage( float damage, Object source ) {
+        System.out.println( "Damaged" );
+        CharDamagedEvent e = new CharDamagedEvent( this, source, damage );
+        damageHandler.dispatch( e );
+        if ( e.isCancelled() )
+            return 0;
+        else
+            damage = e.getDamage();
         setHealth( getHealth() - damage );
         return damage;
     }
@@ -99,7 +104,7 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     @Override
     public void setMaxHealth( float health ) {
         if ( health <= 0 )
-            throw new IllegalArgumentException( "'health' cannot be smaller than 0" );
+            throw new IllegalArgumentException( "'health' cannot be smaller or equal to 0" );
         if ( this.health > health )
             this.health = health;
         this.maxHealth = health;
@@ -108,7 +113,7 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     @Override
     public void setHealth( float health ) {
         if ( health > maxHealth )
-            throw new IllegalArgumentException( "'health' cannot be greater than max health" );
+            health = maxHealth;
         this.health = health;
         if ( health <= 0 )
             die();
@@ -136,5 +141,15 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     @Override
     public boolean isOver( int x, int y ) {
         return location.equals( x, y );
+    }
+
+    @Override
+    public EventHandler<CharMoveListener> getMoveHandler() {
+        return moveHandler;
+    }
+
+    @Override
+    public EventHandler<CharDamagedListener> getDamageHandler() {
+        return damageHandler;
     }
 }
