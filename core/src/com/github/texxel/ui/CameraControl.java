@@ -10,6 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
+/**
+ * The Camera control is what lets the user drag/zoom the camera around the screen
+ */
 public class CameraControl extends GestureDetector.GestureAdapter implements EventListener {
 
     private final OrthographicCamera gameCamera;

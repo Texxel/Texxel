@@ -6,6 +6,10 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.scenes.GameScene;
 import com.github.texxel.sprites.api.Visual;
 
+/**
+ * The HeroFollower positions the camera over the hero whenever his sprite moves. If the sprite
+ * never moves, then this class will do nothing letting the camera be panned around.
+ */
 public class HeroFollower extends Actor {
 
     private final GameScene scene;

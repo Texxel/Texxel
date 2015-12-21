@@ -17,6 +17,11 @@ import com.github.texxel.levels.Level;
 import com.github.texxel.scenes.GameScene;
 import com.github.texxel.utils.Point2D;
 
+/**
+ * The HeroControl class lets the user interact with the hero. It listens to where the user taps the
+ * screen and tells the Hero to venture there. It also listens in for keyboard input. It has logic
+ * to make the hero pick up items, interact with tiles, and attack enemies.
+ */
 public class HeroControl extends InputListener {
 
     private final GameScene game;
@@ -51,7 +56,7 @@ public class HeroControl extends InputListener {
 
         // make sure the finger wasn't moved very far
         float distance = touchDown.dst2( x, y );
-        // TODO remove hardcoded cell selection
+        // TODO remove hardcoded cell selection distance
         if ( distance < 0.1f*0.1f ) {
             // in worlds coords
             vec3.set( x, y, 0 );

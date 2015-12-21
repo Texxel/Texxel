@@ -9,6 +9,10 @@ import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.scenes.GameScene;
 import com.github.texxel.sprites.api.HeroVisual;
 
+/**
+ * The Status panel is the panel that sits at the top of the screen. It consists of the little hero
+ * avatar, health bar, xp level, current depth, and the amount of keys in the backpack.
+ */
 public class StatusPane extends Table {
 
     public static final Texture texture = new Texture( "status_pane.png" );
@@ -18,6 +22,10 @@ public class StatusPane extends Table {
 
     private static final float HEIGHT = 3;
 
+    /**
+     * Constructs a Status panel about the hero in the given game scene
+     * @param scene the scene to get info about the hero from
+     */
     public StatusPane( GameScene scene ) {
         setFillParent( true );
         top();
