@@ -8,16 +8,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.github.texxel.actors.Char;
-import com.github.texxel.actors.ai.brains.HeroHuntAI;
-import com.github.texxel.actors.ai.brains.HeroInteractAI;
-import com.github.texxel.actors.ai.brains.HeroMoveAI;
-import com.github.texxel.actors.ai.brains.HeroPickUpAI;
+import com.github.texxel.actors.ai.goals.HeroHuntGoal;
+import com.github.texxel.actors.ai.goals.HeroInteractGoal;
+import com.github.texxel.actors.ai.goals.HeroPickUpGoal;
 import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.items.Heap;
 import com.github.texxel.levels.Level;
 import com.github.texxel.scenes.GameScene;
-import com.github.texxel.tiles.Interactable;
-import com.github.texxel.tiles.Tile;
 import com.github.texxel.utils.Point2D;
 
 public class HeroControl extends InputListener {
@@ -97,7 +94,7 @@ public class HeroControl extends InputListener {
 
         for ( Char c : level.getCharacters()) {
             if ( c != hero && c.isOver( x, y ) ) {
-                hero.setBrain( new HeroHuntAI( hero, c ) );
+                hero.setGoal( new HeroHuntGoal( hero, c ) );
                 return;
             }
         }
@@ -105,17 +102,12 @@ public class HeroControl extends InputListener {
         Point2D location = new Point2D( x, y );
         Heap heap = level.getHeaps().get( location );
         if ( heap != null ) {
-            hero.setBrain( new HeroPickUpAI( hero, heap, location ) );
+            hero.setGoal( new HeroPickUpGoal( hero, location ) );
             return;
         }
 
         if ( x >= 0 && x < level.width() && y >= 0 && y < level.height() ) {
-            Tile tile = level.getTileMap().getTile( x, y );
-            if ( tile instanceof Interactable ) {
-                hero.setBrain( new HeroInteractAI( hero, new Point2D( x, y ) ) );
-            } else {
-                hero.setBrain( new HeroMoveAI( hero, new Point2D( x, y ) ) );
-            }
+            hero.setGoal( new HeroInteractGoal( hero, new Point2D( x, y ) ) );
         }
     }
 

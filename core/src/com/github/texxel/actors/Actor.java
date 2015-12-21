@@ -1,6 +1,5 @@
 package com.github.texxel.actors;
 
-import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
@@ -48,18 +47,6 @@ public interface Actor extends Serializable {
     void setGoal( Goal goal );
 
     /**
-     * Gets the brain of this actor
-     * @return the actors brain
-     */
-    Brain getBrain();
-
-    /**
-     * Sets this actors AI
-     * @param brain the actors ai
-     */
-    void setBrain( Brain brain );
-
-    /**
      * Adds a sensor to the actor
      * @param sensor the sensor to add
      * @throws NullPointerException if sensor is null
@@ -78,12 +65,14 @@ public interface Actor extends Serializable {
      */
     void remove( Sensor sensor );
 
+    // TODO remove need isUserControlled function
     /**
      * Tests if the character is controlled by the user. This is only used to determine when to
      * break from the main update loop. Only the Hero should return true.
-     * TODO remove need isUserControlled function
      * @return if the character is user controlled
+     * @deprecated here due to an implementation detail in LevelRenderer and will be removed in the future
      */
+    @Deprecated
     boolean isUserControlled();
 
     /**

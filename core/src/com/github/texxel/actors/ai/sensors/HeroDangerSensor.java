@@ -1,7 +1,7 @@
 package com.github.texxel.actors.ai.sensors;
 
 import com.github.texxel.actors.Char;
-import com.github.texxel.actors.ai.brains.HeroIdleAI;
+import com.github.texxel.actors.ai.goals.HeroIdleGoal;
 import com.github.texxel.utils.Point2D;
 
 /**
@@ -19,7 +19,7 @@ public class HeroDangerSensor extends AbstractEnemySensor {
 
     @Override
     protected void onEnemySeen( Char enemy ) {
-        character.setBrain( new HeroIdleAI( character ) );
+        character.setGoal( new HeroIdleGoal( character ) );
     }
 
     @Override

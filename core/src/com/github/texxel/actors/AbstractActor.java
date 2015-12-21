@@ -1,6 +1,5 @@
 package com.github.texxel.actors;
 
-import com.github.texxel.actors.ai.Brain;
 import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
@@ -14,7 +13,6 @@ public abstract class AbstractActor implements Actor {
     private static final long serialVersionUID = 4744979006380058760L;
 
     private float time;
-    private Brain brain;
     private Goal goal;
     private final List<Sensor> sensors = new ArrayList<>();
     private final List<Sensor> unmodifiableSensors = Collections.unmodifiableList( sensors );
@@ -58,18 +56,6 @@ public abstract class AbstractActor implements Actor {
         if ( goal == null )
             throw new NullPointerException( "'goal' cannot be null" );
         this.goal = goal;
-    }
-
-    @Override
-    public Brain getBrain() {
-        return brain;
-    }
-
-    @Override
-    public void setBrain( Brain brain ) {
-        if ( brain == null )
-            throw new NullPointerException( "'brain' cannot be null" );
-        this.brain = brain;
     }
 
     @Override

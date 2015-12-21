@@ -10,19 +10,20 @@ import java.io.Serializable;
 public interface Goal extends Serializable {
 
     /**
-     * Called when an Actor has the state attached to it
+     * Called when an Actor has the state attached to it. This should be used to perform any start
+     * up actions
      */
     void onStart();
 
     /**
      * Decides on the next action to perform. This does not set the actors current action but simply
      * states what it should be.
-     * @return the next action. Should never be null
+     * @return the actor's next action. Should never be null
      */
     Action nextAction();
 
     /**
-     * Called this state is removed from the action
+     * Called when this state is removed from the actor
      */
     void onRemove();
 

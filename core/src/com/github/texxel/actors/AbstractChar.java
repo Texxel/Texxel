@@ -1,7 +1,7 @@
 package com.github.texxel.actors;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.github.texxel.actors.ai.brains.CharDieAI;
+import com.github.texxel.actors.ai.goals.CharDieGoal;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.events.actor.CharMoveEvent;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
@@ -115,7 +115,7 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     private void die() {
-        setBrain( new CharDieAI( this ) );
+        setGoal( new CharDieGoal( this ) );
     }
 
     @Override

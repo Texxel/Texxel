@@ -38,7 +38,6 @@ public class LevelUpdater implements GameUpdater {
             sensors.get( i ).update();
 
         // update the actors actions
-        actor.getBrain().update();
         currentAction = actor.getGoal().nextAction();
         currentAction.onStart();
         actionFinished = false;

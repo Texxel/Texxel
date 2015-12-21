@@ -1,7 +1,6 @@
 package com.github.texxel.actors.ai.actions;
 
 import com.github.texxel.actors.ai.Action;
-import com.github.texxel.actors.ai.brains.HeroIdleAI;
 import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.items.Heap;
 import com.github.texxel.items.ItemStack;
@@ -34,10 +33,8 @@ public class PickUpAction implements Action {
     @Override
     public boolean update() {
         ItemStack stack = heap.topItem();
-        if ( hero.getInventory().collect( stack ) ) {
+        if ( hero.getInventory().collect( stack ) )
             heap.remove( stack );
-        }
-        hero.setBrain( new HeroIdleAI( hero ) );
         return true;
     }
 
@@ -53,6 +50,5 @@ public class PickUpAction implements Action {
 
     @Override
     public void forceFinish() {
-        hero.setBrain( new HeroIdleAI( hero ) );
     }
 }

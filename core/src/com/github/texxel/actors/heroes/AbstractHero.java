@@ -1,7 +1,7 @@
 package com.github.texxel.actors.heroes;
 
 import com.github.texxel.actors.AbstractChar;
-import com.github.texxel.actors.ai.brains.HeroIdleAI;
+import com.github.texxel.actors.ai.goals.HeroIdleGoal;
 import com.github.texxel.actors.ai.sensors.HeroDangerSensor;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.level.TileSetListener;
@@ -40,7 +40,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     public AbstractHero( Level level, Point2D spawn ) {
         super( level, spawn, 100 );
         updateFog();
-        setBrain( new HeroIdleAI( this ) );
+        setGoal( new HeroIdleGoal( this ) );
         addSensor( new HeroDangerSensor( this ) );
         Listener listener = new Listener();
         level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
