@@ -14,8 +14,10 @@ import com.github.texxel.event.listeners.actor.ActorDestroyListener;
 import com.github.texxel.event.listeners.actor.ActorSpawnListener;
 import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
+import com.github.texxel.items.Gold;
 import com.github.texxel.items.Heap;
-import com.github.texxel.items.Item;
+import com.github.texxel.items.ItemStack;
+import com.github.texxel.items.weapons.Sword;
 import com.github.texxel.levels.components.TileFiller;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FogOfWar;
@@ -27,7 +29,10 @@ import com.github.texxel.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractLevel implements Level {
 
@@ -35,11 +40,11 @@ public abstract class AbstractLevel implements Level {
 
     private final ArrayList<Actor> actors = new ArrayList<>();
     private final ArrayList<Char> chars = new ArrayList<>();
-    private final ArrayList<Heap> heaps = new ArrayList<>();
+    private final HashMap<Point2D, Heap> heaps = new HashMap<>();
 
     private final List<Actor> actorImmutableList = Collections.unmodifiableList( actors );
     private final List<Char> charsImmutableList = Collections.unmodifiableList( chars );
-    private final List<Heap> heapsImmutableList = Collections.unmodifiableList( heaps );
+    private final Map<Point2D, Heap> heapsImmutableMap = Collections.unmodifiableMap( heaps );
 
     private final EventHandler<ActorSpawnListener> actorSpawnHandler = new EventHandler<>();
     private final EventHandler<ActorDestroyListener> actorDestroyHandler = new EventHandler<>();
@@ -96,6 +101,12 @@ public abstract class AbstractLevel implements Level {
             addActor( new Rat( this, randomRespawnCell() ) );
         }
 
+        for ( int i = 0; i < 10; i++ ) {
+            dropItem( new ItemStack( Gold.instance(), i ), randomRespawnCell() );
+            dropItem( new ItemStack( Sword.instance(), 1 ), randomRespawnCell() );
+        }
+        dropItem( new ItemStack( Gold.instance(), 6 ), hero.getLocation().plus( 1, 0 ) );
+
     }
 
     @Override
@@ -137,22 +148,30 @@ public abstract class AbstractLevel implements Level {
     }
 
     @Override
-    public List<Heap> getHeaps() {
-        return heapsImmutableList;
+    public Map<Point2D, Heap> getHeaps() {
+        // clean the heap list before returning it
+        Iterator<Heap> iterator = heaps.values().iterator();
+        while ( iterator.hasNext() ) {
+            Heap heap = iterator.next();
+            if ( heap.isEmpty() ) {
+                iterator.remove();
+            }
+        }
+
+        return heapsImmutableMap;
     }
 
     @Override
-    public boolean dropItem( final Item item, final int x, final int y ) {
-        int size = heaps.size();
-        for ( int i = 0; i < size; i++ ) {
-            Heap heap = heaps.get( i );
-            if ( heap.getX() == x && heap.getY() == y ) {
-                heap.add( item );
-                return true;
-            }
-        }
-        // TODO make a new heap here
-        return false;
+    public Heap dropItem( final ItemStack item, final Point2D location ) {
+        if ( location == null )
+            throw new NullPointerException( "'location' cannot be null" );
+        if ( item == null )
+            throw new NullPointerException( "'item' cannot be null" );
+        Heap heap = heaps.get( location );
+        if ( heap == null )
+            heaps.put( location, heap = new Heap() );
+        heap.add( item );
+        return heap;
     }
 
     @Override

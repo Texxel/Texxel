@@ -11,7 +11,9 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.brains.HeroHuntAI;
 import com.github.texxel.actors.ai.brains.HeroInteractAI;
 import com.github.texxel.actors.ai.brains.HeroMoveAI;
+import com.github.texxel.actors.ai.brains.HeroPickUpAI;
 import com.github.texxel.actors.heroes.Hero;
+import com.github.texxel.items.Heap;
 import com.github.texxel.levels.Level;
 import com.github.texxel.scenes.GameScene;
 import com.github.texxel.tiles.Interactable;
@@ -68,7 +70,6 @@ public class HeroControl extends InputListener {
 
             // select the cell
             onCellSelected( game.getPlayer(), (int) vec3.x, (int) vec3.y );
-            System.out.println( vec3.x + " " + vec3.y );
         }
     }
 
@@ -99,6 +100,13 @@ public class HeroControl extends InputListener {
                 hero.setBrain( new HeroHuntAI( hero, c ) );
                 return;
             }
+        }
+
+        Point2D location = new Point2D( x, y );
+        Heap heap = level.getHeaps().get( location );
+        if ( heap != null ) {
+            hero.setBrain( new HeroPickUpAI( hero, heap, location ) );
+            return;
         }
 
         if ( x >= 0 && x < level.width() && y >= 0 && y < level.height() ) {

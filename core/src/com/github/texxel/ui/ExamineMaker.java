@@ -20,15 +20,13 @@ public class ExamineMaker implements CellSelectedListener {
         if ( !level.isInBounds( x, y ) )
             return;
         for ( Actor actor : level.getActors() ) {
-            if ( actor instanceof Examinable ) {
-                Examinable examinable = (Examinable)actor;
-                if ( examinable.isOver( x, y ) ) {
-                    examine( (Examinable) actor );
-                    e.setCancelled( true );
-                }
+            if ( actor instanceof Examinable && actor.isOver( x, y )) {
+                examine( (Examinable) actor );
+                e.setCancelled( true );
                 return;
             }
         }
+
         Tile tile = level.getTileMap().getTile( e.getX(), e.getY() );
         examine( tile );
         e.setCancelled( true );

@@ -86,4 +86,13 @@ public interface Actor extends Serializable {
      */
     boolean isUserControlled();
 
+    /**
+     * Tests if this actor is covering the specific tile. If this actor has so position, then simply
+     * always return false.
+     * @param x the x position to test
+     * @param y the y position to test
+     * @return true if the actor is covering the tile
+     */
+    boolean isOver( int x, int y );
+
 }

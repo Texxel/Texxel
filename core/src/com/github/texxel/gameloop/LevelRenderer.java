@@ -16,8 +16,10 @@ import com.github.texxel.sprites.api.Visual;
 import com.github.texxel.sprites.api.WorldVisual;
 import com.github.texxel.sprites.imp.AbstractVisual;
 import com.github.texxel.tiles.Tile;
+import com.github.texxel.utils.Point2D;
 
 import java.util.List;
+import java.util.Map;
 
 public class LevelRenderer implements GameRenderer {
 
@@ -87,10 +89,13 @@ public class LevelRenderer implements GameRenderer {
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
 
         // draw the items
-        List<Heap> heaps = level.getHeaps();
-        for ( int i = heaps.size() - 1; i >= 0; i-- ) {
-            Heap heap = heaps.get( i );
-            batch.draw( heap.getVisual() );
+        Map<Point2D, Heap> heaps = level.getHeaps();
+        for ( Map.Entry<Point2D, Heap> entry : heaps.entrySet() ) {
+            Point2D loc = entry.getKey();
+            Heap heap = entry.getValue();
+            Visual visual = heap.getVisual();
+            visual.setLocation( loc.x, loc.y );
+            batch.draw( visual );
         }
 
         // draw the actors

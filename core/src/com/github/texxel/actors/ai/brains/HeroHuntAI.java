@@ -24,6 +24,8 @@ public class HeroHuntAI implements Brain {
 
         @Override
         public Action onTargetReached() {
+            // do one hit then stop fighting
+            hero.setBrain( new HeroIdleAI( hero ) );
             return new AttackAction( hero, enemy );
         }
 

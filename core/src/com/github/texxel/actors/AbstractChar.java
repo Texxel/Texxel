@@ -38,7 +38,6 @@ public abstract class AbstractChar extends AbstractActor implements Char {
 
     @Override
     public float attack( Char enemy ) {
-        System.out.println( name() + " attacked " + enemy.name() );
         spend( 1.0f );
         return enemy.damage( 3, this );
     }
@@ -92,11 +91,6 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
-    public boolean isOver( int x, int y ) {
-        return location.equals( x, y );
-    }
-
-    @Override
     public float damage( float damage, Object source ) {
         setHealth( getHealth() - damage );
         return damage;
@@ -137,5 +131,10 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     @Override
     public boolean isDead() {
         return health <= 0;
+    }
+
+    @Override
+    public boolean isOver( int x, int y ) {
+        return location.equals( x, y );
     }
 }

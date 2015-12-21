@@ -10,6 +10,7 @@ import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
 import com.github.texxel.items.Heap;
 import com.github.texxel.items.Item;
+import com.github.texxel.items.ItemStack;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FogOfWar;
@@ -17,6 +18,7 @@ import com.github.texxel.utils.Point2D;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public interface Level extends Serializable {
 
@@ -43,11 +45,12 @@ public interface Level extends Serializable {
     List<Char> getCharacters();
 
     /**
-     * Gets a list of all the heaps in the level. Use {@link #dropItem(Item, int, int)} to add an
-     * item to the list.
-     * @return all items in the level. The list cannot be modified
+     * Gets an unmodifiable list of all the heaps in the level. Use {@link #dropItem(Item, Point2D)}
+     * to add new heaps. To remove a heap, delete all the items in the returned heap and the heap
+     * will be removed automatically.
+     * @return all items in the level. The map cannot be modified
      */
-    List<Heap> getHeaps();
+    Map<Point2D, Heap> getHeaps();
 
     /**
      * Gets the fog that covers the level. The fog gets updated every frame
@@ -91,13 +94,12 @@ public interface Level extends Serializable {
     boolean removeActor( Actor actor );
 
     /**
-     * Drops an item in the level. This event may be edited through {@link #getItemDropHandler()}.
+     * Drops an item stack in the level. This event may be edited through {@link #getItemDropHandler()}.
      * @param item the item to add
-     * @param x the x location to add the item at
-     * @param y the y location to add the item at
-     * @return true if the item was added
+     * @param loc where to put the item
+     * @return the heap that the item was dropped into. Never null
      */
-    boolean dropItem( Item item, int x, int y );
+    Heap dropItem( ItemStack item, Point2D loc );
 
     /**
      * Gets a point that is valid for a mob to spawn at

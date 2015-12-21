@@ -184,7 +184,6 @@ public final class PathFinder {
             tail++;
         }
         if ( head > MAX_USED ) {
-            System.out.println( "PathFinder used " + head + " data cells" );
             MAX_USED = head;
         }
         dirty = false;

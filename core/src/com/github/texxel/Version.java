@@ -40,7 +40,7 @@ public enum Version {
      * Gets a version from it's version number (e.g. "1.7.0"). The version number must be exactly
      * the same as what is returned from the {@link #toString()} method
      * @param name the versions number
-     * @return the Version that has that number (or null if non existent)
+     * @return the Version that has that number (or UNKNOWN if non existent)
      * @see #valueOf(String)
      */
     public static Version fromString( String name ) {

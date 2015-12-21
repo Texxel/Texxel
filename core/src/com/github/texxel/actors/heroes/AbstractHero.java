@@ -5,6 +5,11 @@ import com.github.texxel.actors.ai.brains.HeroIdleAI;
 import com.github.texxel.actors.ai.sensors.HeroDangerSensor;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.level.TileSetListener;
+import com.github.texxel.items.ItemStack;
+import com.github.texxel.items.ItemUtils;
+import com.github.texxel.items.bags.BackPack;
+import com.github.texxel.items.bags.Slot;
+import com.github.texxel.items.weapons.Weapon;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FieldOfVision;
@@ -12,6 +17,8 @@ import com.github.texxel.mechanics.FogOfWar;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.utils.ColorMaths;
 import com.github.texxel.utils.Point2D;
+
+import java.util.List;
 
 public abstract class AbstractHero extends AbstractChar implements Hero {
 
@@ -28,6 +35,8 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         }
     }
 
+    private final BackPack backPack;
+
     public AbstractHero( Level level, Point2D spawn ) {
         super( level, spawn, 100 );
         updateFog();
@@ -35,6 +44,11 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         addSensor( new HeroDangerSensor( this ) );
         Listener listener = new Listener();
         level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.VERY_LATE );
+
+        backPack = new BackPack( 12 );
+        List<Slot> slots = backPack.getContents();
+        slots.get( 1 ).setFilter( ItemUtils.weaponFilter() );
+        slots.get( 0 ).setFilter( ItemUtils.goldFilter() );
     }
 
     @Override
@@ -94,5 +108,20 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     @Override
     public Side getSide() {
         return Side.GOOD;
+    }
+
+    @Override
+    public BackPack getInventory() {
+        return backPack;
+    }
+
+    @Override
+    public Weapon getEquippedWeapon() {
+        return (Weapon)backPack.getContents().get( 0 ).getItemStack().item();
+    }
+
+    @Override
+    public void setEquippedWeapon( Weapon weapon ) {
+        backPack.getContents().get( 0 ).setItemStack( new ItemStack( weapon, 1 ) );
     }
 }

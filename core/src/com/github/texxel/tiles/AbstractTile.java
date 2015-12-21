@@ -14,8 +14,4 @@ public abstract class AbstractTile implements Tile {
         return new Animation( 1.0f, getDefaultImage() );
     }
 
-    @Override
-    public boolean isOver( int x, int y ) {
-        throw new UnsupportedOperationException( "tiles don't know where they are" );
-    }
 }

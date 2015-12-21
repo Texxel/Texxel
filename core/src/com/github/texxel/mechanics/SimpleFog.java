@@ -57,7 +57,6 @@ public class SimpleFog implements FogOfWar {
 
         sprite = new Sprite( texture = new Texture( pixmap ));
         sprite.setPosition( -0.5f, -0.5f );
-        System.out.println( "texture height: " + textureHeight );
         // must flip the y axis because drawn texture uses the opposite y axis convention
         sprite.setScale( 1, -1 );
         sprite.setTexture( texture );

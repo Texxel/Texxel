@@ -25,9 +25,7 @@ public class HeroInteractAI extends HeroMoveAI {
         Tile tile = tileMap.getTile( target.x, target.y );
         if ( tile instanceof Interactable ) {
             Interactable interactable = (Interactable)tile;
-            System.out.println( "Testing for interaction" );
             if ( interactable.canInteract( hero ) ) {
-                System.out.println( "Interacting" );
                 interactable.interact( hero );
             }
         } else {

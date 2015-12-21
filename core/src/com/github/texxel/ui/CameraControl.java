@@ -72,7 +72,6 @@ public class CameraControl extends GestureDetector.GestureAdapter implements Eve
     }
 
     private boolean mouseScrolled( int amount ) {
-        System.out.println( "scroll" );
         OrthographicCamera camera = gameCamera;
         // this equation just feels nice - it's rather arbitrary
         camera.zoom += amount * camera.zoom * 0.1f;

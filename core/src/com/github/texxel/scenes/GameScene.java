@@ -39,7 +39,6 @@ public class GameScene implements Screen {
 
     public GameScene( Dungeon dungeon, Level level ) {
         this.dungeon = dungeon;
-        System.out.println( level.id() );
         this.level = level;
 
         // super hacky method to find hero

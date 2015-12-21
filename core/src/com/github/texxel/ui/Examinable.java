@@ -20,12 +20,5 @@ public interface Examinable {
      */
     Animation getLogo();
 
-    /**
-     * Tests if the Examinable is covering a cell
-     * @param x the x position
-     * @param y the y position
-     * @return true if the Examinable is covering the cell
-     */
-    boolean isOver( int x, int y );
 
 }
