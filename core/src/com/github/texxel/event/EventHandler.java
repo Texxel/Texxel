@@ -19,6 +19,10 @@ public final class EventHandler<L extends Listener> implements Serializable {
      */
     public static final int VERY_EARLY = 1000;
     /**
+     * Priority used by Texxel to alter events. Plugins should not using this priority
+     */
+    public static final int TEXXEL_ALTER = 500;
+    /**
      * Priority to use for small changes to an event
      */
     public static final int EARLY = 100;
@@ -30,6 +34,10 @@ public final class EventHandler<L extends Listener> implements Serializable {
      * Priority for listening to events. Don't make any changes on this priority
      */
     public static final int LATE = -100;
+    /**
+     * Priority used by Texxel to listen into events. Plugins should avoid using this priority
+     */
+    public static final int TEXXEL_LISTEN = -500;
     /**
      * Priority for listening to events. You should never use this priority except for when debugging.
      */
