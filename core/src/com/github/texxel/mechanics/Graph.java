@@ -7,8 +7,6 @@ import java.util.List;
 
 public class Graph {
 
-    // TODO add tests for Graph class
-
     public static <T extends Node> void setPrice( List<T> nodes, int value ) {
         for (T node : nodes) {
             node.setPrice( value );

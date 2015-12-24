@@ -8,7 +8,5 @@ public class TestButton extends Image {
 
     public TestButton() {
         super( new TextureRegion( new Texture( "amulet.png" ) ) );
-        setSize( 4, 4 );
-        setPosition( 0, 0 );
     }
 }

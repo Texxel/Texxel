@@ -20,7 +20,7 @@ public class StatusPane extends Table {
     public static final TextureRegion fillRegion = new TextureRegion( texture, 80, 0, 4, 64 );
     public static final TextureRegion statusRegion = new TextureRegion( texture, 84, 0, 128-84, 64 );
 
-    private static final float HEIGHT = 3;
+    private static final float HEIGHT = 30;
 
     /**
      * Constructs a Status panel about the hero in the given game scene
@@ -38,7 +38,7 @@ public class StatusPane extends Table {
 
     static class HeroPanel extends Image {
 
-        private static final float AVATAR_SIZE = 0.7f;
+        private static final float AVATAR_SIZE = 0.7f * HEIGHT;
         private final GameScene scene;
 
         HeroPanel( GameScene scene ) {

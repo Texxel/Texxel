@@ -44,10 +44,8 @@ public class HeroDamageSensor implements Sensor {
         @Override
         public void onCharDamaged( CharDamagedEvent e ) {
             Char c = e.getCharacter();
-            System.out.println( "Received damaged event" );
             if ( c != hero )
                 return;
-            System.out.println( "Set goal" );
             c.setGoal( new HeroIdleGoal( c ) );
         }
     }

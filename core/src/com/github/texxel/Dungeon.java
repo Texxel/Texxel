@@ -98,7 +98,7 @@ public class Dungeon implements Serializable {
             level = (Level) ois.readObject();
         } catch ( IOException | ClassNotFoundException e ) {
             e.printStackTrace();
-            // TODO better level loading exption handling
+            // TODO better level loading exception handling
             throw new RuntimeException( "Couldn't load level" );
         } finally {
             if ( ois != null )

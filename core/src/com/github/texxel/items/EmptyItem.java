@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.sprites.api.EmptyTexture;
 import com.github.texxel.sprites.api.Visual;
+import com.github.texxel.sprites.imp.ItemVisual;
 
 public final class EmptyItem implements Item {
 
@@ -47,7 +48,9 @@ public final class EmptyItem implements Item {
 
     @Override
     public Visual getVisual() {
-        return null;
+        if ( visual == null )
+            visual = new ItemVisual( EmptyTexture.instance() );
+        return visual;
     }
 
     @Override

@@ -47,7 +47,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         Listener listener = new Listener();
         level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.TEXXEL_LISTEN );
 
-        backPack = new BackPack( 12 );
+        backPack = new BackPack( 20 );
         List<Slot> slots = backPack.getContents();
         slots.get( 1 ).setFilter( ItemUtils.weaponFilter() );
         slots.get( 0 ).setFilter( ItemUtils.goldFilter() );

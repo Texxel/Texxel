@@ -90,7 +90,6 @@ public abstract class AbstractChar extends AbstractActor implements Char {
 
     @Override
     public float damage( float damage, Object source ) {
-        System.out.println( "Damaged" );
         CharDamagedEvent e = new CharDamagedEvent( this, source, damage );
         damageHandler.dispatch( e );
         if ( e.isCancelled() )

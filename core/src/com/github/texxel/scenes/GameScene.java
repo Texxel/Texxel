@@ -4,7 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Char;
@@ -14,9 +19,12 @@ import com.github.texxel.gameloop.GameUpdater;
 import com.github.texxel.gameloop.LevelRenderer;
 import com.github.texxel.gameloop.LevelUpdater;
 import com.github.texxel.levels.Level;
+import com.github.texxel.ui.BackPackDisplay;
 import com.github.texxel.ui.CameraControl;
+import com.github.texxel.ui.GameWindow;
 import com.github.texxel.ui.HeroControl;
 import com.github.texxel.ui.HeroFollower;
+import com.github.texxel.ui.PixelSkin;
 import com.github.texxel.ui.StatusPane;
 import com.github.texxel.utils.GameTimer;
 
@@ -78,6 +86,30 @@ public class GameScene implements Screen {
         ui.addActor( new HeroFollower( this ) );
 
         ui.addActor( new StatusPane( this ) );
+
+        ui.addActor( new TextButton( "Click me", PixelSkin.chrome() ) {{
+            addListener( new ChangeListener() {
+                @Override
+                public void changed( ChangeEvent event, Actor actor ) {
+                    final GameWindow backPackWindow = new GameWindow();
+                    backPackWindow.getContent().add( new BackPackDisplay( getPlayer().getInventory() ) );
+                    ui.addActor( backPackWindow );
+
+                    ui.addListener( new ClickListener() {
+                        @Override
+                        public boolean touchDown( InputEvent event, float x, float y, int pointer, int button ) {
+                            return true;
+                        }
+
+                        @Override
+                        public void touchUp( InputEvent event, float x, float y, int pointer, int button ) {
+                            ui.removeListener( this );
+                            backPackWindow.remove();
+                        }
+                    } );
+                }
+            } );
+        }});
     }
 
     @Override
@@ -117,10 +149,9 @@ public class GameScene implements Screen {
         gameCamera.update();
 
         // set the viewport so there are 100 units along the smallest axis
-        float unitPerPixels = 10f / Math.min( width, height );
-        viewport.setUnitsPerPixel( unitPerPixels );
+        //float unitPerPixels = 100f / Math.min( width, height );
+        //viewport.setUnitsPerPixel( unitPerPixels );
         viewport.update( width, height, true );
-        System.out.println( unitPerPixels );
     }
 
     @Override

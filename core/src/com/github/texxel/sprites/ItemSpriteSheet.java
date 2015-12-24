@@ -14,7 +14,6 @@ public class ItemSpriteSheet {
      */
     public static final Texture ITEM_SHEET_TEXTURE = new Texture( "items.png" );
 
-
     public static final TextureRegion BLANK_WEAPON      = make(  0,  0 );
     public static final TextureRegion BLANK_ARMOR       = make(  1,  0 );
     public static final TextureRegion BLANK_RING        = make(  2,  0 );

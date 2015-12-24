@@ -19,8 +19,8 @@ public class TextStatus extends StatusVisual implements CustomRenderer {
 
     public TextStatus( Visual parent, String text ) {
         super( parent, Behaviour.FLOAT );
-        TextureRegion region = new TextureRegion( new Texture( "font3.png" ) );
-        font = new BitmapFont( Gdx.files.internal( "font3.fnt" ), region );
+        TextureRegion region = new TextureRegion( new Texture( "font8px.png" ) );
+        font = new BitmapFont( Gdx.files.internal( "font8px.fnt" ), region );
         this.text = text;
     }
 
