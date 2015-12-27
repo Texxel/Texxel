@@ -130,8 +130,8 @@ public class GameScene implements Screen {
         gameCamera.viewportHeight = gameCamera.viewportWidth * height / width;
         gameCamera.update();
 
-        // set the viewport so there are 100 units along the smallest axis
-        float unitPerPixels = 200f / Math.min( width, height );
+        // set the viewport so there are 160 pixels along the smallest axis
+        float unitPerPixels = 160f / Math.min( width, height );
         viewport.setUnitsPerPixel( unitPerPixels );
         viewport.update( width, height, true );
     }
