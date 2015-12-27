@@ -1,0 +1,86 @@
+
+chrome.png
+size: 128, 64
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+default-window
+  rotate: false
+  xy: 0, 0
+  size: 22, 22
+  split: 8, 8, 8, 8
+  orig: 22, 22
+  offset: 0, 0
+  index: -1
+tabbed-window
+  rotate: false
+  xy: 64, 0
+  size: 22, 22
+  split: 8, 8, 8, 8
+  orig: 22, 22
+  offset: 0, 0
+  index: -1
+default-toast
+  rotate: false
+  xy: 22, 0
+  size: 18, 18
+  split: 6, 6, 6, 6
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+trans-toast
+  rotate: false
+  xy: 40, 0
+  size: 18, 18
+  split: 6, 6, 6, 6
+  orig: 18, 18
+  offset: 0, 0
+  index: -1
+default-button
+  rotate: false
+  xy: 58, 0
+  size: 4, 4
+  split: 1, 1, 1, 1
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+tab-selected
+  rotate: false
+  xy: 64, 22
+  size: 10, 14
+  split: 5, 5, 5, 5
+  orig: 10, 14
+  offset: 0, 0
+  index: -1
+tab-unselected
+  rotate: false
+  xy: 74, 22
+  size: 10, 14
+  split: 5, 5, 5, 5
+  orig: 10, 14
+  offset: 0, 0
+  index: -1
+default-tag
+  rotate: false
+  xy: 22, 18
+  size: 16, 14
+  split: 4, 4, 4, 4
+  orig: 16, 14
+  offset: 0, 0
+  index: -1
+scroll
+  rotate: false
+  xy: 32, 32
+  size: 32, 32
+  split: 6, 12, 6, 12
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+basic-patch
+  rotate: false
+  xy: 38, 18
+  size: 3, 3
+  split: 1, 1, 1, 1
+  orig: 3, 3
+  offset: 0, 0
+  index: -1

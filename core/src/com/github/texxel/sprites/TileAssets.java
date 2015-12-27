@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class TileAssets {
 
     public static final int SIZE = 16;
-    public static final Texture texture = new Texture( Gdx.files.internal( "tiles0.png" ), true );
+    public static final Texture texture = new Texture( Gdx.files.internal( "game/tiles0.png" ), true );
 
     public static final TextureRegion CHASM           = makeTexture( 0,  0  );
     public static final TextureRegion FLOOR           = makeTexture( 1,  0  );

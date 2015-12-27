@@ -1,0 +1,43 @@
+{
+    com.badlogic.gdx.graphics.g2d.BitmapFont: {
+        default-font: { file: font12px.fnt },
+        heading-font: { file: font12px.fnt }
+    },
+    com.badlogic.gdx.graphics.Color: {
+        green: { a: 1, b: 0, g: 1, r: 0 },
+        white: { a: 1, b: 1, g: 1, r: 1 },
+        red: { a: 1, b: 0, g: 0, r: 1 },
+        black: { a: 1, b: 0, g: 0, r: 0 },
+        yellow: { a: 1, b: 0, g: 1, r: 1 },
+        dark: { a: 1, b: 0.7, g: 0.7, r: 0.7 },
+        trans-dark:  { a: 0.1, b: 1, g: 1, r: 1 },
+        trans-light: { a: 0.2, b: 1, g: 1, r: 1 },
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
+        default-button-on: { name: default-button, color: dark },
+        dark-patch: { name: basic-patch, color: trans-dark }
+        light-patch: { name: basic-patch, color: trans-light }
+    }
+    com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+        default: { down: default-button-on, up: default-button },
+        toggle: { down: default-button-on, checked: default-button, up: default-button },
+        toast: { down: trans-toast, checked: default-toast, up: default-toast },
+        basic: { down: light-patch, checked: dark-patch, up: dark-patch }
+        tabbed: { down: light-patch, checked: dark-patch, up: dark-patch }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+        default: { down: default-button-on, up: default-button, font: default-font, fontColor: white },
+        toggle:  { down: default-button-on, up: default-button, checked: default-button, font: default-font, fontColor: white, downFontColor: red }
+        toast:   { down: trans-toast,       up: default-toast,  checked: default-toast },
+        basic:   { down: light-patch,       up: dark-patch,     checked: dark-patch }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+        default: { titleFont: default-font, background: default-window, titleFontColor: yellow },
+        tabbed: { titleFont: default-font, background: tabbed-window, titleFontColor: yellow },
+        dialog: { titleFont: default-font, background: default-window, titleFontColor: white }
+    },
+    com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+        default: { font: default-font, fontColor: white },
+        heading: { font: heading-font, fontColor: yellow }
+    },
+}

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class RatVisual extends AbstractMobVisual {
 
-    private static TextureRegion[][] frames = TextureRegion.split( new Texture( "rat.png" ), 16, 15 );
+    private static TextureRegion[][] frames = TextureRegion.split( new Texture( "game/rat.png" ), 16, 15 );
 
     public RatVisual() {
         super( 16, 15 );

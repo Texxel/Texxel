@@ -7,7 +7,7 @@ public class PixelSkin {
 
     private static final Skin chrome;
     static {
-        chrome = new Skin( Gdx.files.internal( "uiskin.json" ) );
+        chrome = new Skin( Gdx.files.internal( "ui/chrome.json" ) );
     }
 
     public static Skin chrome() {

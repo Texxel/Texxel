@@ -7,7 +7,7 @@ import com.github.texxel.sprites.api.CustomRenderer;
 
 public class WarriorVisual extends AbstractHeroVisual implements CustomRenderer {
 
-    private static final TextureRegion[][] frames = TextureRegion.split( new Texture( "warrior.png" ), 12, 15 );
+    private static final TextureRegion[][] frames = TextureRegion.split( new Texture( "game/warrior.png" ), 12, 15 );
 
     public WarriorVisual() {
         super( 12, 15 );

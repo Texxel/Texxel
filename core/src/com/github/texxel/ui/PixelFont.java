@@ -13,11 +13,11 @@ public class PixelFont {
     private static final BitmapFont font8px, font10px, font12px, font14px, font19px;
 
     static {
-        font8px  = new BitmapFont( Gdx.files.internal( "font8px.fnt" ) );
-        font10px = new BitmapFont( Gdx.files.internal( "font10px.fnt" ) );
-        font12px = new BitmapFont( Gdx.files.internal( "font12px.fnt" ) );
-        font14px = new BitmapFont( Gdx.files.internal( "font14px.fnt" ) );
-        font19px = new BitmapFont( Gdx.files.internal( "font19px.fnt" ) );
+        font8px  = new BitmapFont( Gdx.files.internal( "ui/font8px.fnt" ) );
+        font10px = new BitmapFont( Gdx.files.internal( "ui/font10px.fnt" ) );
+        font12px = new BitmapFont( Gdx.files.internal( "ui/font12px.fnt" ) );
+        font14px = new BitmapFont( Gdx.files.internal( "ui/font14px.fnt" ) );
+        font19px = new BitmapFont( Gdx.files.internal( "ui/font19px.fnt" ) );
     }
 
     /**

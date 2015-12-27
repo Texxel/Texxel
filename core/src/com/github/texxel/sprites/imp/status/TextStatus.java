@@ -1,7 +1,5 @@
 package com.github.texxel.sprites.imp.status;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,6 +7,7 @@ import com.badlogic.gdx.utils.Align;
 import com.github.texxel.sprites.api.CustomRenderer;
 import com.github.texxel.sprites.api.EmptyTexture;
 import com.github.texxel.sprites.api.Visual;
+import com.github.texxel.ui.PixelFont;
 import com.github.texxel.utils.ColorMaths;
 
 public class TextStatus extends StatusVisual implements CustomRenderer {
@@ -19,8 +18,7 @@ public class TextStatus extends StatusVisual implements CustomRenderer {
 
     public TextStatus( Visual parent, String text ) {
         super( parent, Behaviour.FLOAT );
-        TextureRegion region = new TextureRegion( new Texture( "font8px.png" ) );
-        font = new BitmapFont( Gdx.files.internal( "font8px.fnt" ), region );
+        font = PixelFont.getFontSized( 8 );
         this.text = text;
     }
 

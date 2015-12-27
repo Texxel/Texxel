@@ -12,7 +12,7 @@ public class ItemSpriteSheet {
     /**
      * The image that all the items are drawn on
      */
-    public static final Texture ITEM_SHEET_TEXTURE = new Texture( "items.png" );
+    public static final Texture ITEM_SHEET_TEXTURE = new Texture( "game/items.png" );
 
     public static final TextureRegion BLANK_WEAPON      = make(  0,  0 );
     public static final TextureRegion BLANK_ARMOR       = make(  1,  0 );

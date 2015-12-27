@@ -15,7 +15,7 @@ import com.github.texxel.sprites.api.HeroVisual;
  */
 public class StatusPane extends Table {
 
-    public static final Texture texture = new Texture( "status_pane.png" );
+    public static final Texture texture = new Texture( "ui/status_pane.png" );
     public static final TextureRegion heroRegion = new TextureRegion( texture, 80, 64 );
     public static final TextureRegion fillRegion = new TextureRegion( texture, 80, 0, 4, 64 );
     public static final TextureRegion statusRegion = new TextureRegion( texture, 84, 0, 128-84, 64 );
