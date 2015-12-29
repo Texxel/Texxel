@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.items.api.Item;
 import com.github.texxel.sprites.api.EmptyTexture;
-import com.github.texxel.sprites.api.Visual;
 
 public final class EmptyItem implements Item {
 
@@ -12,7 +11,6 @@ public final class EmptyItem implements Item {
     private static EmptyItem instance = new EmptyItem();
 
     private transient Animation animation;
-    private transient Visual visual;
 
     public static EmptyItem instance() {
         return instance;
@@ -54,6 +52,11 @@ public final class EmptyItem implements Item {
     @Override
     public boolean equals( Object obj ) {
         return obj == this;
+    }
+
+    @Override
+    public String toString() {
+        return "Empty";
     }
 
     @Override
