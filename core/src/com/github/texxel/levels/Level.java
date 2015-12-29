@@ -8,9 +8,8 @@ import com.github.texxel.event.listeners.actor.ActorDestroyListener;
 import com.github.texxel.event.listeners.actor.ActorSpawnListener;
 import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
-import com.github.texxel.items.Heap;
-import com.github.texxel.items.Item;
-import com.github.texxel.items.ItemStack;
+import com.github.texxel.actors.heaps.Heap;
+import com.github.texxel.items.api.Item;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FogOfWar;
@@ -45,9 +44,10 @@ public interface Level extends Serializable {
     List<Char> getCharacters();
 
     /**
-     * Gets an unmodifiable list of all the heaps in the level. Use {@link #dropItem(Item, Point2D)}
-     * to add new heaps. To remove a heap, delete all the items in the returned heap and the heap
-     * will be removed automatically.
+     * Gets a cached list of all the heaps mapped to the locations that they are added at. The
+     * returned map cannot be modified. Use {@link #dropItem(Item, Point2D)} to add new heaps.
+     * To remove a heap, either delete all the items in the returned heap and the heap
+     * will be removed automatically or use {@link #removeActor(Actor)}
      * @return all items in the level. The map cannot be modified
      */
     Map<Point2D, Heap> getHeaps();
@@ -99,7 +99,7 @@ public interface Level extends Serializable {
      * @param loc where to put the item
      * @return the heap that the item was dropped into. Never null
      */
-    Heap dropItem( ItemStack item, Point2D loc );
+    Heap dropItem( Item item, Point2D loc );
 
     /**
      * Gets a point that is valid for a mob to spawn at

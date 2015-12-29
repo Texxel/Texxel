@@ -1,22 +1,19 @@
 package com.github.texxel.items.weapons;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.github.texxel.items.helper.AbstractWeapon;
 import com.github.texxel.sprites.ItemSpriteSheet;
 
 public class Sword extends AbstractWeapon {
 
     private static final long serialVersionUID = 7190115410565231271L;
-    private static final Sword instance = new Sword();
-    public static Sword instance() {
-        return instance;
-    }
 
     public Sword() {
         super( 2 );
     }
 
     @Override
-    protected TextureRegion makeTexture() {
+    public TextureRegion getImage() {
         return ItemSpriteSheet.SHORT_SWORD;
     }
 
@@ -27,10 +24,7 @@ public class Sword extends AbstractWeapon {
 
     @Override
     public String description() {
-        return "A tiny little blade";
+        return "A tiny little blade. Good for a Hobbits";
     }
 
-    private Object readResolve() {
-        return instance;
-    }
 }

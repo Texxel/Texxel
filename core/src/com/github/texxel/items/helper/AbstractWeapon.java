@@ -1,9 +1,10 @@
-package com.github.texxel.items.weapons;
+package com.github.texxel.items.helper;
 
 import com.github.texxel.actors.Char;
-import com.github.texxel.items.AbstractItem;
+import com.github.texxel.items.api.Sellable;
+import com.github.texxel.items.api.Weapon;
 
-public abstract class AbstractWeapon extends AbstractItem implements Weapon {
+public abstract class AbstractWeapon extends AbstractItem implements Weapon, Sellable {
     private static final long serialVersionUID = -5741285143699499672L;
 
     private final int tier;
@@ -18,12 +19,12 @@ public abstract class AbstractWeapon extends AbstractItem implements Weapon {
     }
 
     @Override
-    public float accuracy() {
+    public float accuracy( Char attacker ) {
         return 1;
     }
 
     @Override
-    public float speed() {
+    public float speed( Char attacker ) {
         return 1;
     }
 
@@ -33,7 +34,7 @@ public abstract class AbstractWeapon extends AbstractItem implements Weapon {
     }
 
     @Override
-    public float damageRoll() {
+    public float damageRoll( Char attacker, Char enemy ) {
         return tier;
     }
 }

@@ -3,6 +3,7 @@ package com.github.texxel.levels;
 import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Actor;
 import com.github.texxel.actors.Char;
+import com.github.texxel.actors.heaps.Heap;
 import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.actors.heroes.Warrior;
 import com.github.texxel.actors.mobs.Rat;
@@ -15,8 +16,7 @@ import com.github.texxel.event.listeners.actor.ActorSpawnListener;
 import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
 import com.github.texxel.items.Gold;
-import com.github.texxel.items.Heap;
-import com.github.texxel.items.ItemStack;
+import com.github.texxel.items.api.Item;
 import com.github.texxel.items.weapons.Sword;
 import com.github.texxel.levels.components.TileFiller;
 import com.github.texxel.levels.components.TileMap;
@@ -27,10 +27,12 @@ import com.github.texxel.tiles.WallTile;
 import com.github.texxel.utils.Point2D;
 import com.github.texxel.utils.Random;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,24 +40,28 @@ public abstract class AbstractLevel implements Level {
 
     private static final long serialVersionUID = 5335599560586674121L;
 
+    private final Dungeon dungeon;
+    private final int id;
+    private final int width, height;
+
+    // TODO fog should be moved to the UI
+    private final FogOfWar fog;
+
+    private final TileMap tileMap;
     private final ArrayList<Actor> actors = new ArrayList<>();
-    private final ArrayList<Char> chars = new ArrayList<>();
-    private final HashMap<Point2D, Heap> heaps = new HashMap<>();
 
-    private final List<Actor> actorImmutableList = Collections.unmodifiableList( actors );
-    private final List<Char> charsImmutableList = Collections.unmodifiableList( chars );
-    private final Map<Point2D, Heap> heapsImmutableMap = Collections.unmodifiableMap( heaps );
-
+    // event handlers
     private final EventHandler<ActorSpawnListener> actorSpawnHandler = new EventHandler<>();
     private final EventHandler<ActorDestroyListener> actorDestroyHandler = new EventHandler<>();
     private final EventHandler<LevelDestructionListener> levelDestructionHandler = new EventHandler<>();
     private final EventHandler<ItemDropListener> itemDropHandler = new EventHandler<>();
 
-    private final Dungeon dungeon;
-    private final int id;
-    private final int width, height;
-    private final FogOfWar fog;
-    private final TileMap tileMap;
+    // cached data/shared lists
+    private transient ArrayList<Char> charCache = new ArrayList<>();
+    private transient Map<Point2D, Heap> heapCache = new HashMap<>();
+    private transient List<Actor> publicActors = Collections.unmodifiableList( actors );
+    private transient List<Char> publicChars = Collections.unmodifiableList( charCache );
+    private transient Map<Point2D, Heap> publicHeaps = Collections.unmodifiableMap( heapCache );
 
     public AbstractLevel( Dungeon dungeon, int id, int width, int height ) {
         this.dungeon = dungeon;
@@ -102,10 +108,10 @@ public abstract class AbstractLevel implements Level {
         }
 
         for ( int i = 0; i < 10; i++ ) {
-            dropItem( new ItemStack( Gold.instance(), i ), randomRespawnCell() );
-            dropItem( new ItemStack( Sword.instance(), 1 ), randomRespawnCell() );
+            dropItem( new Gold( i ), randomRespawnCell() );
+            dropItem( new Sword(), randomRespawnCell() );
         }
-        dropItem( new ItemStack( Gold.instance(), 6 ), hero.getLocation().plus( 1, 0 ) );
+        dropItem( new Gold( 6 ), hero.getLocation().plus( 1, 0 ) );
 
     }
 
@@ -117,16 +123,29 @@ public abstract class AbstractLevel implements Level {
             return false;
         actor = e.getActor();
         actors.add( actor );
+
+        // updated cached lists
         if ( actor instanceof Char )
-            chars.add( (Char)actor );
+            charCache.add( (Char) actor );
+        if ( actor instanceof Heap ) {
+            Heap heap = (Heap)actor;
+            heapCache.put( heap.getLocation(), heap );
+        }
+
         return true;
     }
 
     @Override
     public boolean removeActor( Actor actor ) {
         actors.remove( actor );
+
+        // update cached lists
         if ( actor instanceof Char )
-            chars.remove( actor );
+            charCache.remove( actor );
+        if ( actor instanceof Heap ) {
+            Heap heap = (Heap)actor;
+            heapCache.remove( heap.getLocation() );
+        }
         ActorDestroyEvent e = new ActorDestroyEvent( actor );
         actorDestroyHandler.dispatch( e );
         return true;
@@ -139,37 +158,30 @@ public abstract class AbstractLevel implements Level {
 
     @Override
     public List<Char> getCharacters() {
-        return charsImmutableList;
+        return publicChars;
     }
 
     @Override
     public List<Actor> getActors() {
-        return actorImmutableList;
+        return publicActors;
     }
 
     @Override
     public Map<Point2D, Heap> getHeaps() {
-        // clean the heap list before returning it
-        Iterator<Heap> iterator = heaps.values().iterator();
-        while ( iterator.hasNext() ) {
-            Heap heap = iterator.next();
-            if ( heap.isEmpty() ) {
-                iterator.remove();
-            }
-        }
-
-        return heapsImmutableMap;
+        return publicHeaps;
     }
 
     @Override
-    public Heap dropItem( final ItemStack item, final Point2D location ) {
+    public Heap dropItem( final Item item, final Point2D location ) {
         if ( location == null )
             throw new NullPointerException( "'location' cannot be null" );
         if ( item == null )
             throw new NullPointerException( "'item' cannot be null" );
-        Heap heap = heaps.get( location );
-        if ( heap == null )
-            heaps.put( location, heap = new Heap() );
+        Heap heap = heapCache.get( location );
+        if ( heap == null ) {
+            heap = new Heap( this, location );
+            addActor( heap );
+        }
         heap.add( item );
         return heap;
     }
@@ -178,7 +190,7 @@ public abstract class AbstractLevel implements Level {
     public Point2D randomRespawnCell() {
         // TODO less hacky respawn cell method
         TileMap tileMap = this.tileMap;
-        ArrayList<Char> chars = this.chars;
+        ArrayList<Actor> actors = this.actors;
         locationFinder:
         while ( true ) {
             int x = Random.Int( width );
@@ -187,8 +199,8 @@ public abstract class AbstractLevel implements Level {
             if ( !tile.isPassable() )
                 continue;
             for ( int i = actors.size()-1; i >= 0; i-- ) {
-                Char ch = chars.get( i );
-                if ( ch.getLocation().equals( x, y ) )
+                Actor a = actors.get( i );
+                if ( a.isOver( x, y ) )
                     continue locationFinder;
             }
             return new Point2D( x, y );
@@ -228,6 +240,31 @@ public abstract class AbstractLevel implements Level {
     @Override
     public void destroy() {
         levelDestructionHandler.dispatch( new LevelDestructionEvent( this ) );
+    }
+
+    private void writeObject( ObjectOutputStream out ) throws IOException {
+        out.defaultWriteObject();
+    }
+
+    private void readObject( ObjectInputStream out ) throws IOException, ClassNotFoundException {
+        out.defaultReadObject();
+
+        charCache = new ArrayList<>();
+        heapCache = new HashMap<>();
+        publicActors = Collections.unmodifiableList( actors );
+        publicChars = Collections.unmodifiableList( charCache );
+        publicHeaps = Collections.unmodifiableMap( heapCache );
+
+        // repopulate cached lists
+        for ( Actor actor : actors ) {
+            if ( actor instanceof Char )
+                charCache.add( (Char)actor );
+            if ( actor instanceof Heap ) {
+                Heap heap = (Heap)actor;
+                heapCache.put( heap.getLocation(), heap );
+            }
+        }
+
     }
 
 }

@@ -2,7 +2,7 @@ package com.github.texxel.event.events.item;
 
 import com.github.texxel.event.Cancelable;
 import com.github.texxel.event.listeners.item.ItemDropListener;
-import com.github.texxel.items.Item;
+import com.github.texxel.items.api.Item;
 import com.github.texxel.utils.Point2D;
 
 public class ItemDropEvent extends ItemEvent<ItemDropListener> implements Cancelable {

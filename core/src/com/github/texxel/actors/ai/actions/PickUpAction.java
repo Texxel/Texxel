@@ -2,8 +2,8 @@ package com.github.texxel.actors.ai.actions;
 
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.heroes.Hero;
-import com.github.texxel.items.Heap;
-import com.github.texxel.items.ItemStack;
+import com.github.texxel.actors.heaps.Heap;
+import com.github.texxel.items.api.Item;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.utils.Point2D;
 
@@ -32,9 +32,11 @@ public class PickUpAction implements Action {
 
     @Override
     public boolean update() {
-        ItemStack stack = heap.topItem();
-        if ( hero.getInventory().collect( stack ) )
-            heap.remove( stack );
+        System.out.println( this + " updated");
+        Item item = heap.pop();
+        if ( !hero.getInventory().collect( item ) )
+            heap.add( item );
+        System.out.println( hero.getInventory() );
         return true;
     }
 

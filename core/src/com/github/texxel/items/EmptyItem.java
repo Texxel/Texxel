@@ -2,25 +2,20 @@ package com.github.texxel.items;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.github.texxel.items.api.Item;
 import com.github.texxel.sprites.api.EmptyTexture;
 import com.github.texxel.sprites.api.Visual;
-import com.github.texxel.sprites.imp.ItemVisual;
 
 public final class EmptyItem implements Item {
 
     private static final long serialVersionUID = -5505657725204831439L;
     private static EmptyItem instance = new EmptyItem();
-    private static ItemStack stackInstance = new ItemStack( instance, 0 );
 
     private transient Animation animation;
     private transient Visual visual;
 
     public static EmptyItem instance() {
         return instance;
-    }
-
-    public static ItemStack stackInstance() {
-        return stackInstance;
     }
 
     @Override
@@ -42,15 +37,18 @@ public final class EmptyItem implements Item {
     @Override
     public Animation getLogo() {
         if ( animation == null )
-            animation = new Animation( 1, new TextureRegion( EmptyTexture.instance() ) );
+            animation = new Animation( 1, getImage() );
         return animation;
     }
 
     @Override
-    public Visual getVisual() {
-        if ( visual == null )
-            visual = new ItemVisual( EmptyTexture.instance() );
-        return visual;
+    public TextureRegion getImage() {
+        return EmptyTexture.instance();
+    }
+
+    @Override
+    public int getSortPriority() {
+        return -100;
     }
 
     @Override
@@ -60,11 +58,6 @@ public final class EmptyItem implements Item {
 
     @Override
     public int hashCode() {
-        return 0;
-    }
-
-    @Override
-    public int price() {
         return 0;
     }
 

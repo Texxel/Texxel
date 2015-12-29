@@ -1,9 +1,8 @@
 package com.github.texxel.items.bags;
 
-import com.github.texxel.items.EmptyItem;
-import com.github.texxel.items.Item;
-import com.github.texxel.items.ItemStack;
-import com.github.texxel.utils.Filter;
+import com.github.texxel.items.ItemUtils;
+import com.github.texxel.items.api.Item;
+import com.github.texxel.items.api.Stackable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,44 +13,36 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class BackPack implements Serializable {
+public class SomeSlots implements Serializable {
 
     private static final long serialVersionUID = -4804185696695483477L;
 
     private final List<Slot> slots = new ArrayList<>();
-    private transient List<Bag> bags = new ArrayList<>();
     private transient List<Slot> publicSlots = Collections.unmodifiableList( slots );
-    private transient List<Bag> publicBags  = Collections.unmodifiableList( bags );
 
-    public BackPack( int size ) {
+    public SomeSlots( int size ) {
         for ( int i = 0; i < size; i++ )
             slots.add( new Slot() );
+    }
+
+    /**
+     * Reorders all the slots in the correct order
+     */
+    private void reorder() {
+        Collections.sort( slots, ItemUtils.getSlotComparator() );
     }
 
     /**
      * Gets an unmodifiable list of the contents in the backpack. This does not include the slots in
      * all the sub bags. While the list is unmodifiable, the slots inside the list are mutable. You
      * can add items directly to the slots here but is generally recommended that you use
-     * {@link #collect(ItemStack)} so it gets filed properly
+     * {@link #collect(Item)} so it gets filed properly
      * @return all the items in this backpack
      */
     public List<Slot> getContents() {
         return publicSlots;
     }
 
-    /**
-     * Gets the bags that are contained inside this backpack. The list can not modified. To add or
-     * remove a bag, add the backpack as an item
-     * @return the sub bags
-     */
-    public List<Bag> getBags() {
-        bags.clear();
-        for ( Slot slot : slots ) {
-            if ( slot.getItemStack().item() instanceof Bag )
-                bags.add( (Bag)slot.getItemStack().item() );
-        }
-        return publicBags;
-    }
 
     /**
      * Tests if the item can fit into the backpack
@@ -59,77 +50,54 @@ public class BackPack implements Serializable {
      * @return true if it can fit
      */
     public boolean canCollect( Item item ) {
-        for ( Bag bag : getBags() )
-            if ( bag.canCollect( item ) )
-                return true;
-        for ( Slot slot : slots )
-            if ( slot.getFilter().isAllowed( item )
-                    && slot.getItemStack().canStackWith( item ) )
-                return true;
+        System.out.println("Can we collect?");
+        for ( Slot slot : slots ) {
+            if ( slot.getFilter().isAllowed( item ) ) {
+                // can take it if the slot is empty
+                if ( slot.isEmpty() ) {
+                    return true;
+                }
+                // can take it if the items can stack
+                Item inPack = slot.getItem();
+                if ( inPack instanceof Stackable ) {
+                    if (( (Stackable) inPack ).canStackWith( (Stackable)item ))
+                        return true;
+                }
+            }
+        }
+        System.out.println("Cannot collect");
         return false;
     }
 
     /**
      * Attempts to collect the item. If the backpack cannot store the item, then false will be
-     * returned and nothing further will happen
-     * @param stack the item to collect
+     * returned and nothing further will happen.
+     * @param item the item to collect
      * @return true if the item was collected
      */
-    public boolean collect( ItemStack stack ) {
-        if ( stack == null )
+    public boolean collect( Item item ) {
+        if ( item == null )
             throw new NullPointerException( "cannot add a null item" );
 
-        if ( stack.isEmpty() )
+        System.out.println( "Trying to collect item" );
+
+        if ( item.isEmpty() )
             return true;
 
-        for ( Bag bag : getBags() ) {
-            if ( bag.collect( stack ) )
-                return true;
-        }
         for ( Slot slot : slots ) {
-            if ( slot.getFilter().isAllowed( stack.item() ) ) {
-                ItemStack slotItem = slot.getItemStack();
-                if ( slotItem.canStackWith( stack ) ) {
-                    slot.setItemStack( slotItem.stackedWith( stack ) );
+            if ( slot.getFilter().isAllowed( item ) ) {
+                Item slotItem = slot.getItem();
+                if ( slotItem.isEmpty() ) {
+                    slot.setItem( item );
+                    return true;
+                }
+                if ( slotItem instanceof Stackable && ( (Stackable) slotItem ).add( (Stackable)item ) ) {
                     return true;
                 }
             }
         }
+        System.out.println("Cannot collect item");
         return false;
-    }
-
-    /**
-     * Removes an amount of items from the backpack. This will try to remove the item from this
-     * backpack before the sub bags
-     * @param filter anything that the filter matches will be removed (unless the quantity is exceeded)
-     * @param quantity the amount of items to remove or -1 for as many as possible
-     * @return all the items that were removed. An empty array if none were removed
-     * @throws IllegalArgumentException if quantity is < -1
-     */
-    public List<ItemStack> remove( Filter<Item> filter, int quantity ) {
-        if ( quantity < -1 )
-            throw new IllegalArgumentException( "Cannot remove " + quantity + " items" );
-
-        ArrayList<ItemStack> removed = new ArrayList<>();
-        int itemsLeftToRemove = quantity == -1 ? Integer.MAX_VALUE : quantity;
-        for ( int i = slots.size() - 1; i >= 0; i-- ) {
-            Slot slot = slots.get( i );
-            ItemStack stack = slot.getItemStack();
-            Item item = stack.item();
-            if ( filter.isAllowed( item ) ) {
-                if ( itemsLeftToRemove >= stack.quantity() ) {
-                    removed.add( stack );
-                    itemsLeftToRemove -= stack.quantity();
-                    slot.setItemStack( EmptyItem.stackInstance() );
-                } else {
-                    removed.add( new ItemStack( item, itemsLeftToRemove ) );
-                    slot.setItemStack( new ItemStack( item, stack.quantity() - itemsLeftToRemove ) );
-                }
-                if ( itemsLeftToRemove <= 0 )
-                    break;
-            }
-        }
-        return removed;
     }
 
     /**
@@ -181,6 +149,11 @@ public class BackPack implements Serializable {
         }
     }
 
+    @Override
+    public String toString() {
+        return slots.toString();
+    }
+
     private void writeObject( ObjectOutputStream out ) throws IOException {
         out.defaultWriteObject();
     }
@@ -188,9 +161,6 @@ public class BackPack implements Serializable {
     private void readObject( ObjectInputStream in ) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
 
-        // these things will automagically get updated
-        bags = new ArrayList<>();
         publicSlots = Collections.unmodifiableList( slots );
-        publicBags = Collections.unmodifiableList( bags );
     }
 }

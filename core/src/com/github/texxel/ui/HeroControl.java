@@ -12,7 +12,7 @@ import com.github.texxel.actors.ai.goals.HeroHuntGoal;
 import com.github.texxel.actors.ai.goals.HeroInteractGoal;
 import com.github.texxel.actors.ai.goals.HeroPickUpGoal;
 import com.github.texxel.actors.heroes.Hero;
-import com.github.texxel.items.Heap;
+import com.github.texxel.actors.heaps.Heap;
 import com.github.texxel.levels.Level;
 import com.github.texxel.scenes.GameScene;
 import com.github.texxel.utils.Point2D;
@@ -26,7 +26,6 @@ public class HeroControl extends InputListener {
 
     private final GameScene game;
     private final Vector3 vec3 = new Vector3();
-    private final Vector2 vec2 = new Vector2();
 
     private final Vector2 touchDown = new Vector2();
 
@@ -57,7 +56,7 @@ public class HeroControl extends InputListener {
         // make sure the finger wasn't moved very far
         float distance = touchDown.dst2( x, y );
         // TODO remove hardcoded cell selection distance
-        if ( distance < 0.1f*0.1f ) {
+        if ( distance < 10f*10f ) {
             // in worlds coords
             vec3.set( x, y, 0 );
 
@@ -107,7 +106,7 @@ public class HeroControl extends InputListener {
         Point2D location = new Point2D( x, y );
         Heap heap = level.getHeaps().get( location );
         if ( heap != null ) {
-            hero.setGoal( new HeroPickUpGoal( hero, location ) );
+            hero.setGoal( new HeroPickUpGoal( hero, heap ) );
             return;
         }
 

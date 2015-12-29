@@ -1,15 +1,20 @@
 package com.github.texxel.items;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.github.texxel.items.api.Sellable;
+import com.github.texxel.items.helper.AbstractStackableItem;
 import com.github.texxel.sprites.ItemSpriteSheet;
 
-public class Gold extends AbstractItem {
+public class Gold extends AbstractStackableItem implements Sellable {
 
     private static final long serialVersionUID = 657297712584810880L;
-    private static Gold instance = new Gold();
 
-    public static Gold instance() {
-        return instance;
+    public Gold( int quantity ) {
+        super( quantity );
+    }
+
+    public Gold() {
+        super();
     }
 
     @Override
@@ -28,12 +33,8 @@ public class Gold extends AbstractItem {
     }
 
     @Override
-    protected TextureRegion makeTexture() {
+    public TextureRegion getImage() {
         return ItemSpriteSheet.GOLD;
-    }
-
-    private Object readResolve() {
-        return instance;
     }
 
 }

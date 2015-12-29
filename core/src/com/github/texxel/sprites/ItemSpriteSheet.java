@@ -123,7 +123,7 @@ public class ItemSpriteSheet {
     public static final TextureRegion CHEST             = make(  0, 10 );
     public static final TextureRegion LOCKED_CHEST      = make(  1, 10 );
     public static final TextureRegion CRYSTAL_CHEST     = make(  2, 10 );
-    public static final TextureRegion GRAVE_STONE       = make(  3, 10 );
+    public static final TextureRegion TOMB = make(  3, 10 );
     public static final TextureRegion SKULL             = make(  4, 10 );
 
     public static final TextureRegion SILVER_KEY        = make(  0, 11 );

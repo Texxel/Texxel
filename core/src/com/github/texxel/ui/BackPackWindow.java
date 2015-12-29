@@ -8,11 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.github.texxel.items.Item;
-import com.github.texxel.items.ItemStack;
-import com.github.texxel.items.bags.BackPack;
+import com.github.texxel.items.api.Item;
+import com.github.texxel.items.api.Stackable;
 import com.github.texxel.items.bags.Slot;
-import com.github.texxel.sprites.api.Visual;
+import com.github.texxel.items.bags.SomeSlots;
 
 /**
  * A window designed to display the hero's backpack. All the inner classes BackPackWindow have been
@@ -31,7 +30,7 @@ public class BackPackWindow extends TabbedWindow {
      */
     private static final float SLOT_MARGIN = 4;
 
-    public BackPackWindow( BackPack backPack ) {
+    public BackPackWindow( SomeSlots backPack ) {
         super( "Backpack" );
         getContent().add( new SlotGrid( backPack ) );
 
@@ -43,7 +42,7 @@ public class BackPackWindow extends TabbedWindow {
      */
     public static class SlotGrid extends Table {
 
-        public SlotGrid( BackPack backPack ) {
+        public SlotGrid( SomeSlots backPack ) {
             // decide on the width/height of the display
             int size = backPack.getSize();
             int width;
@@ -80,27 +79,25 @@ public class BackPackWindow extends TabbedWindow {
 
         public SlotImage( Slot slot ) {
             super( PixelSkin.chrome(), "basic" );
-            final ItemStack itemStack = slot.getItemStack();
-            final Item item = itemStack.item();
-            Visual visual = item.getVisual();
-            System.out.println( item );
-            TextureRegion region = visual.getRegion();
+            final Item item = slot.getItem();
+            TextureRegion region = item.getImage();
             image = new Image( region );
-            image.setSize( SLOT_SIZE, 20 );
+            image.setSize( SLOT_SIZE, SLOT_SIZE );
             image.setPosition( 0, 0 );
 
-            int amount = itemStack.quantity();
-            if ( amount > 1 ) {
-                Label label = new Label( Integer.toString( amount ), PixelSkin.chrome() );
-                add( new Stack( image, label ) );
-            } else {
-                add( new Stack( image ) );
+            Stack stack = new Stack( image );
+
+            if ( item instanceof Stackable ) {
+                int qty = ( (Stackable) item ).quantity();
+                Label label = new Label( Integer.toString( qty ), PixelSkin.chrome() );
+                stack.add( label );
             }
+            add( stack );
+
             addListener( new ChangeListener() {
                 @Override
                 public void changed( ChangeEvent event, Actor actor ) {
-                    event.setBubbles( false );
-                    System.out.println( "hello: " + itemStack );
+                    System.out.println( "hello: " + item );
                 }
             } );
         }

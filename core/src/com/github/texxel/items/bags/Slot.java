@@ -1,7 +1,7 @@
 package com.github.texxel.items.bags;
 
-import com.github.texxel.items.*;
 import com.github.texxel.items.EmptyItem;
+import com.github.texxel.items.api.Item;
 import com.github.texxel.utils.Filter;
 import com.github.texxel.utils.FilterUtils;
 
@@ -11,14 +11,14 @@ public final class Slot implements Serializable {
 
     private static final long serialVersionUID = -625567128821904276L;
 
-    private ItemStack item = EmptyItem.stackInstance();
+    private Item item = EmptyItem.instance();
     private Filter<Item> filter = FilterUtils.anyObject();
 
-    public ItemStack getItemStack() {
+    public Item getItem() {
         return item;
     }
 
-    public Slot setItemStack( ItemStack item ) {
+    public Slot setItem( Item item ) {
         if ( item == null )
             throw new NullPointerException( "item cannot be null");
         this.item = item;
@@ -30,6 +30,11 @@ public final class Slot implements Serializable {
             throw new NullPointerException( "'filter' cannot be null" );
         this.filter = filter;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return item.toString();
     }
 
     public Filter<Item> getFilter() {
