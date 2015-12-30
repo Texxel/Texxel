@@ -16,7 +16,7 @@ public interface HeroFOV extends FieldOfVision {
     /**
      * Sets if the hero has seen a cell. If the cell is set to discovered, then the cell shall
      * remain discovered forever. If set to un-discovered, then the cell shall only be un-discovered
-     * until the next time the hero sees the cell. // TODO was that true?
+     * until the next time the hero sees the cell.
      * @param x the cell's x position
      * @param y the cell's y position
      * @param discovered true if the cell is discovered

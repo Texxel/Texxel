@@ -138,7 +138,6 @@ public interface Level extends Serializable {
      * It is the responsibility of implementations of Level to fire the event.
      * @return a EventHandler
      */
-    // TODO make it harder to keep a level alive
     EventHandler<LevelDestructionListener> getDestructionHandler();
 
     /**
