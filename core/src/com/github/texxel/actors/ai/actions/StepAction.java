@@ -11,7 +11,7 @@ import com.github.texxel.utils.Point2D;
 
 public class StepAction implements Action {
 
-    private static final float STEP_TIME = 0.1f;
+    private static final float STEP_TIME = 0.12f;
 
     private final Char character;
     private CharVisual charVisual;

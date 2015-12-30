@@ -96,11 +96,6 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     }
 
     @Override
-    public boolean isUserControlled() {
-        return true;
-    }
-
-    @Override
     public Side getSide() {
         return Side.GOOD;
     }

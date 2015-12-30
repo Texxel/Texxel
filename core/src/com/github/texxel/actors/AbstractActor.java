@@ -79,8 +79,4 @@ public abstract class AbstractActor implements Actor {
         sensor.onRemove();
     }
 
-    @Override
-    public boolean isUserControlled() {
-        return false;
-    }
 }

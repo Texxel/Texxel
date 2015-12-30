@@ -1,7 +1,8 @@
 package com.github.texxel.gameloop;
 
-import com.github.texxel.actors.ai.Action;
 import com.github.texxel.actors.Actor;
+import com.github.texxel.actors.ai.Action;
+import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
 
@@ -13,36 +14,57 @@ import java.util.Map;
 public class LevelUpdater implements GameUpdater {
 
     private Map<Actor, Action> renderingActions = new HashMap<>();
-    private boolean actionFinished;
     private Action currentAction;
 
     @Override
     public void update( Level level ) {
-        if ( currentAction == null || currentAction.update() ) {
-            actionFinished = true;
-            // current action finished. Choose a new one
-            Actor nextActor = getNextActor( level.getActors() );
 
-            if ( !renderingActions.containsKey( nextActor ) ) {
-                updateActor( nextActor );
+        // update the action a little bit more
+        do {
+            if ( currentAction == null ) {
+                Actor actor = getNextActor( level.getActors() );
+                //
+                if ( renderingActions.containsKey( actor ) )
+                    break;
+                currentAction = getAction( actor );
+                currentAction.onStart();
+                renderingActions.put( actor, currentAction );
             }
-        }
+
+            // if the action finishes, move onto another action
+            if ( currentAction.update() ) {
+                currentAction = null;
+            }
+        } while ( currentAction == null );
+
+        // draw all the actions
         renderActions();
     }
 
-    private void updateActor( Actor actor ) {
-        // update the actors sensors
+    /**
+     * Gets the next action to use from the actor. Before the action is taken from the actor, the
+     * sensors will be updated.
+     * @return true if the current action was set. False if no action should be updated (just wait
+     *          for rendering to complete)
+     */
+    private static Action getAction( Actor actor ) {
+
         List<Sensor> sensors = actor.getSensors();
         int size = sensors.size();
-        for ( int i = 0; i < size; i++ )
-            sensors.get( i ).update();
+        for ( int i = 0; i < size; i++ ) {
+            Sensor sensor = sensors.get( i );
+            assert sensor != null;
+            sensor.update();
+        }
 
-        // update the actors actions
-        currentAction = actor.getGoal().nextAction();
-        currentAction.onStart();
-        actionFinished = false;
+        Goal goal = actor.getGoal();
+        if ( goal == null )
+            throw new IllegalStateException( actor + " had no goal" );
+        Action action = goal.nextAction();
+        if ( action == null )
+            throw new IllegalStateException( goal + " returned null action. From goal" + goal );
 
-        renderingActions.put( actor, currentAction );
+        return action;
     }
 
     /**
@@ -50,7 +72,7 @@ public class LevelUpdater implements GameUpdater {
      * @param actors the list of actors to search through
      * @return the actor with the smallest time
      */
-    private Actor getNextActor( List<Actor> actors ) {
+    private static Actor getNextActor( List<Actor> actors ) {
         float minTime = Float.MAX_VALUE;
         Actor nextActor = null;
         int size = actors.size();
@@ -67,20 +89,16 @@ public class LevelUpdater implements GameUpdater {
         return nextActor;
     }
 
-    private boolean renderActions() {
+    private void renderActions() {
         Iterator<Map.Entry<Actor, Action>> i = renderingActions.entrySet().iterator();
-        boolean userControlled = false;
         while ( i.hasNext() ) {
             Map.Entry<Actor, Action> entry = i.next();
-            Actor actor = entry.getKey();
             Action action = entry.getValue();
-            if ( action.render() && ( action != currentAction || actionFinished ) ) {
+            if ( action.render() && ( action != currentAction ) ) {
                 action.onFinish();
                 i.remove();
             }
-            userControlled |= actor.isUserControlled();
         }
-        return userControlled;
     }
 
     @Override

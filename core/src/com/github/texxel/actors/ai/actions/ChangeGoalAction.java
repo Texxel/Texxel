@@ -34,8 +34,7 @@ public class ChangeGoalAction implements Action {
 
     @Override
     public boolean update() {
-        // TODO ChangeGoalAction throws exception when it is a valid change
-        if ( false && updated )
+        if ( updated )
             throw new IllegalStateException( "The same ChangeGoalAction updated twice in actor " + actor
             + " and setting next goal of " + nextGoal );
         else

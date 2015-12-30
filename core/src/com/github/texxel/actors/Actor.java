@@ -65,16 +65,6 @@ public interface Actor extends Serializable {
      */
     void remove( Sensor sensor );
 
-    // TODO remove need isUserControlled function
-    /**
-     * Tests if the character is controlled by the user. This is only used to determine when to
-     * break from the main update loop. Only the Hero should return true.
-     * @return if the character is user controlled
-     * @deprecated here due to an implementation detail in LevelRenderer and will be removed in the future
-     */
-    @Deprecated
-    boolean isUserControlled();
-
     /**
      * Tests if this actor is covering the specific tile. If this actor has so position, then simply
      * always return false.
