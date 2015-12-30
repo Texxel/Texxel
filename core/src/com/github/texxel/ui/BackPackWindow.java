@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.github.texxel.actors.heroes.Inventory;
 import com.github.texxel.items.api.Item;
 import com.github.texxel.items.api.Stackable;
 import com.github.texxel.items.bags.Slot;
@@ -28,13 +29,14 @@ public class BackPackWindow extends TabbedWindow {
     /**
      * The margin around the slots
      */
-    private static final float SLOT_MARGIN = 4;
+    private static final float SLOT_MARGIN = 2;
 
-    public BackPackWindow( SomeSlots backPack ) {
+    public BackPackWindow( Inventory inventory ) {
         super( "Backpack" );
-        getContent().add( new SlotGrid( backPack ) );
-
-        setDebug( true, true );
+        Table content = getContent();
+        content.add( new SlotGrid( inventory.getEquippedSlots() ) );
+        content.row().space( SLOT_MARGIN );
+        content.add( new SlotGrid( inventory.getBackPack() ) );
     }
 
     /**
@@ -62,7 +64,7 @@ public class BackPackWindow extends TabbedWindow {
                 if ( i % width == 0 )
                     row();
 
-                Slot slot = backPack.getContents().get( i );
+                Slot slot = backPack.getSlot( i );
                 add( new SlotImage( slot ) ).size( SLOT_SIZE ).space( SLOT_MARGIN );
             }
 

@@ -8,8 +8,6 @@ import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.level.TileSetListener;
 import com.github.texxel.items.ItemUtils;
 import com.github.texxel.items.api.Weapon;
-import com.github.texxel.items.bags.Slot;
-import com.github.texxel.items.bags.SomeSlots;
 import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FieldOfVision;
@@ -17,8 +15,6 @@ import com.github.texxel.mechanics.FogOfWar;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.utils.ColorMaths;
 import com.github.texxel.utils.Point2D;
-
-import java.util.List;
 
 public abstract class AbstractHero extends AbstractChar implements Hero {
 
@@ -35,7 +31,7 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         }
     }
 
-    private final SomeSlots backPack;
+    private final Inventory inventory;
 
     public AbstractHero( Level level, Point2D spawn ) {
         super( level, spawn, 100 );
@@ -46,10 +42,8 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         Listener listener = new Listener();
         level.getTileMap().getTileSetHandler().addListener( listener, EventHandler.TEXXEL_LISTEN );
 
-        backPack = new SomeSlots( 20 );
-        List<Slot> slots = backPack.getContents();
-        slots.get( 1 ).setFilter( ItemUtils.weaponFilter() );
-        slots.get( 0 ).setFilter( ItemUtils.goldFilter() );
+        inventory = new Inventory();
+        inventory.getEquippedSlots().getSlot( 0 ).setFilter( ItemUtils.weaponFilter() );
     }
 
     @Override
@@ -112,17 +106,17 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     }
 
     @Override
-    public SomeSlots getInventory() {
-        return backPack;
+    public Inventory getInventory() {
+        return inventory;
     }
 
     @Override
-    public Weapon getEquippedWeapon() {
-        return (Weapon)backPack.getContents().get( 0 ).getItem();
+    public Weapon getWeapon() {
+        return (Weapon) inventory.getEquippedSlots().get( 0 );
     }
 
     @Override
     public void setEquippedWeapon( Weapon weapon ) {
-        backPack.getContents().get( 0 ).setItem( weapon );
+        inventory.getEquippedSlots().set( 0, weapon );
     }
 }

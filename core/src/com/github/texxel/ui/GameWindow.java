@@ -1,8 +1,10 @@
 package com.github.texxel.ui;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 /**
@@ -38,6 +40,14 @@ public class GameWindow extends Table {
 
         add( main ).align( Align.center );
         setFillParent( true );
+
+        addListener( new ClickListener() {
+            @Override
+            public boolean touchDown( InputEvent event, float x, float y, int pointer, int button ) {
+                GameWindow.this.remove();
+                return false;
+            }
+        });
     }
 
     /**

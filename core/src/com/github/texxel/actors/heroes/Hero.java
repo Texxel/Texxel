@@ -1,7 +1,6 @@
 package com.github.texxel.actors.heroes;
 
 import com.github.texxel.actors.Char;
-import com.github.texxel.items.bags.SomeSlots;
 import com.github.texxel.items.api.Weapon;
 import com.github.texxel.sprites.api.HeroVisual;
 
@@ -17,14 +16,14 @@ public interface Hero extends Char {
      * Gets the hero's inventory
      * @return the hero's inventory. Never null
      */
-    SomeSlots getInventory();
+    Inventory getInventory();
 
     /**
-     * Gets the weapon that the hero has equipted. If the hero has no weapon equipped, then the hand
+     * Gets the weapon that the hero has equipped. If the hero has no weapon equipped, then the hand
      * weapon is returned.
      * @return the weapon the hero will use for melee combat. Never null
      */
-    Weapon getEquippedWeapon();
+    Weapon getWeapon();
 
     /**
      * Sets the weapon to use to fight with in melee combat. This will not spend any of the hero's

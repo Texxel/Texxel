@@ -34,7 +34,7 @@ public class PickUpAction implements Action {
     public boolean update() {
         System.out.println( this + " updated");
         Item item = heap.pop();
-        if ( !hero.getInventory().collect( item ) )
+        if ( !hero.getInventory().getBackPack().collect( item ) )
             heap.add( item );
         System.out.println( hero.getInventory() );
         return true;

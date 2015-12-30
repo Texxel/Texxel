@@ -13,12 +13,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class SomeSlots implements Serializable {
+public class SomeSlots implements Serializable, Iterable<Slot> {
 
     private static final long serialVersionUID = -4804185696695483477L;
 
     private final List<Slot> slots = new ArrayList<>();
-    private transient List<Slot> publicSlots = Collections.unmodifiableList( slots );
 
     public SomeSlots( int size ) {
         for ( int i = 0; i < size; i++ )
@@ -33,16 +32,31 @@ public class SomeSlots implements Serializable {
     }
 
     /**
-     * Gets an unmodifiable list of the contents in the backpack. This does not include the slots in
-     * all the sub bags. While the list is unmodifiable, the slots inside the list are mutable. You
-     * can add items directly to the slots here but is generally recommended that you use
-     * {@link #collect(Item)} so it gets filed properly
-     * @return all the items in this backpack
+     * Gets the slot at a specific position.
+     * @return the slot at the given position
+     * @throws IndexOutOfBoundsException if {@code slot < 0  || slot >= size}
      */
-    public List<Slot> getContents() {
-        return publicSlots;
+    public Slot getSlot( int slot ) {
+        return slots.get( slot );
     }
 
+    /**
+     * Convenience method for {@code getSlot( i ).getItem()}
+     * @param slot the index of the slot to get the item from
+     * @return the item in the slot
+     */
+    public Item get( int slot ) {
+        return slots.get( slot ).getItem();
+    }
+
+    /**
+     * Convenience method for {@code getSlot( i ).setItem( item )}
+     * @param slot the index of the slot to set
+     * @param item the item to set in the slot
+     */
+    public void set( int slot, Item item ) {
+        slots.get( slot ).setItem( item );
+    }
 
     /**
      * Tests if the item can fit into the backpack
@@ -50,7 +64,6 @@ public class SomeSlots implements Serializable {
      * @return true if it can fit
      */
     public boolean canCollect( Item item ) {
-        System.out.println("Can we collect?");
         for ( Slot slot : slots ) {
             if ( slot.getFilter().isAllowed( item ) ) {
                 // can take it if the slot is empty
@@ -65,7 +78,6 @@ public class SomeSlots implements Serializable {
                 }
             }
         }
-        System.out.println("Cannot collect");
         return false;
     }
 
@@ -79,8 +91,6 @@ public class SomeSlots implements Serializable {
         if ( item == null )
             throw new NullPointerException( "cannot add a null item" );
 
-        System.out.println( "Trying to collect item" );
-
         if ( item.isEmpty() )
             return true;
 
@@ -91,12 +101,14 @@ public class SomeSlots implements Serializable {
                     slot.setItem( item );
                     return true;
                 }
-                if ( slotItem instanceof Stackable && ( (Stackable) slotItem ).add( (Stackable)item ) ) {
+                if ( slotItem instanceof Stackable
+                        && item instanceof Stackable
+                        && ( (Stackable) slotItem ).add( (Stackable) item ) ) {
+                    reorder();
                     return true;
                 }
             }
         }
-        System.out.println("Cannot collect item");
         return false;
     }
 
@@ -154,13 +166,39 @@ public class SomeSlots implements Serializable {
         return slots.toString();
     }
 
+    /**
+     * An iterator across all the slots. The iterator does not support removing.
+     * @return a slot iterator
+     */
+    @Override
+    public Iterator<Slot> iterator() {
+        return new Iterator<Slot>() {
+
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < slots.size()-1;
+            }
+
+            @Override
+            public Slot next() {
+                index++;
+                return slots.get( index );
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException( "SomeSlot iterator does not support removal" );
+            }
+        };
+    }
+
     private void writeObject( ObjectOutputStream out ) throws IOException {
         out.defaultWriteObject();
     }
 
     private void readObject( ObjectInputStream in ) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-
-        publicSlots = Collections.unmodifiableList( slots );
     }
 }
