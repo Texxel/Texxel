@@ -15,18 +15,20 @@ public interface Action {
     /**
      * Updates the state of the action. Once the action indicates that it has finished, no further
      * calls to update will be made but there may be more calls to render.
+     * @param delta amount of seconds since the last call
      * @return true when the action is finished
      */
-    boolean update();
+    boolean update( float delta );
 
     /**
      * Changes the graphics to match the state of the action. Never change the world state in this
      * method as it may stuff up other actions. When this action's rending is complete, this method
      * will return true. An action can never have the rendering finished before the updating thus
      * the output will be ignored until the updating is finished.
+     * @param delta amount of seconds since the last call
      * @return true when the rendering is finished
      */
-    boolean render();
+    boolean render( float delta );
 
     /**
      * An action is called to force finish when the game quits. Actions cannot be stored into bundles,

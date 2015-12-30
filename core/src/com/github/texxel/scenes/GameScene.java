@@ -23,7 +23,6 @@ import com.github.texxel.ui.HeroControl;
 import com.github.texxel.ui.HeroFollower;
 import com.github.texxel.ui.PixelSkin;
 import com.github.texxel.ui.StatusPane;
-import com.github.texxel.utils.GameTimer;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -96,11 +95,12 @@ public class GameScene implements Screen {
 
     @Override
     public void render( float delta ) {
-        GameTimer.update();
+        // limit the tick time to assist in debugging
+        delta = Math.min( delta, 0.1f );
 
         Gdx.gl.glViewport( 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() );
-        updater.update( level );
-        renderer.render( level );
+        updater.update( level, delta );
+        renderer.render( level, delta );
 
         ui.getViewport().apply();
         ui.act( delta );

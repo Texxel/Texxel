@@ -6,7 +6,6 @@ import com.github.texxel.actors.ai.Action;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.tiles.Trampleable;
-import com.github.texxel.utils.GameTimer;
 import com.github.texxel.utils.Point2D;
 
 public class StepAction implements Action {
@@ -80,23 +79,24 @@ public class StepAction implements Action {
     }
 
     @Override
-    public boolean update() {
+    public boolean update( float dt ) {
         return true;
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         if ( finishImmediately )
             return true;
 
-        timeElapsed += GameTimer.tickTime();
+        timeElapsed += dt;
         float factorComplete = timeElapsed / STEP_TIME;
         float x = xStart + xDelta * factorComplete;
         float y = yStart + yDelta * factorComplete;
         charVisual.setLocation( x, y );
 
         // finished if we're over on the next step
-        return (timeElapsed + GameTimer.tickTime()) / STEP_TIME >= 1;
+        // approximating the next tick time to be the same as this time
+        return ( timeElapsed + dt ) / STEP_TIME >= 1;
     }
 
     @Override

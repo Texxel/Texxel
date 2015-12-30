@@ -33,13 +33,13 @@ public class IdleAction implements Action {
     }
 
     @Override
-    public boolean update() {
+    public boolean update( float dt ) {
         character.spend( idleTime );
         return true;
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         return true;
     }
 

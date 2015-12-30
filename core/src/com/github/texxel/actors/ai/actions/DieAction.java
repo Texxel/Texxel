@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.sprites.api.CharVisual;
-import com.github.texxel.utils.GameTimer;
 
 public class DieAction implements Action {
 
@@ -24,13 +23,13 @@ public class DieAction implements Action {
     }
 
     @Override
-    public boolean update() {
-        timeToFinish -= GameTimer.tickTime();
+    public boolean update( float dt ) {
+        timeToFinish -= dt;
         return timeToFinish <= 0;
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         // TODO make character fade out
         return true;
     }

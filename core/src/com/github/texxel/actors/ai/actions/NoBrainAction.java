@@ -23,12 +23,12 @@ public class NoBrainAction implements Action {
     }
 
     @Override
-    public boolean update() {
+    public boolean update( float dt ) {
         return true;
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         return true;
     }
 

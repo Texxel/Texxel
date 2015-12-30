@@ -78,7 +78,7 @@ public class LevelRenderer implements GameRenderer {
     }
 
     @Override
-    public void render( Level level ) {
+    public void render( Level level, float dt ) {
         tileMap = level.getTileMap();
         fog = level.getFogOfWar();
 
@@ -100,7 +100,7 @@ public class LevelRenderer implements GameRenderer {
         for ( Visual visual : specialVisuals )
             batch.draw( visual );
 
-        batch.flush();
+        batch.flush( dt );
     }
 
 }

@@ -31,7 +31,7 @@ public class PickUpAction implements Action {
     }
 
     @Override
-    public boolean update() {
+    public boolean update( float dt ) {
         Item item = heap.pop();
         if ( !hero.getInventory().getBackPack().collect( item ) )
             heap.add( item );
@@ -39,7 +39,7 @@ public class PickUpAction implements Action {
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         // nothing to do
         return true;
     }

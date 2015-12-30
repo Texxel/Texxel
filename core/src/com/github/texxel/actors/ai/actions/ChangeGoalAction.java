@@ -33,7 +33,7 @@ public class ChangeGoalAction implements Action {
     }
 
     @Override
-    public boolean update() {
+    public boolean update( float dt ) {
         if ( updated )
             throw new IllegalStateException( "The same ChangeGoalAction updated twice in actor " + actor
             + " and setting next goal of " + nextGoal );
@@ -43,7 +43,7 @@ public class ChangeGoalAction implements Action {
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         return true;
     }
 

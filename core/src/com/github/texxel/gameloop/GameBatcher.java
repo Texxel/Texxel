@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.NumberUtils;
 import com.github.texxel.sprites.api.CustomRenderer;
 import com.github.texxel.sprites.api.GroupVisual;
 import com.github.texxel.sprites.api.Visual;
-import com.github.texxel.utils.GameTimer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,12 +57,11 @@ public class GameBatcher {
      * Flushes all sprites in the batch. Upon calling this method, all the actual drawing is done.
      * Failing to call this method will result in the sprites just building up and up and eventually
      * causing a stack overflow error. This method should not be called until all sprites to be
-     * drawn for the frame have been added.
+     * drawn for the frame have been added. All the visuals will also be updated by an amount
+     * @param dt the amount of time to update the visuals by
      */
-    public void flush() {
+    public void flush( float dt ) {
         Batch batch = this.batch;
-        float dt = GameTimer.tickTime();
-
         batch.setProjectionMatrix( camera.combined );
 
         batch.begin();

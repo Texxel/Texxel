@@ -8,7 +8,7 @@ public interface GameUpdater {
      * Updates the game state a little bit more
      * @param level the level to update
      */
-    void update( Level level );
+    void update( Level level, float delta );
 
     /**
      * Called

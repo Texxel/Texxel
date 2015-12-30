@@ -5,7 +5,6 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.tiles.Interactable;
-import com.github.texxel.utils.GameTimer;
 
 public class HeroInteractAction implements Action {
 
@@ -31,8 +30,8 @@ public class HeroInteractAction implements Action {
     }
 
     @Override
-    public boolean update() {
-        timeToFinish -= GameTimer.tickTime();
+    public boolean update( float dt ) {
+        timeToFinish -= dt;
         if ( timeToFinish < 0 ) {
             tile.interact( hero );
             return true;
@@ -42,7 +41,7 @@ public class HeroInteractAction implements Action {
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         return true;
     }
 

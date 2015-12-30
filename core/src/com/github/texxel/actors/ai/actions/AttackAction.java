@@ -5,7 +5,6 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Action;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.sprites.imp.status.DamageStatus;
-import com.github.texxel.utils.GameTimer;
 import com.github.texxel.utils.Point2D;
 
 public class AttackAction implements Action {
@@ -35,8 +34,8 @@ public class AttackAction implements Action {
     }
 
     @Override
-    public boolean update() {
-        timeToFinish -= GameTimer.tickTime();
+    public boolean update( float dt ) {
+        timeToFinish -= -dt;
         if ( timeToFinish <= 0 ) {
             float damage = attacker.attack( defender );
             defender.getVisual().attach( new DamageStatus( defender.getVisual(), damage ) );
@@ -47,7 +46,7 @@ public class AttackAction implements Action {
     }
 
     @Override
-    public boolean render() {
+    public boolean render( float dt ) {
         // nothing to do: graphics done in onStart/onFinish
         return true;
     }

@@ -17,28 +17,33 @@ public class LevelUpdater implements GameUpdater {
     private Action currentAction;
 
     @Override
-    public void update( Level level ) {
+    public void update( Level level, float delta ) {
 
-        // update the action a little bit more
         do {
+            // the old action has finished: start a new action
             if ( currentAction == null ) {
                 Actor actor = getNextActor( level.getActors() );
-                //
+
+                // if the actor is already doing something, just wait for it to finish
                 if ( renderingActions.containsKey( actor ) )
                     break;
+
+                // start the new action
                 currentAction = getAction( actor );
                 currentAction.onStart();
                 renderingActions.put( actor, currentAction );
             }
 
-            // if the action finishes, move onto another action
-            if ( currentAction.update() ) {
+            // update a little bit more
+            if ( currentAction.update( delta ) ) {
+                // the action finished, move onto another action on next iteration
                 currentAction = null;
             }
+
         } while ( currentAction == null );
 
         // draw all the actions
-        renderActions();
+        renderActions( delta );
     }
 
     /**
@@ -49,6 +54,7 @@ public class LevelUpdater implements GameUpdater {
      */
     private static Action getAction( Actor actor ) {
 
+        // update the sensors
         List<Sensor> sensors = actor.getSensors();
         int size = sensors.size();
         for ( int i = 0; i < size; i++ ) {
@@ -57,13 +63,13 @@ public class LevelUpdater implements GameUpdater {
             sensor.update();
         }
 
+        // get the actor's action
         Goal goal = actor.getGoal();
         if ( goal == null )
             throw new IllegalStateException( actor + " had no goal" );
         Action action = goal.nextAction();
         if ( action == null )
             throw new IllegalStateException( goal + " returned null action. From goal" + goal );
-
         return action;
     }
 
@@ -89,12 +95,16 @@ public class LevelUpdater implements GameUpdater {
         return nextActor;
     }
 
-    private void renderActions() {
+    /**
+     * Tells all the actions to render a little bit more. When an action says it's finished
+     * rendering, it will be removed from renderingActions
+     */
+    private void renderActions( float delta ) {
         Iterator<Map.Entry<Actor, Action>> i = renderingActions.entrySet().iterator();
         while ( i.hasNext() ) {
             Map.Entry<Actor, Action> entry = i.next();
             Action action = entry.getValue();
-            if ( action.render() && ( action != currentAction ) ) {
+            if ( action.render( delta ) && ( action != currentAction ) ) {
                 action.onFinish();
                 i.remove();
             }
