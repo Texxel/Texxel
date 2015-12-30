@@ -21,7 +21,8 @@ public class GameTimer {
         long lastTick = now;
         now = System.nanoTime();
         long diff = now - lastTick;
-        GameTimer.diff = diff/1000000000f;
+        assert diff >= 0;
+        GameTimer.diff = Math.min( 0.1f, diff/1000000000f );
     }
 
     private GameTimer() {
