@@ -1,41 +1,108 @@
 package com.github.texxel.levels.components;
 
-import com.github.texxel.levels.Level;
+import com.github.texxel.Dungeon;
+import com.github.texxel.event.EventHandler;
+import com.github.texxel.event.listeners.level.LevelConstructionListener;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * LevelDescriptors describes the relationship between levels and how the hero should transverse
- * levels. If an object needs to have a persistent reference to a level, but does not require the
- * level data, it is much better to use a LevelDescriptor as the reference because it uses much less
- * memory and time to create and lets the garbage collector clean up the level data.
- */
-public interface LevelDescriptor extends Serializable {
+public class LevelDescriptor implements Serializable {
+
+    private static final long serialVersionUID = 3231534207288622150L;
+
+    private final Dungeon dungeon;
+    private final int id;
+    private final EventHandler<LevelConstructionListener> handler = new EventHandler<>();
+
+    private int width = 32, height = 32;
+    private LevelPlanner planner = new BasicPlanner();
+    private List<LevelDecorator> decorators = new ArrayList<>();
 
     /**
-     * <p>Constructs the level. This is only the very basic construction of the level; you should use
-     * {@link com.github.texxel.Dungeon#make(LevelDescriptor)} to get a fully furnished level.</p>
-     * <p>Note: implementations of this interface should <i>not</i> cache the
-     * created level as it would mean that the garbage collector couldn't clean up. Thus, every call
-     * to this method must create/load a new Level (which is an expensive task!).</p>
-     * @return the created level
+     * Constructs a level constructor that will create a level in the given dungeon with the given id
+     * @param dungeon the dungeon the level is in
+     * @param id the levels id
      */
-    Level construct();
+    public LevelDescriptor(Dungeon dungeon, int id) {
+        this.dungeon = dungeon;
+        this.id = id;
+        decorators.add( new BasicDecorator() );
+    }
 
-    int width();
+    /**
+     * Gets the dungeon the level is in
+     * @return the dungeon
+     */
+    public Dungeon dungeon() {
+        return dungeon;
+    }
 
-    int height();
+    /**
+     * Gets the id of the level being built
+     * @return the levels id
+     */
+    public int id() {
+        return id;
+    }
 
-    void setSize( int width, int height );
 
-    LevelBuilder getBuilder();
+    /**
+     * Gets the planned width of the level
+     * @return the levels width
+     */
+    public int width() {
+        return width;
+    }
 
-    void setBuilder( LevelBuilder builder );
+    /**
+     * Gets the planned height of the level
+     * @return the levels height
+     */
+    public int height() {
+        return height;
+    }
 
-    LevelDecorator getDecorator();
+    /**
+     * Sets the size that a level will be created at
+     * @param width the levels new width
+     * @param height the levels new height
+     * @return this
+     */
+    public LevelDescriptor setSize( int width, int height ) {
+        this.width = width;
+        this.height = height;
+        return this;
+    }
 
-    void setDecorator( LevelDecorator decorator );
+    /**
+     * Gets the LevelPlanner that will generate the room layout
+     * @return the level planner
+     */
+    public LevelPlanner getPlanner() {
+        return planner;
+    }
 
-    int id();
+    /**
+     * Sets the planner for the level
+     * @param planner the levels new planner
+     * @return this
+     */
+    public LevelDescriptor setPlanner( LevelPlanner planner ) {
+        if ( planner == null )
+            throw new NullPointerException( "'planner' cannot be null" );
+        this.planner = planner;
+        return this;
+    }
+
+    /**
+     * Gets a list of all the decorators. Decorators can be added/removed as pleased. Do not add
+     * null!
+     * @return the decorators for this level
+     */
+    public List<LevelDecorator> getDecorators() {
+        return decorators;
+    }
 
 }

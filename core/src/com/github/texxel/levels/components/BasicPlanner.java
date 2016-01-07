@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class BasicBuilder implements LevelBuilder {
+public class BasicPlanner implements LevelPlanner {
 
     /**
      * The absolutely minimum size room that can be generated (must be less than half of minRoomSize)

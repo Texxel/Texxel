@@ -16,7 +16,7 @@ public abstract class AbstractActor implements Actor {
     private Goal goal;
     private final List<Sensor> sensors = new ArrayList<>();
     private final List<Sensor> unmodifiableSensors = Collections.unmodifiableList( sensors );
-    private final Level level;
+    private Level level;
 
     /**
      * Constructs an actor who's time is at 0. Make sure to set the actor's brain as well
@@ -48,8 +48,21 @@ public abstract class AbstractActor implements Actor {
 
     @Override
     public Goal getGoal() {
+        if ( goal == null ) {
+            goal = defaultGoal();
+            if ( goal == null )
+                throw new NullPointerException( getClass() + " returned a null default goal" );
+        }
         return goal;
     }
+
+    /**
+     * Gets the goal that this actor should go back to when there is no goal set. In Texxel, this
+     * is only used for setting an initial goal and setting a new goal when the actor moves from
+     * one depth to the next
+     * @return a default goal
+     */
+    protected abstract Goal defaultGoal();
 
     @Override
     public void setGoal( Goal goal ) {

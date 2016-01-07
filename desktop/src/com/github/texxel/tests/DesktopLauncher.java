@@ -9,6 +9,6 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 400;
 		config.height = 600;
-		new LwjglApplication(new Texxel(), config);
+		new LwjglApplication(new Texxel( new DesktopModLoader() ), config);
 	}
 }

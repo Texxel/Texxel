@@ -29,8 +29,4 @@ public class StairsDownTile extends StairsTile implements Interactable {
         return TileAssets.STAIRS_DOWN;
     }
 
-    @Override
-    protected IntervalLevelScreen.TransitionReason transitionReason() {
-        return IntervalLevelScreen.StandardTransitionReason.STAIRS_DESCENDING;
-    }
 }

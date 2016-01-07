@@ -1,40 +1,52 @@
 package com.github.texxel.event.listeners.level;
 
 import com.github.texxel.event.Listener;
-import com.github.texxel.event.events.level.LevelPlanEvent;
 import com.github.texxel.levels.Level;
+import com.github.texxel.levels.components.LevelDescriptor;
+import com.github.texxel.levels.components.Room;
 
+import java.util.Collection;
+
+/**
+ * The LevelConstructionListener can listen to and alter how a level is made. A level construction
+ * goes through multiple phases:
+ * <ol>
+ *     <li>Listeners are notified: {@link #onConstructionStarted(LevelDescriptor)}</li>
+ *     <li>The Level is built</li>
+ *     <li>Listeners are notified: {@link #onLevelInitialised(LevelDescriptor, Level)}</li>
+ *     <li>The Planner is told to plan the level</li>
+ *     <li>Listeners are informed: {@link #onLevelPlanned(LevelDescriptor, Level, Collection)}</li>
+ *     <li>The decorators are told to decorate the level</li>
+ *     <li>The listeners are informed: {@link #onLevelCreated(LevelDescriptor, Level, Collection)}</li>
+ * </ol>
+ */
 public interface LevelConstructionListener extends Listener {
 
     /**
-     * Called as the very first step to designing a level. Anything can be changed at this point.
-     * Most changes should just edit methods in the LevelDescriptor gotten from
-     * {@link LevelPlanEvent#getLevel()}. However, an entirely differernt level can be chosen with
-     * by setting a different LevelDescriptor.
-     * @param e say what you want here
+     * Called before the level is constructed. This gives listeners a chance to configure the
+     * LevelDescriptor as they like.
+     * @param constructor the constructor that will build the level
      */
-    void onLevelPlan( LevelPlanEvent e );
+    void onConstructionStarted( LevelDescriptor constructor );
 
     /**
-     * Called directly after the LevelBuilder and LevelDecorator has done their work. At this point,
-     * the basic tile layout has finished but there are no mobs or items. It is best to change tiles
-     * in this event as there is no chance of effecting things like mobs
-     * @param level the level
-     * LevelDecorator paid any attention to it)
+     * Called after the level has been created but before anything else has been done.
+     * @param descriptor the descriptor the level is created from
+     * @param level the created level
      */
-    void onTilesPlaced( Level level );
+    void onLevelInitialised( LevelDescriptor descriptor, Level level );
 
     /**
-     * Called after the level has asked to be populated.
-     * @param level the level
+     * Called when the level has been planned out.
+     * @param level the level that is getting planned
+     * @param rooms the rooms used to make this level. The list cannot be modified.
      */
-    void onLevelPopulated( Level level );
+    void onLevelPlanned( LevelDescriptor descriptor, Level level, Collection<Room> rooms );
 
     /**
-     * Called as a final step to the Level creation. Small edits can be made here, but try to keep
-     * this event as a read-only event.
-     * @param level the level
+     * Called when the level has been constructed. No further actions will occur after this.
+     * @param level the constructed level
+     * @param rooms the rooms used to make this level. The list cannot be modified.
      */
-    void onLevelCreated( Level level );
-
+    void onLevelCreated( LevelDescriptor descriptor, Level level, Collection<Room> rooms );
 }

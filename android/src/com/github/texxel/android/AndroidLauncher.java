@@ -14,6 +14,6 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useImmersiveMode = true;
 		config.useAccelerometer = false;
 		config.useCompass = false;
-		initialize( new Texxel(), config );
+		initialize( new Texxel( new AndriodModLoader( this ) ), config );
 	}
 }

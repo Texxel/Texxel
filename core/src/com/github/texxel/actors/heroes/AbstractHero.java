@@ -1,6 +1,7 @@
 package com.github.texxel.actors.heroes;
 
 import com.github.texxel.actors.AbstractChar;
+import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.goals.HeroIdleGoal;
 import com.github.texxel.actors.ai.sensors.HeroDamageSensor;
 import com.github.texxel.actors.ai.sensors.HeroDangerSensor;
@@ -36,7 +37,6 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     public AbstractHero( Level level, Point2D spawn ) {
         super( level, spawn, 100 );
         updateFog();
-        setGoal( new HeroIdleGoal( this ) );
         addSensor( new HeroDangerSensor( this ) );
         addSensor( new HeroDamageSensor( this ) );
         Listener listener = new Listener();
@@ -47,12 +47,23 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
     }
 
     @Override
+    protected Goal defaultGoal() {
+        return new HeroIdleGoal( this );
+    }
+
+    @Override
     public HeroFOV getVision() {
         FieldOfVision fov = super.getVision();
         if ( fov instanceof HeroFOV )
             return (HeroFOV)fov;
         else
+            // this should never be able to happen since makeFOV() returns a HeroFOV
             throw new ClassCastException( "Hero's FOV must be instance of HeroFOV" );
+    }
+
+    @Override
+    protected HeroFOV makeFOV() {
+        return new BasicHeroFOV( level().getTileMap().getLosBlocking(), getLocation() );
     }
 
     private void updateFog() {
@@ -88,11 +99,6 @@ public abstract class AbstractHero extends AbstractChar implements Hero {
         location = super.setLocation( location );
         updateFog();
         return location;
-    }
-
-    @Override
-    protected FieldOfVision makeFOV() {
-        return new BasicHeroFOV( level().getTileMap().getLosBlocking(), getLocation() );
     }
 
     @Override

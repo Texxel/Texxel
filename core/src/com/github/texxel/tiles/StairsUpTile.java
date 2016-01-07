@@ -29,8 +29,4 @@ public class StairsUpTile extends StairsTile implements Interactable {
         return "some stairs. I wonder what's up there";
     }
 
-    @Override
-    protected IntervalLevelScreen.TransitionReason transitionReason() {
-        return IntervalLevelScreen.StandardTransitionReason.STAIRS_ASCEND;
-    }
 }

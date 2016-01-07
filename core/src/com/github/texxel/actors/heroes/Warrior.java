@@ -1,5 +1,7 @@
 package com.github.texxel.actors.heroes;
 
+import com.github.texxel.actors.Actor;
+import com.github.texxel.actors.ai.goals.HeroIdleGoal;
 import com.github.texxel.levels.Level;
 import com.github.texxel.sprites.api.HeroVisual;
 import com.github.texxel.sprites.imp.herovisuals.WarriorVisual;
@@ -39,4 +41,5 @@ public class Warrior extends AbstractHero {
         input.defaultReadObject();
         sprite = new WarriorVisual();
     }
+
 }

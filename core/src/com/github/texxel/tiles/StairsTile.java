@@ -1,8 +1,9 @@
 package com.github.texxel.tiles;
 
-import com.github.texxel.Dungeon;
 import com.github.texxel.Texxel;
 import com.github.texxel.actors.Char;
+import com.github.texxel.actors.heroes.Hero;
+import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.scenes.IntervalLevelScreen;
 
@@ -10,16 +11,16 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
 
     private static final long serialVersionUID = -335016907648851199L;
 
-    private final Dungeon dungeon;
+    private final Level level;
     private final int x, y;
     private LevelDescriptor targetLevel;
 
-    public StairsTile( Dungeon dungeon, LevelDescriptor nextLevel, int x, int y ) {
-        if ( dungeon == null )
-            throw new NullPointerException( "'dungeon' cannot be null" );
+    public StairsTile( Level level, LevelDescriptor nextLevel, int x, int y ) {
+        if ( level == null )
+            throw new NullPointerException( "'level' cannot be null" );
         if ( nextLevel == null )
             throw new NullPointerException( "'nextLevel' cannot be null" );
-        this.dungeon = dungeon;
+        this.level = level;
         this.targetLevel = nextLevel;
         this.x = x;
         this.y = y;
@@ -42,15 +43,16 @@ public abstract class StairsTile extends AbstractTile implements Interactable {
 
     @Override
     public void interact( Char ch ) {
+        if ( !(ch instanceof Hero) )
+            return;
         Texxel.getInstance().setScreen(
-                new IntervalLevelScreen( dungeon, targetLevel, transitionReason() ) );
+                new IntervalLevelScreen( level.dungeon(), level, targetLevel, (Hero)ch ) );
     }
-
-    protected abstract IntervalLevelScreen.TransitionReason transitionReason();
 
     @Override
     public boolean canInteract( Char ch ) {
-        return ch.getLocation().equals( x, y );
+        // only hero's can move though levels
+        return ch instanceof Hero && ch.getLocation().equals( x, y );
     }
 
     /**

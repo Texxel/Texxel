@@ -30,6 +30,7 @@ import java.io.ObjectOutputStream;
 
 public class GameScene implements Screen {
 
+    // world things
     private final Dungeon dungeon;
     private final Level level;
     private GameUpdater updater;
@@ -37,22 +38,27 @@ public class GameScene implements Screen {
     private Hero player;
     private OrthographicCamera gameCamera;
 
+    // ui things
     private Stage ui;
     private ScreenViewport viewport;
 
+    /**
+     * Creates a visual display for the given level
+     * @param dungeon the dungeon the game scene is for
+     * @param level the level to display
+     * @param player the hero to track
+     */
+    public GameScene( Dungeon dungeon, Level level, Hero player ) {
+        if ( dungeon == null )
+            throw new NullPointerException( "dungeon cannot be null" );
+        if ( level == null )
+            throw new NullPointerException( "level cannot be null" );
+        if ( player == null )
+            throw new NullPointerException( "player cannot be null" );
 
-    public GameScene( Dungeon dungeon, Level level ) {
         this.dungeon = dungeon;
         this.level = level;
-
-        // super hacky method to find hero
-        for ( Char c : level.getCharacters() ) {
-            if ( c instanceof Hero ) {
-                setPlayer( (Hero)c );
-                break;
-            }
-        }
-        assert getPlayer() != null;
+        this.player = player;
     }
 
     @Override
@@ -115,14 +121,39 @@ public class GameScene implements Screen {
         return player;
     }
 
+    /**
+     * Sets what player should get tracked. This is the character that the user sees. Texxel will
+     * never change this - but who knows what a mod will do.
+     * @param player the tracked player
+     */
     public void setPlayer( Hero player ) {
         if ( player == null )
             throw new NullPointerException( "'player' cannot be null" );
         this.player = player;
     }
 
+    /**
+     * Gets the Camera that is displaying the world
+     * @return the worlds camera
+     */
     public OrthographicCamera getGameCamera() {
         return gameCamera;
+    }
+
+    /**
+     * Gets the level this GameScene is for
+     * @return the level
+     */
+    public Level getLevel() {
+        return level;
+    }
+
+    /**
+     * Gets the dungeon this GameScene is for
+     * @return the dungeon
+     */
+    public Dungeon getDungeon() {
+        return dungeon;
     }
 
     @Override
@@ -147,23 +178,13 @@ public class GameScene implements Screen {
     @Override
     public void hide() {
         ui.dispose();
-        ObjectOutputStream oos = null;
         try {
             dungeon.save();
-            FileHandle file = Gdx.files.local( "level-" + level.id() + ".json" );
-            oos = new ObjectOutputStream( new BufferedOutputStream( file.write( false ) ) );
-            oos.writeObject( level );
+            dungeon.save( level );
+            level.destroy();
         } catch ( IOException e ) {
             // TODO handle error while saving
             e.printStackTrace();
-        } finally {
-            if ( oos != null ) {
-                try {
-                    oos.close();
-                } catch ( IOException ignored ) {
-                    // just let the memory leak out
-                }
-            }
         }
     }
 
