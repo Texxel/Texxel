@@ -3,6 +3,7 @@ package com.github.texxel.actors;
 import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.levels.Level;
+import com.github.texxel.utils.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,13 @@ public abstract class AbstractActor implements Actor {
     }
 
     @Override
+    public void setLevel( Level level ) {
+        this.level = Assert.nonnull( level, "level cannot be null" );
+        // revert back to the default goal (since all context of the previous goal will be lost)
+        this.goal = null;
+    }
+
+    @Override
     public void spend( float energy ) {
         this.time += energy;
     }
@@ -48,11 +56,8 @@ public abstract class AbstractActor implements Actor {
 
     @Override
     public Goal getGoal() {
-        if ( goal == null ) {
-            goal = defaultGoal();
-            if ( goal == null )
-                throw new NullPointerException( getClass() + " returned a null default goal" );
-        }
+        if ( goal == null )
+            goal = Assert.nonnull( defaultGoal(), getClass() + " returned a null default goal" );
         return goal;
     }
 
@@ -91,5 +96,4 @@ public abstract class AbstractActor implements Actor {
         }
         sensor.onRemove();
     }
-
 }

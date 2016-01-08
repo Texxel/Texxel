@@ -2,9 +2,10 @@ package com.github.texxel.levels.components;
 
 import com.github.texxel.levels.Level;
 
+import java.io.Serializable;
 import java.util.Collection;
 
-public interface LevelDecorator {
+public interface LevelDecorator extends Serializable {
 
     /**
      * Decorates a level

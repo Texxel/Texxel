@@ -10,11 +10,6 @@ import com.github.texxel.levels.components.LevelDecorator;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.Room;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,18 +20,7 @@ public class Dungeon implements Serializable {
 
     private static final long serialVersionUID = -2168020760891847785L;
     private final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
-    private final int id;
     private final EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
-
-    {
-        for ( int i = 1; i <= 10; i++ ) {
-            register( i, new LevelDescriptor( this, i ) );
-        }
-    }
-
-    public Dungeon( int id ) {
-        this.id = id;
-    }
 
     /**
      * Sets the level that will generated when the specified id is asked for
@@ -74,55 +58,15 @@ public class Dungeon implements Serializable {
     }
 
     /**
-     * If the level has previously been visited, then the level will be read from memory. Otherwise,
-     * the level will be created anew. Note: the Dungeon does not remember levels, thus, every call
-     * to this method will generate a new level even if the level has already been created.
-     * @param descriptor the ID of the level to create
-     * @return the created level
-     * @throws NullPointerException if descriptor is null
-     */
-    public Level loadLevel( LevelDescriptor descriptor ) {
-        Level level = load( levelFile( descriptor.id() ) );
-        if ( level != null )
-            return level;
-        return make(descriptor);
-    }
-
-    /**
-     * Loads the level from the save file. Returns null if the level has not been saved
-     */
-    private static Level load( FileHandle file ) {
-        if ( !file.exists() )
-            return null;
-        ObjectInputStream ois = null;
-        Level level;
-        try {
-            ois = new ObjectInputStream( new BufferedInputStream( file.read() ) );
-            level = (Level) ois.readObject();
-        } catch ( IOException | ClassNotFoundException e ) {
-            e.printStackTrace();
-            // TODO better level loading exception handling
-            throw new RuntimeException( "Couldn't load level" );
-        } finally {
-            if ( ois != null )
-                try {
-                    ois.close();
-                } catch ( IOException ignored ) {
-                }
-        }
-        return level;
-    }
-
-    /**
      * Creates a brand new level
      */
-    private Level make( LevelDescriptor descriptor ) {
+    Level make( LevelDescriptor descriptor ) {
         ConstructionEvent event = new ConstructionEvent();
         event.state = State.STARTING;
         event.descriptor = descriptor;
         constructionHandler.dispatch(event);
 
-        Level level = new Level( this, id, descriptor.width(), descriptor.height() );
+        Level level = new Level( this, descriptor.id(), descriptor.width(), descriptor.height() );
 
         event.level = level;
         event.state = State.INITIALISED;
@@ -149,63 +93,8 @@ public class Dungeon implements Serializable {
         return level;
     }
 
-    /**
-     * The file that the given level will be saved to
-     */
-    private FileHandle levelFile( int id ) {
-        return Gdx.files.local( "d-" + this.id + "-l-" + id + ".dat" );
-    }
-
-    /**
-     * The file that this dungeon will be saved to
-     */
-    private FileHandle dungeonFile() {
-        return Gdx.files.local( "d-" + id + ".dat" );
-    }
-
-    /**
-     * Saves the dungeon to a file. Note: this does <b>not</b> save any levels - they must manually
-     * be saved separately using {@link #save(Level)}
-     */
-    public void save() throws IOException {
-        ObjectOutputStream oos = null;
-        try {
-            FileHandle output = dungeonFile();
-            oos = new ObjectOutputStream( new BufferedOutputStream( output.write( false ) ) );
-            oos.writeObject( this );
-        } finally {
-            if ( oos != null ) {
-                try {
-                    oos.close();
-                } catch ( IOException ignored ) {
-                    // just let the memory leak...
-                }
-            }
-        }
-    }
-
-    /**
-     * Saves a level overwriting whatever was previously saved.
-     * @param level the level to save
-     */
-    public void save( Level level ) throws IOException {
-        ObjectOutputStream oos = null;
-        try {
-            FileHandle output = levelFile( level.id() );
-            oos = new ObjectOutputStream( new BufferedOutputStream( output.write( false ) ) );
-            oos.writeObject( level );
-        } finally {
-            if ( oos != null ) {
-                try {
-                    oos.close();
-                } catch ( IOException ignored ) {
-                }
-            }
-        }
-    }
-
     // Level construction state
-    private enum State {
+    enum State {
         STARTING,
         INITIALISED,
         PLANNED,
@@ -213,7 +102,7 @@ public class Dungeon implements Serializable {
     }
 
     // Level construction event (never seen in listeners so only a single instance is needed per creation)
-    private static class ConstructionEvent implements Event<LevelConstructionListener> {
+    static class ConstructionEvent implements Event<LevelConstructionListener> {
 
         State state;
         LevelDescriptor descriptor;
@@ -241,6 +130,4 @@ public class Dungeon implements Serializable {
             return false;
         }
     }
-
-
 }

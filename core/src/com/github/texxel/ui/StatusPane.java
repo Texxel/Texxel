@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.github.texxel.GameState;
 import com.github.texxel.actors.heroes.Hero;
-import com.github.texxel.scenes.GameScene;
 import com.github.texxel.sprites.api.HeroVisual;
 
 /**
@@ -22,16 +22,16 @@ public class StatusPane extends Table {
             new NinePatch( new Texture( "ui/status_pane.png" ), 80, 42, 100, 1  ) );
 
     /**
-     * Constructs a Status panel about the hero in the given game scene
-     * @param scene the scene to get info about the hero from
+     * Constructs a Status panel about the hero in the given game game
+     * @param game the game to display info about
      */
-    public StatusPane( GameScene scene ) {
+    public StatusPane( GameState game ) {
         setFillParent( true );
         top();
         left();
         setBackground( patch );
 
-        add( new Avatar( scene ) );
+        add( new Avatar( game ) );
         add( new StatusPanel() );
     }
 
@@ -39,17 +39,17 @@ public class StatusPane extends Table {
 
         private static final float AVATAR_SIZE = 16;
         private static final float AVATAR_PAD  = 8;
-        private final GameScene scene;
+        private final GameState game;
 
-        Avatar( GameScene scene ) {
-            if ( scene == null )
-                throw new NullPointerException( "'scene' cannot be null" );
-            this.scene = scene;
+        Avatar( GameState game ) {
+            if ( game == null )
+                throw new NullPointerException( "'game' cannot be null" );
+            this.game = game;
         }
 
         @Override
         public void draw( Batch batch, float parentAlpha ) {
-            Hero hero = scene.getPlayer();
+            Hero hero = game.getPlayer();
             HeroVisual visual = hero.getVisual();
             TextureRegion region = visual.getRegion();
 

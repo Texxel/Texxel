@@ -69,6 +69,13 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
+    public void setLevel( Level level ) {
+        super.setLevel( level );
+        // recreate the fov
+        fov = null;
+    }
+
+    @Override
     public FieldOfVision getVision() {
         FieldOfVision fov = this.fov;
         if ( fov == null ) {

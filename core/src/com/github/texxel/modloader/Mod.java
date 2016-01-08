@@ -1,7 +1,7 @@
 package com.github.texxel.modloader;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.texxel.Dungeon;
+import com.github.texxel.GameState;
 
 public interface Mod {
 
@@ -11,6 +11,6 @@ public interface Mod {
 
     String description();
 
-    void onGameStart( Dungeon dungeon );
+    void onGameStart( GameState state );
 
 }

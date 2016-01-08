@@ -2,6 +2,7 @@ package com.github.texxel.actors.heaps;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.actors.AbstractActor;
+import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.items.EmptyItem;
 import com.github.texxel.items.api.Item;
 import com.github.texxel.levels.Level;
@@ -43,7 +44,11 @@ public final class Heap extends AbstractActor implements WorldVisual, Examinable
             throw new NullPointerException( "'location' cannot be null" );
         this.location = location;
         this.type = SimpleHeap.instance();
-        setGoal( new HeapGoal( this ) );
+    }
+
+    @Override
+    protected Goal defaultGoal() {
+        return new HeapGoal( this );
     }
 
     /**

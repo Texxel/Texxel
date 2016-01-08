@@ -1,8 +1,6 @@
 package com.github.texxel.levels.components;
 
 import com.github.texxel.Dungeon;
-import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.listeners.level.LevelConstructionListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,11 +12,9 @@ public class LevelDescriptor implements Serializable {
 
     private final Dungeon dungeon;
     private final int id;
-    private final EventHandler<LevelConstructionListener> handler = new EventHandler<>();
-
     private int width = 32, height = 32;
     private LevelPlanner planner = new BasicPlanner();
-    private List<LevelDecorator> decorators = new ArrayList<>();
+    private ArrayList<LevelDecorator> decorators = new ArrayList<>();
 
     /**
      * Constructs a level constructor that will create a level in the given dungeon with the given id

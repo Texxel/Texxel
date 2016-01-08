@@ -1,6 +1,7 @@
 package com.github.texxel.actors.mobs;
 
 import com.github.texxel.actors.AbstractChar;
+import com.github.texxel.actors.ai.Goal;
 import com.github.texxel.actors.ai.goals.MobWanderGoal;
 import com.github.texxel.actors.ai.sensors.MobEnemySensor;
 import com.github.texxel.levels.Level;
@@ -12,8 +13,12 @@ public abstract class AbstractMob extends AbstractChar implements Mob {
 
     public AbstractMob( Level level, Point2D spawn, float health ) {
         super( level, spawn, health );
-        setGoal( new MobWanderGoal( this ) );
         addSensor( new MobEnemySensor( this ) );
+    }
+
+    @Override
+    protected Goal defaultGoal() {
+        return new MobWanderGoal( this );
     }
 
     @Override

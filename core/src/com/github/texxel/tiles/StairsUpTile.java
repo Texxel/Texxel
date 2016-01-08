@@ -1,17 +1,14 @@
 package com.github.texxel.tiles;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.texxel.Dungeon;
-import com.github.texxel.levels.components.LevelDescriptor;
-import com.github.texxel.scenes.IntervalLevelScreen;
 import com.github.texxel.sprites.TileAssets;
 
-public class StairsUpTile extends StairsTile implements Interactable {
+public class StairsUpTile extends StairsTile {
 
     private static final long serialVersionUID = -8655260990341680009L;
 
-    public StairsUpTile( Dungeon dungeon, LevelDescriptor targetLevel, int x, int y ) {
-        super( dungeon, targetLevel, x, y );
+    public StairsUpTile( int targetLevel ) {
+        super( targetLevel );
     }
 
     @Override

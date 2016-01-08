@@ -38,13 +38,12 @@ public abstract class StairsRoom implements RoomType {
         Point2D center = getStairsLocation( room );
         int x = center.x;
         int y = center.y;
-        Tile stairs = getStairs( level, center );
+        Tile stairs = getStairs( level );
         tileMap.setTile( x, y, stairs );
     }
 
     /**
-     * Gets the location of the stairs tile. By default, this is the center of the room. The returned
-     * location will then be passed to the the {@link #getStairs(Level, Point2D)}
+     * Gets the location of the stairs tile. By default, this is the center of the room
      * method.
      * @param room the room that the stairs is.
      * @return the stairs location. Never null.
@@ -56,9 +55,8 @@ public abstract class StairsRoom implements RoomType {
     /**
      * Gets the tile that will be used as the stairs.
      * @param level the level the stairs are going to be placed into
-     * @param location the place the returned tile will be placed in the map
      * @return a new Tile. Never null
      */
-    protected abstract Tile getStairs( Level level, Point2D location );
+    protected abstract Tile getStairs( Level level );
 
 }

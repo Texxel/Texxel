@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.github.texxel.GameState;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.goals.HeroHuntGoal;
 import com.github.texxel.actors.ai.goals.HeroInteractGoal;
@@ -14,7 +15,6 @@ import com.github.texxel.actors.ai.goals.HeroPickUpGoal;
 import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.actors.heaps.Heap;
 import com.github.texxel.levels.Level;
-import com.github.texxel.scenes.GameScene;
 import com.github.texxel.utils.Point2D;
 
 /**
@@ -24,13 +24,17 @@ import com.github.texxel.utils.Point2D;
  */
 public class HeroControl extends InputListener {
 
-    private final GameScene game;
+    private final GameState game;
+    private final Camera uiCamera;
+    private final Camera gameCamera;
     private final Vector3 vec3 = new Vector3();
 
     private final Vector2 touchDown = new Vector2();
 
-    public HeroControl( final GameScene game ) {
+    public HeroControl( GameState game, Camera uiCamera, Camera gameCamera ) {
         this.game = game;
+        this.uiCamera = uiCamera;
+        this.gameCamera = gameCamera;
     }
 
     @Override
@@ -61,13 +65,13 @@ public class HeroControl extends InputListener {
             vec3.set( x, y, 0 );
 
             // into screen coords
-            Camera uiCamera = game.getUserInterface().getCamera();
+            Camera uiCamera = this.uiCamera;
             uiCamera.project( vec3 );
             // flip the y axis (project assumes y up but we want y down)
             vec3.y = Gdx.graphics.getHeight() - vec3.y - 1;
 
             // into world coords
-            game.getGameCamera().unproject( vec3 );
+            gameCamera.unproject( vec3 );
 
             // select the cell
             onCellSelected( game.getPlayer(), (int) vec3.x, (int) vec3.y );

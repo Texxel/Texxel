@@ -10,11 +10,15 @@ import com.github.texxel.mechanics.Graph;
 import com.github.texxel.utils.Random;
 import com.github.texxel.utils.Rectangle;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class BasicPlanner implements LevelPlanner {
+
+    private static final long serialVersionUID = -2254785724105231981L;
 
     /**
      * The absolutely minimum size room that can be generated (must be less than half of minRoomSize)
@@ -36,20 +40,20 @@ public class BasicPlanner implements LevelPlanner {
     /**
      * A list of all the rooms that get generated. Many rooms are not used
      */
-    private final ArrayList<Room> allRooms = new ArrayList<>();
+    private transient ArrayList<Room> allRooms = new ArrayList<>();
     /**
      * A list of all the connected rooms. All rooms in this list will be accessible to the Hero
      */
-    private ArrayList<Room> connectedRooms = new ArrayList<>();
+    private transient ArrayList<Room> connectedRooms = new ArrayList<>();
 
     /**
      * The entrance room
      */
-    private Room roomEntrance = null;
+    private transient Room roomEntrance = null;
     /**
      * The exit room
      */
-    private Room roomExit = null;
+    private transient Room roomExit = null;
 
     @Override
     public Collection<Room> planRooms( int width, int height ) {
@@ -282,6 +286,15 @@ public class BasicPlanner implements LevelPlanner {
             }
         }
         */
+    }
+
+    private void readObject( ObjectInputStream in ) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+
+        this.allRooms = new ArrayList<>();
+        this.connectedRooms = new ArrayList<>();
+        this.roomEntrance = null;
+        this.roomExit = null;
     }
 
 }

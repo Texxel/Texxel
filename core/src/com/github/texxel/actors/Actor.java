@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface Actor extends Serializable {
 
+    // TODO actors should not have a level
+    // all stuff needing to know about the level should be done in the AI
     /**
      * Gets the level the actor is on
      * @return the current level
@@ -16,16 +18,11 @@ public interface Actor extends Serializable {
     Level level();
 
     /**
-     * Clones the actor to a new level. This method is used to make actors transverse levels. This
-     * method does not remove the actor from the current level nor add the actor to the next level -
-     * that is the responsibility of the caller (if appropriate).
-     *
-     * Even if the actor is not expected to cross level boundaries (like all mobs or heaps), a mod
-     * may want the actor to move across, thus, this method should always be carefully implemented.
-     * @param level the level to move to
-     * @return an exact clone of this actor but in the other level
+     * Sets the level this actor is in. This should be used sparingly as implementations might
+     * require recreating many objects when this is called.
+     * @param level the new level to go to
      */
-    Actor cloneTo( Level level );
+    void setLevel( Level level );
 
     /**
      * Sets back the next actions by an amount of turns

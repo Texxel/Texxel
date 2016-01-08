@@ -13,7 +13,6 @@ import com.github.texxel.event.listeners.actor.ActorSpawnListener;
 import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
 import com.github.texxel.items.api.Item;
-import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.TileFiller;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FogOfWar;
@@ -73,14 +72,6 @@ public class Level implements Serializable {
         };
         this.tileMap = new TileMap( width, height, filler );
         this.fog = new SimpleFog( width, height );
-    }
-
-    /**
-     * Gets the dungeon this level is in.
-     * @return the game's dungeon
-     */
-    public Dungeon dungeon() {
-        return dungeon;
     }
 
     public int id() {
@@ -306,8 +297,8 @@ public class Level implements Serializable {
      * returns suggests to ascend to this level.
      * @return the suggested next level
      */
-    public LevelDescriptor getLevelBelow() {
-        return dungeon().getDescriptor( id() + 1 );
+    public int getLevelBelow() {
+        return id() + 1;
     }
 
     /**
@@ -316,8 +307,8 @@ public class Level implements Serializable {
      * returns suggests to ascend to this level.
      * @return the suggested next level
      */
-    public LevelDescriptor getLevelAbove() {
-        return dungeon().getDescriptor( id() - 1 );
+    public int getLevelAbove() {
+        return id() - 1;
     }
 
     private void writeObject( ObjectOutputStream out ) throws IOException {
