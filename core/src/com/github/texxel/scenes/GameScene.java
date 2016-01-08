@@ -1,5 +1,6 @@
 package com.github.texxel.scenes;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,15 +23,18 @@ import com.github.texxel.ui.PixelSkin;
 import com.github.texxel.ui.StatusPane;
 import com.github.texxel.utils.Assert;
 
+import java.io.IOException;
+
 public class GameScene implements Screen {
 
     // world things
-    private final GameState state;
+    private GameState state;
     private GameUpdater updater;
     private GameRenderer renderer;
     private OrthographicCamera gameCamera;
 
     // ui things
+    private Game app;
     private Stage ui;
     private ScreenViewport viewport;
 
@@ -38,14 +42,13 @@ public class GameScene implements Screen {
      * Creates a visual display for the given game state
      * @param state the state of the game
      */
-    public GameScene( GameState state ) {
+    public GameScene( Game app, GameState state ) {
+        this.app = Assert.nonnull( app, "App cannot be null" );
         this.state = Assert.nonnull( state, "Game state cannot be null" );
     }
 
     @Override
     public void show() {
-
-        System.out.println( "GameScene loading: " + state.id() + " " + state.getLevel().id() );
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
@@ -67,7 +70,7 @@ public class GameScene implements Screen {
         Gdx.input.setInputProcessor( ui );
 
         ui.addListener( new HeroControl( state, ui.getCamera(), gameCamera ) );
-        ui.addActor( new DepthMover( state ) );
+        ui.addActor( new DepthMover( app, state ) );
         ui.addListener( new CameraControl( gameCamera, ui.getCamera() ) );
         ui.addActor( new HeroFollower( state, gameCamera ) );
 
@@ -99,6 +102,10 @@ public class GameScene implements Screen {
 
     public Stage getUserInterface() {
         return ui;
+    }
+
+    public Game getApp() {
+        return app;
     }
 
     public GameState getState() {
@@ -135,8 +142,12 @@ public class GameScene implements Screen {
     @Override
     public void hide() {
         ui.dispose();
-        System.out.println( "GameScene hiding: " + state.id() + " " + state.getLevel().id() );
-        state.save();
+        try {
+            state.save();
+        } catch ( IOException e ) {
+            throw new RuntimeException( "Couldn't save level", e );
+        }
+        state.getLevel().destroy();
     }
 
     @Override

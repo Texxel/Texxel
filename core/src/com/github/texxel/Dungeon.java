@@ -1,7 +1,5 @@
 package com.github.texxel;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.github.texxel.event.Event;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.level.LevelConstructionListener;
@@ -9,6 +7,7 @@ import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.LevelDecorator;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.Room;
+import com.github.texxel.utils.Assert;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -16,7 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class Dungeon implements Serializable {
+public final class Dungeon implements Serializable {
 
     private static final long serialVersionUID = -2168020760891847785L;
     private final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
@@ -28,9 +27,7 @@ public class Dungeon implements Serializable {
      * @param descriptor the descriptor for the level
      */
     public void register( int id, LevelDescriptor descriptor ) {
-        if ( descriptor == null )
-            throw new NullPointerException( "Cannot register a null level" );
-        levelRegistry.put( id, descriptor );
+        levelRegistry.put( id, Assert.nonnull( descriptor, "cannot register a null descriptor" ) );
     }
 
     /**
@@ -61,6 +58,8 @@ public class Dungeon implements Serializable {
      * Creates a brand new level
      */
     Level make( LevelDescriptor descriptor ) {
+        Assert.nonnull( descriptor, "cannot make a null level");
+
         ConstructionEvent event = new ConstructionEvent();
         event.state = State.STARTING;
         event.descriptor = descriptor;
@@ -91,6 +90,15 @@ public class Dungeon implements Serializable {
         constructionHandler.dispatch( event );
 
         return level;
+    }
+
+    /**
+     * Gets the construction handler. The construction handler has events fired every time a new
+     * level is generated.
+     * @return this dungeon's construction handler
+     */
+    public EventHandler<LevelConstructionListener> getConstructionHandler() {
+        return constructionHandler;
     }
 
     // Level construction state
@@ -124,8 +132,6 @@ public class Dungeon implements Serializable {
                 case DECORATED:
                     listener.onLevelCreated( descriptor, level, rooms );
                     break;
-                default:
-                    throw new RuntimeException( "This should never happen" );
             }
             return false;
         }

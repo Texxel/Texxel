@@ -10,16 +10,10 @@ import java.util.List;
 
 public class Texxel extends Game {
 
-    public static Texxel getInstance() {
-        return instance;
-    }
-    private static Texxel instance;
-
     private ModLoader loader;
     private List<Mod> modList;
 
     public Texxel( ModLoader loader ) {
-        instance = this;
         this.loader = loader;
     }
 
@@ -37,7 +31,7 @@ public class Texxel extends Game {
             throw new RuntimeException( "Broken load", e );
         }
 
-        setScreen( new GameScene( state ) );
+        setScreen( new GameScene( this, state ) );
 
         for ( Mod mod : modList ) {
             mod.onGameStart( state );

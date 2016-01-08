@@ -2,6 +2,7 @@ package com.github.texxel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.github.texxel.actors.heroes.Hero;
 import com.github.texxel.actors.heroes.Warrior;
 import com.github.texxel.levels.Level;
@@ -96,8 +97,9 @@ public final class GameState {
      * level, generate/load the new level and place the hero into the new level. It will then save
      * the state of both the new level and the old level.
      * @param nextLevel the new level to progress to
+     * @throws IOException if any error occurs while loading a level
      */
-    public void progress( LevelDescriptor nextLevel ) {
+    public void progress( LevelDescriptor nextLevel ) throws IOException {
         Assert.nonnull( nextLevel, "Cannot go to a null level" );
 
         // update the previous level
@@ -111,12 +113,8 @@ public final class GameState {
         next.addActor( player );
 
         // save game state
-        try {
-            save( id, previous );
-            save();
-        } catch ( Exception e ) {
-
-        }
+        save( id, previous );
+        save();
     }
 
     /**
@@ -129,11 +127,11 @@ public final class GameState {
      * @return the created level
      * @throws NullPointerException if descriptor is null
      */
-    private Level loadLevel( LevelDescriptor descriptor ) {
+    private Level loadLevel( LevelDescriptor descriptor ) throws IOException {
         Level level = load( levelFile( id, descriptor.id() ) );
         if ( level != null )
             return level;
-        return getDungeon().make(descriptor);
+        return getDungeon().make( descriptor );
     }
 
     /**
@@ -153,16 +151,24 @@ public final class GameState {
     /**
      * Saves the current game state
      */
-    public void save() {
+    public void save() throws IOException {
+        ObjectOutputStream out = null;
         try {
-            ObjectOutputStream out = new ObjectOutputStream(
+            out = new ObjectOutputStream(
                     new BufferedOutputStream(
                             gameFile( id ).write( false )
                     ) );
             out.writeObject( dungeon );
             out.writeObject( player );
-            out.close();
-        } catch ( IOException e ) {
+        } catch ( GdxRuntimeException | IOException e ) {
+            throw new IOException( "Failed to save game state", e );
+        } finally {
+            if ( out != null ) {
+                try {
+                    out.close();
+                } catch ( IOException ignored ) {
+                }
+            }
         }
     }
 
@@ -176,6 +182,8 @@ public final class GameState {
             FileHandle output = levelFile( gameID, level.id() );
             oos = new ObjectOutputStream( new BufferedOutputStream( output.write( false ) ) );
             oos.writeObject( level );
+        } catch ( GdxRuntimeException | IOException e ) {
+            throw new IOException( "Failed to save level", e );
         } finally {
             if ( oos != null ) {
                 try {
@@ -189,24 +197,20 @@ public final class GameState {
     /**
      * Loads the level from the save file. Returns null if the level has not been saved
      */
-    private static Level load( FileHandle file ) {
-        System.out.println( "searching: " + file );
+    private static Level load( FileHandle file ) throws IOException {
         if ( !file.exists() )
             return null;
-        System.out.println( "reading it");
-        ObjectInputStream ois = null;
+        ObjectInputStream in = null;
         Level level;
         try {
-            ois = new ObjectInputStream( new BufferedInputStream( file.read() ) );
-            level = (Level) ois.readObject();
-        } catch ( IOException | ClassNotFoundException e ) {
-            e.printStackTrace();
-            // TODO better level loading exception handling
-            throw new RuntimeException( "Couldn't load level" );
+            in = new ObjectInputStream( new BufferedInputStream( file.read() ) );
+            level = (Level) in.readObject();
+        } catch ( GdxRuntimeException | IOException | ClassNotFoundException e ) {
+            throw new IOException( "Couldn't load level", e );
         } finally {
-            if ( ois != null )
+            if ( in != null )
                 try {
-                    ois.close();
+                    in.close();
                 } catch ( IOException ignored ) {
                 }
         }
