@@ -65,7 +65,7 @@ public final class Dungeon implements Serializable {
         event.descriptor = descriptor;
         constructionHandler.dispatch(event);
 
-        Level level = new Level( this, descriptor.id(), descriptor.width(), descriptor.height() );
+        Level level = new Level( descriptor.id(), descriptor.width(), descriptor.height() );
 
         event.level = level;
         event.state = State.INITIALISED;

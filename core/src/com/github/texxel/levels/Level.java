@@ -1,6 +1,5 @@
 package com.github.texxel.levels;
 
-import com.github.texxel.Dungeon;
 import com.github.texxel.actors.Actor;
 import com.github.texxel.actors.Char;
 import com.github.texxel.actors.heaps.Heap;
@@ -36,7 +35,6 @@ public class Level implements Serializable {
 
     private static final long serialVersionUID = 5335599560586674121L;
 
-    private final Dungeon dungeon;
     private final int id;
     private final int width, height;
 
@@ -59,8 +57,7 @@ public class Level implements Serializable {
     private transient List<Char> publicChars = Collections.unmodifiableList( charCache );
     private transient Map<Point2D, Heap> publicHeaps = Collections.unmodifiableMap( heapCache );
 
-    public Level( Dungeon dungeon, int id, int width, int height ) {
-        this.dungeon = dungeon;
+    public Level( int id, int width, int height ) {
         this.id = id;
         this.width = width;
         this.height = height;
