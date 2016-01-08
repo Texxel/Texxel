@@ -28,16 +28,19 @@ public final class GameState {
      * @param gameID the id of the game to load
      * @return the loaded game state or null if it does not exist
      */
-    public static GameState resume( int gameID ) throws IOException, ClassNotFoundException {
+    public static GameState resume( int gameID ) throws IOException {
         FileHandle file = gameFile( gameID );
         if ( !file.exists() )
             return null;
 
-        ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( file.read() ) );
-        Dungeon dungeon = (Dungeon)in.readObject();
-        Hero player = (Hero)in.readObject();
-
-        return new GameState( gameID, dungeon, player );
+        try {
+            ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( file.read() ) );
+            Dungeon dungeon = (Dungeon) in.readObject();
+            Hero player = (Hero) in.readObject();
+            return new GameState( gameID, dungeon, player );
+        } catch ( Exception e ) {
+            throw new IOException( "Unable to load save file", e );
+        }
     }
 
     /**

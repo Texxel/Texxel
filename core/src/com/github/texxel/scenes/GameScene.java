@@ -2,13 +2,11 @@ package com.github.texxel.scenes;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.texxel.GameState;
 import com.github.texxel.gameloop.GameRenderer;
 import com.github.texxel.gameloop.GameUpdater;
@@ -25,7 +23,7 @@ import com.github.texxel.utils.Assert;
 
 import java.io.IOException;
 
-public class GameScene implements Screen {
+public class GameScene extends PixelScreen {
 
     // world things
     private GameState state;
@@ -33,22 +31,18 @@ public class GameScene implements Screen {
     private GameRenderer renderer;
     private OrthographicCamera gameCamera;
 
-    // ui things
-    private Game app;
-    private Stage ui;
-    private ScreenViewport viewport;
-
     /**
      * Creates a visual display for the given game state
      * @param state the state of the game
      */
     public GameScene( Game app, GameState state ) {
-        this.app = Assert.nonnull( app, "App cannot be null" );
+        super( app );
         this.state = Assert.nonnull( state, "Game state cannot be null" );
     }
 
     @Override
     public void show() {
+        super.show();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
@@ -63,14 +57,11 @@ public class GameScene implements Screen {
         updater = new LevelUpdater();
         renderer = new LevelRenderer( gameCamera );
 
-
         // Set up the ui
-        viewport = new ScreenViewport();
-        ui = new Stage( viewport );
-        Gdx.input.setInputProcessor( ui );
+        final Stage ui = getUserInterface();
 
         ui.addListener( new HeroControl( state, ui.getCamera(), gameCamera ) );
-        ui.addActor( new DepthMover( app, state ) );
+        ui.addActor( new DepthMover( getApp(), state ) );
         ui.addListener( new CameraControl( gameCamera, ui.getCamera() ) );
         ui.addActor( new HeroFollower( state, gameCamera ) );
 
@@ -95,17 +86,7 @@ public class GameScene implements Screen {
         updater.update( state.getLevel(), delta );
         renderer.render( state.getLevel(), delta );
 
-        ui.getViewport().apply();
-        ui.act( delta );
-        ui.draw();
-    }
-
-    public Stage getUserInterface() {
-        return ui;
-    }
-
-    public Game getApp() {
-        return app;
+        super.render( delta );
     }
 
     public GameState getState() {
@@ -124,11 +105,6 @@ public class GameScene implements Screen {
     public void resize( int width, int height ) {
         gameCamera.viewportHeight = gameCamera.viewportWidth * height / width;
         gameCamera.update();
-
-        // set the viewport so there are 160 pixels along the smallest axis
-        float unitPerPixels = 160f / Math.min( width, height );
-        viewport.setUnitsPerPixel( unitPerPixels );
-        viewport.update( width, height, true );
     }
 
     @Override
@@ -141,7 +117,6 @@ public class GameScene implements Screen {
 
     @Override
     public void hide() {
-        ui.dispose();
         try {
             state.save();
         } catch ( IOException e ) {
