@@ -2,6 +2,7 @@ package com.github.texxel.levels;
 
 import com.github.texxel.actors.Actor;
 import com.github.texxel.actors.Char;
+import com.github.texxel.actors.MobConstructor;
 import com.github.texxel.actors.heaps.Heap;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.events.actor.ActorDestroyEvent;
@@ -23,6 +24,7 @@ import com.github.texxel.tiles.WallTile;
 import com.github.texxel.utils.Assert;
 import com.github.texxel.utils.Point2D;
 import com.github.texxel.utils.Random;
+import com.github.texxel.utils.RandomCategory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -44,6 +46,7 @@ public class Level implements Serializable {
     private String theme;
     private final TileMap tileMap;
     private final ArrayList<Actor> actors = new ArrayList<>();
+    private RandomCategory<MobConstructor> bestiary = new RandomCategory<>();
 
     // TODO fog should be moved to the UI
     private final FogOfWar fog;
@@ -74,6 +77,26 @@ public class Level implements Serializable {
         this.tileMap = new TileMap( width, height, filler );
         this.fog = new SimpleFog( width, height );
         this.theme = Assert.nonnull( theme, "Theme cannot be null" );
+
+        actors.add( new MobSpawner( this ) );
+    }
+
+    /**
+     * Gets the mobs that will spawn at this level
+     * @return this levels mobs
+     */
+    public RandomCategory<MobConstructor> getBestiary() {
+        return bestiary;
+    }
+
+    /**
+     * Sets a new Bestiary to use for this level. Note: This should not be used to share bestiaries
+     * between levels as the bestiaries will be cloned when the game is saved/loaded.
+     * @return this
+     */
+    public Level setBestiary( RandomCategory<MobConstructor> bestiary ) {
+        this.bestiary = Assert.nonnull( bestiary, "Cannot set a null bestiary" );
+        return this;
     }
 
     /**

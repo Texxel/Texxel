@@ -1,7 +1,9 @@
 package com.github.texxel.levels.components;
 
 import com.github.texxel.Dungeon;
+import com.github.texxel.actors.MobConstructor;
 import com.github.texxel.utils.Assert;
+import com.github.texxel.utils.RandomCategory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ public class LevelDescriptor implements Serializable {
     private int width = 32, height = 32;
     private LevelPlanner planner = new BasicPlanner();
     private ArrayList<LevelDecorator> decorators = new ArrayList<>();
+    private RandomCategory<MobConstructor> bestiary = new RandomCategory<>();
     private String theme = ThemeRegistry.DEFAULT;
 
     /**
@@ -119,5 +122,9 @@ public class LevelDescriptor implements Serializable {
     public LevelDescriptor setTheme( String theme ) {
         this.theme = Assert.nonnull( theme, "Theme cannot be null" );
         return this;
+    }
+
+    public RandomCategory<MobConstructor> getBestiary() {
+        return bestiary;
     }
 }

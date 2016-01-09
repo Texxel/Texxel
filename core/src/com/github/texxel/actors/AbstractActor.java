@@ -20,7 +20,7 @@ public abstract class AbstractActor implements Actor {
     private Level level;
 
     /**
-     * Constructs an actor who's time is at 0. Make sure to set the actor's brain as well
+     * Constructs an actor who's time is at 0
      */
     public AbstractActor( Level level ) {
         time = 0;

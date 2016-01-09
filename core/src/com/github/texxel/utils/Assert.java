@@ -59,4 +59,26 @@ public class Assert {
         return n;
     }
 
+    /**
+     * Makes sure that n >= min
+     * @param message the error message if n < min
+     * @return n
+     */
+    public static float over( float n, float min, String message ) {
+        if ( n < min )
+            throw new IllegalArgumentException( message );
+        return n;
+    }
+
+    /**
+     * Makes sure that n <= min
+     * @param message the error message if n > max
+     * @return n
+     */
+    public static float under( float n, float max, String message ) {
+        if ( n > max )
+            throw new IllegalArgumentException( message );
+        return n;
+    }
+
 }

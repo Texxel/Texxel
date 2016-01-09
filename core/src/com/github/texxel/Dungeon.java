@@ -1,5 +1,6 @@
 package com.github.texxel;
 
+import com.github.texxel.actors.mobs.Rat;
 import com.github.texxel.event.Event;
 import com.github.texxel.event.EventHandler;
 import com.github.texxel.event.listeners.level.LevelConstructionListener;
@@ -24,8 +25,11 @@ public final class Dungeon implements Serializable {
 
     {
         // register the default levels
-        for ( int i = 1; i <= 5; i++ )
-            register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.SEWERS ) );
+        for ( int i = 1; i <= 5; i++ ) {
+            LevelDescriptor descriptor = new LevelDescriptor( this, i ).setTheme( ThemeRegistry.SEWERS );
+            descriptor.getBestiary().add( Rat.constructor(), 1 );
+            register( i, descriptor );
+        }
         for ( int i = 6; i <= 10; i++ )
             register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.PRISON ) );
         for ( int i = 11; i <= 15; i++ )
@@ -81,7 +85,12 @@ public final class Dungeon implements Serializable {
         event.descriptor = descriptor;
         constructionHandler.dispatch(event);
 
-        Level level = new Level( descriptor.id(), descriptor.width(), descriptor.height(), descriptor.getTheme() );
+        Level level = new Level(
+                descriptor.id(),
+                descriptor.width(), descriptor.height(),
+                descriptor.getTheme()
+        );
+        level.setBestiary( descriptor.getBestiary() );
 
         event.level = level;
         event.state = State.INITIALISED;

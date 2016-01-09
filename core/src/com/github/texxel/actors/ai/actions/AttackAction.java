@@ -35,7 +35,7 @@ public class AttackAction implements Action {
 
     @Override
     public boolean update( float dt ) {
-        timeToFinish -= -dt;
+        timeToFinish -= dt;
         if ( timeToFinish <= 0 ) {
             float damage = attacker.attack( defender );
             defender.getVisual().attach( new DamageStatus( defender.getVisual(), damage ) );
