@@ -21,6 +21,12 @@ public class TileAssets {
 
     public static final int SIZE = 16;
 
+    public static final Texture SEWER_TEXTURE  = new Texture( Gdx.files.internal( "game/tiles0.png" ) );
+    public static final Texture PRISON_TEXTURE = new Texture( Gdx.files.internal( "game/tiles1.png" ) );
+    public static final Texture CAVES_TEXTURE  = new Texture( Gdx.files.internal( "game/tiles2.png" ) );
+    public static final Texture CITY_TEXTURE   = new Texture( Gdx.files.internal( "game/tiles3.png" ) );
+    public static final Texture HALLS_TEXTURE  = new Texture( Gdx.files.internal( "game/tiles4.png" ) );
+
     public static final TextureRegion CHASM           = defaultTexture( 0, 0 );
     public static final TextureRegion FLOOR           = defaultTexture( 1, 0 );
     public static final TextureRegion GRASS_SHORT     = defaultTexture( 2, 0 );
@@ -78,12 +84,6 @@ public class TileAssets {
     public static final TextureRegion WATER_NSW       = defaultTexture( 13, 3 );
     public static final TextureRegion WATER_ESW       = defaultTexture( 14, 3 );
     public static final TextureRegion WATER_NESW      = defaultTexture( 15, 3 );
-
-    public static final Texture SEWER_TEXTURE  = new Texture( Gdx.files.internal( "game/tiles0.png" ) );
-    public static final Texture PRISON_TEXTURE = new Texture( Gdx.files.internal( "game/tiles1.png" ) );
-    public static final Texture CAVES_TEXTURE  = new Texture( Gdx.files.internal( "game/tiles2.png" ) );
-    public static final Texture CITY_TEXTURE   = new Texture( Gdx.files.internal( "game/tiles3.png" ) );
-    public static final Texture HALLS_TEXTURE  = new Texture( Gdx.files.internal( "game/tiles4.png" ) );
 
     private static TextureRegion defaultTexture( int x, int y ) {
         return makeTexture( SEWER_TEXTURE, x, y );
