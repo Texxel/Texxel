@@ -12,12 +12,15 @@ import com.github.texxel.event.listeners.actor.ActorSpawnListener;
 import com.github.texxel.event.listeners.item.ItemDropListener;
 import com.github.texxel.event.listeners.level.LevelDestructionListener;
 import com.github.texxel.items.api.Item;
+import com.github.texxel.levels.components.Theme;
+import com.github.texxel.levels.components.ThemeRegistry;
 import com.github.texxel.levels.components.TileFiller;
 import com.github.texxel.levels.components.TileMap;
 import com.github.texxel.mechanics.FogOfWar;
 import com.github.texxel.mechanics.SimpleFog;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.tiles.WallTile;
+import com.github.texxel.utils.Assert;
 import com.github.texxel.utils.Point2D;
 import com.github.texxel.utils.Random;
 
@@ -35,14 +38,15 @@ public class Level implements Serializable {
 
     private static final long serialVersionUID = 5335599560586674121L;
 
+    // level data
     private final int id;
     private final int width, height;
+    private String theme;
+    private final TileMap tileMap;
+    private final ArrayList<Actor> actors = new ArrayList<>();
 
     // TODO fog should be moved to the UI
     private final FogOfWar fog;
-
-    private final TileMap tileMap;
-    private final ArrayList<Actor> actors = new ArrayList<>();
 
     // event handlers
     private final EventHandler<ActorSpawnListener> actorSpawnHandler = new EventHandler<>();
@@ -57,7 +61,7 @@ public class Level implements Serializable {
     private transient List<Char> publicChars = Collections.unmodifiableList( charCache );
     private transient Map<Point2D, Heap> publicHeaps = Collections.unmodifiableMap( heapCache );
 
-    public Level( int id, int width, int height ) {
+    public Level( int id, int width, int height, String theme ) {
         this.id = id;
         this.width = width;
         this.height = height;
@@ -69,6 +73,32 @@ public class Level implements Serializable {
         };
         this.tileMap = new TileMap( width, height, filler );
         this.fog = new SimpleFog( width, height );
+        this.theme = Assert.nonnull( theme, "Theme cannot be null" );
+    }
+
+    /**
+     * Gets the theme that this level is using. This is a convenience method for
+     * {@code ThemeRegistry.get( level.getThemeKey() )}.
+     * @return the levels theme
+     */
+    public Theme getTheme() {
+        return ThemeRegistry.get( theme );
+    }
+
+    /**
+     * Gets the key that this levels theme is using
+     * @return the level themes
+     */
+    public String getThemeKey() {
+        return theme;
+    }
+
+    /**
+     * Sets the theme to use for this level. The theme should be registered into {@link ThemeRegistry}.
+     * @param theme the new theme
+     */
+    public void setTheme( String theme ) {
+        this.theme = Assert.nonnull( theme, "Theme key cannot be null" );
     }
 
     public int id() {

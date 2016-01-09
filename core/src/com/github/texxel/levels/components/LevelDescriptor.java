@@ -1,6 +1,7 @@
 package com.github.texxel.levels.components;
 
 import com.github.texxel.Dungeon;
+import com.github.texxel.utils.Assert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class LevelDescriptor implements Serializable {
     private int width = 32, height = 32;
     private LevelPlanner planner = new BasicPlanner();
     private ArrayList<LevelDecorator> decorators = new ArrayList<>();
+    private String theme = ThemeRegistry.DEFAULT;
 
     /**
      * Constructs a level constructor that will create a level in the given dungeon with the given id
@@ -101,4 +103,21 @@ public class LevelDescriptor implements Serializable {
         return decorators;
     }
 
+    /**
+     * Gets the theme to use for the level
+     * @return the levels theme
+     */
+    public String getTheme() {
+        return theme;
+    }
+
+    /**
+     * Sets the theme the level will use
+     * @param theme the levels theme
+     * @return this
+     */
+    public LevelDescriptor setTheme( String theme ) {
+        this.theme = Assert.nonnull( theme, "Theme cannot be null" );
+        return this;
+    }
 }

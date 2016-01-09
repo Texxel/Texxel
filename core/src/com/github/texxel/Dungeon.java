@@ -7,6 +7,7 @@ import com.github.texxel.levels.Level;
 import com.github.texxel.levels.components.LevelDecorator;
 import com.github.texxel.levels.components.LevelDescriptor;
 import com.github.texxel.levels.components.Room;
+import com.github.texxel.levels.components.ThemeRegistry;
 import com.github.texxel.utils.Assert;
 
 import java.io.Serializable;
@@ -20,6 +21,20 @@ public final class Dungeon implements Serializable {
     private static final long serialVersionUID = -2168020760891847785L;
     private final HashMap<Integer, LevelDescriptor> levelRegistry = new HashMap<>();
     private final EventHandler<LevelConstructionListener> constructionHandler = new EventHandler<>();
+
+    {
+        // register the default levels
+        for ( int i = 1; i <= 1; i++ )
+            register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.SEWERS ) );
+        for ( int i = 2; i <= 2; i++ )
+            register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.PRISON ) );
+        for ( int i = 3; i <= 3; i++ )
+            register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.CAVES ) );
+        for ( int i = 4; i <= 4; i++ )
+            register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.CITY ) );
+        for ( int i = 5; i <= 5; i++ )
+            register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.HALLS ) );
+    }
 
     /**
      * Sets the level that will generated when the specified id is asked for
@@ -65,7 +80,7 @@ public final class Dungeon implements Serializable {
         event.descriptor = descriptor;
         constructionHandler.dispatch(event);
 
-        Level level = new Level( descriptor.id(), descriptor.width(), descriptor.height() );
+        Level level = new Level( descriptor.id(), descriptor.width(), descriptor.height(), descriptor.getTheme() );
 
         event.level = level;
         event.state = State.INITIALISED;

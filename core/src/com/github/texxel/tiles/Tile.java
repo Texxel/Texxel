@@ -39,7 +39,7 @@ public interface Tile extends Examinable, Serializable {
      * drawn with through the {@link WorldVisual} interface, the large amount of tiles meant that
      * Tiles had to be optimised to be drawn as simple texture regions. All tiles will be drawn at
      * depth 0. Generally, a tile will also want to register different textures with all the Themes.
-     * @return the default texture this tile
+     * @return the default texture this tile. Never null
      */
     TextureRegion getDefaultImage();
 

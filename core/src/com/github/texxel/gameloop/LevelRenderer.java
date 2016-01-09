@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.texxel.actors.Actor;
 import com.github.texxel.levels.Level;
+import com.github.texxel.levels.components.Theme;
 import com.github.texxel.levels.components.TileMap;
-import com.github.texxel.mechanics.FogOfWar;
 import com.github.texxel.sprites.api.CustomRenderer;
 import com.github.texxel.sprites.api.EmptyTexture;
 import com.github.texxel.sprites.api.Visual;
@@ -28,11 +28,13 @@ public class LevelRenderer implements GameRenderer {
 
         @Override
         public boolean render( Batch batch ) {
-            TileMap tileMap = LevelRenderer.this.tileMap;
+            TileMap tileMap = level.getTileMap();
+            Theme theme = level.getTheme();
             for ( int i = tileMap.width() - 1; i >= 0; i-- ) {
                 for ( int j = tileMap.height() - 1; j >= 0; j-- ) {
                     Tile tile = tileMap.getTile( i, j );
-                    batch.draw( tile.getDefaultImage(), i, j, 1, 1 );
+                    TextureRegion region = theme.image( tile, tileMap, i, j );
+                    batch.draw( region, i, j, 1, 1 );
                 }
             }
             return false;
@@ -52,7 +54,7 @@ public class LevelRenderer implements GameRenderer {
 
         @Override
         public boolean render( Batch batch ) {
-            fog.render( batch );
+            level.getFogOfWar().render( batch );
             return false;
         }
 
@@ -65,8 +67,7 @@ public class LevelRenderer implements GameRenderer {
     private final GameBatcher batch;
     private final Visual[] specialVisuals;
 
-    TileMap tileMap;
-    FogOfWar fog;
+    Level level;
 
     public LevelRenderer( OrthographicCamera camera ) {
         batch = new GameBatcher( camera );
@@ -79,8 +80,7 @@ public class LevelRenderer implements GameRenderer {
 
     @Override
     public void render( Level level, float dt ) {
-        tileMap = level.getTileMap();
-        fog = level.getFogOfWar();
+        this.level = level;
 
         Gdx.gl.glClearColor( 0, 0, 0, 1 );
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
