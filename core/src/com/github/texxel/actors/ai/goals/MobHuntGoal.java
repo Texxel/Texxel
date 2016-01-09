@@ -21,17 +21,21 @@ public class MobHuntGoal extends CharMoveGoal {
         Char mob = getMob();
         Char hero = this.hero;
 
-        // change target to the hero if he can be seen. Otherwise, keep going to the last place
-        // he was seen
-        if ( mob.getVision().isVisible( hero.getLocation() ) )
-            setTarget( hero.getLocation() );
+        // Change target to the hero if he can be seen. Otherwise, keep going to the
+        // last place he was seen
+        if ( mob.getVision().isVisible( hero.getLocation() ) ) {
+            if ( hero.isDead() )
+                return new ChangeGoalAction( mob, new MobWanderGoal( mob, hero.getLocation() ) );
+            else
+                setTarget( hero.getLocation() );
+        }
         return super.nextAction();
     }
 
     @Override
     public Action onTargetReached() {
         Char mob = getMob();
-        if ( mob.getVision().isVisible( hero.getLocation() ) )
+        if ( !hero.isDead() && mob.getVision().isVisible( hero.getLocation() ) )
             return new AttackAction( mob, hero );
         else
             return new ChangeGoalAction( mob, new MobWanderGoal( mob ) );
