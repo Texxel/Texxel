@@ -23,8 +23,6 @@ class MobSpawner extends AbstractActor {
     }
 
     void fillLevel() {
-        System.out.println( "Filling the level" );
-
         Level level = level();
         List<Char> chars = level.getCharacters();
 
@@ -37,7 +35,6 @@ class MobSpawner extends AbstractActor {
         }
         // bring the level population back up
         for ( int i = mobs; i < MIN_BADDIES; i++ ) {
-            System.out.println( "Adding a mob" );
             RandomCategory<MobConstructor> bestiary = level.getBestiary();
             MobConstructor constructor = bestiary.next();
             Point2D loc = level.randomRespawnCell();
