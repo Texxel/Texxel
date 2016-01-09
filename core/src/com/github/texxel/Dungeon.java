@@ -24,16 +24,17 @@ public final class Dungeon implements Serializable {
 
     {
         // register the default levels
-        for ( int i = 1; i <= 1; i++ )
+        for ( int i = 1; i <= 5; i++ )
             register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.SEWERS ) );
-        for ( int i = 2; i <= 2; i++ )
+        for ( int i = 6; i <= 10; i++ )
             register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.PRISON ) );
-        for ( int i = 3; i <= 3; i++ )
+        for ( int i = 11; i <= 15; i++ )
             register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.CAVES ) );
-        for ( int i = 4; i <= 4; i++ )
+        for ( int i = 16; i <= 20; i++ )
             register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.CITY ) );
-        for ( int i = 5; i <= 5; i++ )
+        for ( int i = 21; i <= 25; i++ )
             register( i, new LevelDescriptor( this, i ).setTheme( ThemeRegistry.HALLS ) );
+
     }
 
     /**
