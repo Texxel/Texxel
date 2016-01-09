@@ -103,16 +103,9 @@ public class GameScene extends PixelScreen {
 
     @Override
     public void resize( int width, int height ) {
+        super.resize( width, height );
         gameCamera.viewportHeight = gameCamera.viewportWidth * height / width;
         gameCamera.update();
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
     }
 
     @Override
@@ -123,10 +116,7 @@ public class GameScene extends PixelScreen {
             throw new RuntimeException( "Couldn't save level", e );
         }
         state.getLevel().destroy();
+        super.hide();
     }
 
-    @Override
-    public void dispose() {
-
-    }
 }
