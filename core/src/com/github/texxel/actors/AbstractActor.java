@@ -13,18 +13,23 @@ public abstract class AbstractActor implements Actor {
 
     private static final long serialVersionUID = 4744979006380058760L;
 
-    private float time;
+    private float energy;
     private Goal goal;
     private final List<Sensor> sensors = new ArrayList<>();
     private final List<Sensor> unmodifiableSensors = Collections.unmodifiableList( sensors );
     private Level level;
 
     /**
-     * Constructs an actor who's time is at 0
+     * Constructs an actor who has 0 energy
      */
     public AbstractActor( Level level ) {
-        time = 0;
+        energy = 0;
         this.level = level;
+    }
+
+    @Override
+    public void charge() {
+        this.energy++;
     }
 
     @Override
@@ -41,17 +46,17 @@ public abstract class AbstractActor implements Actor {
 
     @Override
     public void spend( float energy ) {
-        this.time += energy;
+        this.energy -= energy;
     }
 
     @Override
-    public float getTime() {
-        return time;
+    public float getEnergy() {
+        return energy;
     }
 
     @Override
-    public void setTime( float energy ) {
-        this.time = energy;
+    public void setEnergy( float energy ) {
+        this.energy = energy;
     }
 
     @Override

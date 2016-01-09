@@ -31,16 +31,22 @@ public interface Actor extends Serializable {
     void spend( float time );
 
     /**
-     * Gets the time that the actor will next do something at
-     * @return the time for the actors next turn
+     * Charges up this actors energy by a little bit. By default, this restores 1 energy. Subclasses
+     * may override this to do as they feel
      */
-    float getTime();
+    void charge();
 
     /**
-     * Sets the time at which the actor will do his next action
-     * @param time the time to act
+     * Gets how much energy this actor has
+     * @return this actors energy
      */
-    void setTime( float time );
+    float getEnergy();
+
+    /**
+     * Sets the energy that this actor has
+     * @param energy the actors new energy
+     */
+    void setEnergy( float energy );
 
     /**
      * Gets this actors goal.

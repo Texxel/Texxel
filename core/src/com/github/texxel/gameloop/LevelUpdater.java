@@ -25,8 +25,9 @@ public class LevelUpdater implements GameUpdater {
                 Actor actor = getNextActor( level.getActors() );
 
                 // if the actor is already doing something, just wait for it to finish
-                if ( renderingActions.containsKey( actor ) )
+                if ( renderingActions.containsKey( actor ) ) {
                     break;
+                }
 
                 // start the new action
                 currentAction = getAction( actor );
@@ -74,24 +75,32 @@ public class LevelUpdater implements GameUpdater {
     }
 
     /**
-     * Gets the Actor with the smallest time
+     * Gets the Actor with the most energy which is still positive. If no actors have any energy,
+     * then all the actors will be told to charge up.
      * @param actors the list of actors to search through
      * @return the actor with the smallest time
      */
     private static Actor getNextActor( List<Actor> actors ) {
-        float minTime = Float.MAX_VALUE;
         Actor nextActor = null;
-        int size = actors.size();
-        for ( int i = 0; i < size; i++ ) {
-            Actor a = actors.get( i );
-            float time = a.getTime();
-            if ( time < minTime ) {
-                nextActor = a;
-                minTime = time;
+        while ( nextActor == null ) {
+            // try to find an actor with positive energy
+            float maxEnergy = 0;
+            int size = actors.size();
+            for ( int i = 0; i < size; i++ ) {
+                Actor a = actors.get( i );
+                float energy = a.getEnergy();
+                if ( energy > maxEnergy ) {
+                    nextActor = a;
+                    maxEnergy = energy;
+                }
+            }
+
+            // no actor with positive energy. Charge everyone up
+            if ( nextActor == null ) {
+                for ( int i = 0; i < size; i++ )
+                    actors.get( i ).charge();
             }
         }
-        if ( nextActor == null )
-            throw new IllegalStateException( "The level had no actors!!!" );
         return nextActor;
     }
 
