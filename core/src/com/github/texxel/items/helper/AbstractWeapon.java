@@ -1,16 +1,27 @@
 package com.github.texxel.items.helper;
 
-import com.github.texxel.actors.Char;
 import com.github.texxel.items.api.Sellable;
 import com.github.texxel.items.api.Weapon;
+import com.github.texxel.mechanics.attacking.Effect;
+import com.github.texxel.utils.Range;
+import com.github.texxel.utils.UniformRange;
+
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractWeapon extends AbstractItem implements Weapon, Sellable {
     private static final long serialVersionUID = -5741285143699499672L;
 
     private final int tier;
+    private final float accuracy, delay;
+    private final Range accRange, delayRange;
 
-    public AbstractWeapon( int tier ) {
+    public AbstractWeapon( int tier, float accuracy, float delay ) {
         this.tier = tier;
+        this.accuracy = accuracy;
+        this.delay = delay;
+        accRange = new UniformRange( 0, accuracy );
+        delayRange = new UniformRange( 0, delay );
     }
 
     @Override
@@ -19,22 +30,24 @@ public abstract class AbstractWeapon extends AbstractItem implements Weapon, Sel
     }
 
     @Override
-    public float accuracy( Char attacker ) {
-        return 1;
+    public Range accuracy() {
+        return accRange;
     }
 
     @Override
-    public float speed( Char attacker ) {
-        return 1;
+    public Range damage() {
+        return new UniformRange( tier, (tier * tier - tier + 10) / accuracy * delay );
     }
 
     @Override
-    public int proc( Char attacker, Char defender, int damageRolled ) {
-        return damageRolled;
+    public Range delay() {
+        return delayRange;
     }
 
     @Override
-    public float damageRoll( Char attacker, Char enemy ) {
-        return tier;
+    public List<Effect> effects() {
+        // return enchaantment.effects();
+        return Collections.emptyList();
     }
+
 }

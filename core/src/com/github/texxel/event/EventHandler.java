@@ -43,8 +43,11 @@ public final class EventHandler<L extends Listener> implements Serializable {
      */
     public static final int VERY_LATE = -1000;
 
-    transient Listener[] listenersBaked = null;
+    // The full list of all the listeners mapped to the priority being listened to
     TreeMap<Integer, HashSet<Listener>> listeners = new TreeMap<>();
+
+    // Iterating over the tree map is slow! so we bake the listeners order into an array
+    transient Listener[] listenersBaked = null;
 
     /**
      * Dispatches an event to all the listeners. If a listener cancels an event, then no further
@@ -125,6 +128,23 @@ public final class EventHandler<L extends Listener> implements Serializable {
         return found;
     }
 
+    /**
+     * Tests if there is any listeners registered. Before firing an event, it is recommended that
+     * this method is checked; if no listeners are registered, then there is no point wasting
+     * performance setting up events. Note: firing events with no listeners is very fast anyway,
+     * thus, it's only when the set up to fire the event is strenuous does it become worth calling
+     * this method.
+     * @return true if there are no listeners.
+     */
+    public boolean isEmpty() {
+        if ( listenersBaked == null )
+            bake();
+        return listenersBaked.length != 0;
+    }
+
+    /**
+     * Bakes the cached listeners order
+     */
     private void bake() {
         int size = 0;
         for( HashSet<Listener> list : listeners.values() )

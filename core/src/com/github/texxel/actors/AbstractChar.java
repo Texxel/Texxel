@@ -3,14 +3,20 @@ package com.github.texxel.actors;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.github.texxel.actors.ai.goals.CharDieGoal;
 import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.events.actor.CharDamagedEvent;
+import com.github.texxel.event.events.actor.CharHealthChangedEvent;
 import com.github.texxel.event.events.actor.CharMoveEvent;
-import com.github.texxel.event.listeners.actor.CharDamagedListener;
+import com.github.texxel.event.listeners.actor.CharAttackListener;
+import com.github.texxel.event.listeners.actor.CharHealthChangedListener;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
 import com.github.texxel.levels.Level;
 import com.github.texxel.mechanics.BasicFOV;
 import com.github.texxel.mechanics.FieldOfVision;
+import com.github.texxel.mechanics.attacking.Attack;
+import com.github.texxel.utils.Assert;
 import com.github.texxel.utils.Point2D;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractChar extends AbstractActor implements Char {
 
@@ -19,8 +25,10 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     private float health, maxHealth;
     private Point2D location;
     private FieldOfVision fov;
+    private Map<String, Attribute> attributes = new HashMap<>();
     private final EventHandler<CharMoveListener> moveHandler = new EventHandler<>();
-    private final EventHandler<CharDamagedListener> damageHandler = new EventHandler<>();
+    private final EventHandler<CharAttackListener> attackHandler = new EventHandler<>();
+    private final EventHandler<CharHealthChangedListener> healthHandler = new EventHandler<>();
 
     /**
      * Constructs the char at the spawn point
@@ -37,12 +45,6 @@ public abstract class AbstractChar extends AbstractActor implements Char {
             throw new IllegalArgumentException( "health cannot be <= 0" );
         this.location = spawn;
         maxHealth = this.health = health;
-    }
-
-    @Override
-    public float attack( Char enemy ) {
-        spend( 1.0f );
-        return enemy.damage( 3, this );
     }
 
     @Override
@@ -96,15 +98,33 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
-    public float damage( float damage, Object source ) {
-        CharDamagedEvent e = new CharDamagedEvent( this, source, damage );
-        damageHandler.dispatch( e );
-        if ( e.isCancelled() )
-            return 0;
-        else
-            damage = e.getDamage();
-        setHealth( getHealth() - damage );
-        return damage;
+    public boolean hasAttribute( String name ) {
+        return attributes.containsKey( name );
+    }
+
+    @Override
+    public Attribute getAttribute( String name ) {
+        Attribute attribute = attributes.get( Assert.nonnull( name, "attribute key cannot be null" ) );
+        if ( attribute == null ) {
+            attribute = new Attribute( name );
+            attributes.put( name, attribute );
+        }
+        return attribute;
+    }
+
+    @Override
+    public void damage( Attack attack ) {
+        float accuracy = attack.accuracy().get();
+        float dodge = getAttribute( "dodge" ).value().get();
+        if ( dodge > accuracy )
+            return;
+
+        float dmg = attack.damage().get();
+        float armor = getAttribute( "armor" ).value().get();
+        float netDamage = Math.max( dmg - armor, 0 );
+
+        attack.attacker().spend( attack.delay().get() );
+        setHealth( health - netDamage );
     }
 
     @Override
@@ -117,12 +137,21 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
-    public void setHealth( float health ) {
+    public float setHealth( float health ) {
+        if ( !healthHandler.isEmpty() ) {
+            CharHealthChangedEvent e = new CharHealthChangedEvent( this, this.health, health );
+            healthHandler.dispatch( e );
+            if ( e.isCancelled() )
+                return this.health;
+            health = e.getNextHealth();
+        }
+
         if ( health > maxHealth )
             health = maxHealth;
         this.health = health;
         if ( health <= 0 )
             die();
+        return health;
     }
 
     private void die() {
@@ -155,7 +184,12 @@ public abstract class AbstractChar extends AbstractActor implements Char {
     }
 
     @Override
-    public EventHandler<CharDamagedListener> getDamageHandler() {
-        return damageHandler;
+    public EventHandler<CharAttackListener> getAttackHandler() {
+        return attackHandler;
+    }
+
+    @Override
+    public EventHandler<CharHealthChangedListener> getHealthHandler() {
+        return healthHandler;
     }
 }

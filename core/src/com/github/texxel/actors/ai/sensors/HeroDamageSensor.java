@@ -4,8 +4,8 @@ import com.github.texxel.actors.Char;
 import com.github.texxel.actors.ai.Sensor;
 import com.github.texxel.actors.ai.goals.HeroIdleGoal;
 import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.events.actor.CharDamagedEvent;
-import com.github.texxel.event.listeners.actor.CharDamagedListener;
+import com.github.texxel.event.events.actor.CharHealthChangedEvent;
+import com.github.texxel.event.listeners.actor.CharHealthChangedListener;
 
 /**
  * The hero damage sensor will stop the hero whenever he is damaged
@@ -25,7 +25,7 @@ public class HeroDamageSensor implements Sensor {
 
     @Override
     public void onStart() {
-        hero.getDamageHandler().addListener( listener, EventHandler.TEXXEL_LISTEN );
+        hero.getHealthHandler().addListener( listener, EventHandler.TEXXEL_LISTEN );
     }
 
     @Override
@@ -35,18 +35,22 @@ public class HeroDamageSensor implements Sensor {
 
     @Override
     public void onRemove() {
-        hero.getDamageHandler().removeListener( listener, EventHandler.TEXXEL_LISTEN );
+        hero.getHealthHandler().removeListener( listener, EventHandler.TEXXEL_LISTEN );
     }
 
-    private class DamageListener implements CharDamagedListener {
+    private class DamageListener implements CharHealthChangedListener {
         private static final long serialVersionUID = -2973991290170852849L;
 
         @Override
-        public void onCharDamaged( CharDamagedEvent e ) {
+        public void onHealthChanged( CharHealthChangedEvent e ) {
             Char c = e.getCharacter();
             if ( c != hero )
                 return;
-            c.setGoal( new HeroIdleGoal( c ) );
+            float previous = e.getPreviousHealth();
+            float next = e.getNextHealth();
+            if ( next < previous )
+                c.setGoal( new HeroIdleGoal( c ) );
         }
+
     }
 }

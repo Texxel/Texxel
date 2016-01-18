@@ -36,7 +36,7 @@ public class MobHuntGoal extends CharMoveGoal {
     public Action onTargetReached() {
         Char mob = getMob();
         if ( !hero.isDead() && mob.getVision().isVisible( hero.getLocation() ) )
-            return new AttackAction( mob, hero );
+            return new AttackAction( mob, mob.weapon(), hero );
         else
             return new ChangeGoalAction( mob, new MobWanderGoal( mob ) );
     }

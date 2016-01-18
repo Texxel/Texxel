@@ -40,7 +40,8 @@ public abstract class AbstractEnemySensor implements Sensor {
         for ( int i = 0; i < size; i++ ) {
             Char enemy = chars.get( i );
             if ( Char.Side.areEnemies( side, enemy.getSide() )
-                    && vision.isVisible( enemy.getLocation() ) ) {
+                    && vision.isVisible( enemy.getLocation() )
+                    && !enemy.isDead() ) {
                 if ( knownEnemies.put( enemy, enemy.getLocation() ) == null )
                     onEnemySeen( enemy );
             }

@@ -1,15 +1,26 @@
 package com.github.texxel.items.api;
 
-import com.github.texxel.actors.Char;
+import com.github.texxel.mechanics.attacking.Effect;
+import com.github.texxel.utils.Range;
+
+import java.util.List;
 
 public interface Weapon extends Item {
 
-    float damageRoll( Char attacker, Char defender );
+    Range delay();
 
-    int proc( Char attacker, Char defender, int damageRolled );
+    Range accuracy();
 
-    float speed( Char attacker );
+    /**
+     * Gets the damage that this weapon does
+     * @return the range of the damage
+     */
+    Range damage();
 
-    float accuracy( Char attacker );
+    /**
+     * Gets a list of the effects for this weapon
+     * @return the effects that this weapon has
+     */
+    List<Effect> effects();
 
 }

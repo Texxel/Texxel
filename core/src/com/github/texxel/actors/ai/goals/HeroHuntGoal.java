@@ -37,7 +37,7 @@ public class HeroHuntGoal extends CharMoveGoal {
 
         // attack the enemy if we can see them
         if ( hero.getVision().isVisible( enemy.getLocation() ) )
-            return new AttackAction( hero, enemy );
+            return new AttackAction( hero, hero.weapon(), enemy );
         else
             return new IdleAction( hero, 0 );
     }

@@ -19,13 +19,6 @@ public interface Hero extends Char {
     Inventory getInventory();
 
     /**
-     * Gets the weapon that the hero has equipped. If the hero has no weapon equipped, then the hand
-     * weapon is returned.
-     * @return the weapon the hero will use for melee combat. Never null
-     */
-    Weapon getWeapon();
-
-    /**
      * Sets the weapon to use to fight with in melee combat. This will not spend any of the hero's
      * time.
      * @param weapon the weapon to do melee combat with

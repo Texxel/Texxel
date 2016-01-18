@@ -1,9 +1,12 @@
 package com.github.texxel.actors;
 
 import com.github.texxel.event.EventHandler;
-import com.github.texxel.event.listeners.actor.CharDamagedListener;
+import com.github.texxel.event.listeners.actor.CharAttackListener;
+import com.github.texxel.event.listeners.actor.CharHealthChangedListener;
 import com.github.texxel.event.listeners.actor.CharMoveListener;
+import com.github.texxel.items.api.Weapon;
 import com.github.texxel.mechanics.FieldOfVision;
+import com.github.texxel.mechanics.attacking.Attack;
 import com.github.texxel.sprites.api.CharVisual;
 import com.github.texxel.sprites.api.WorldVisual;
 import com.github.texxel.ui.Examinable;
@@ -53,20 +56,22 @@ public interface Char extends Actor, WorldVisual, Examinable {
     Point2D setLocation( Point2D location );
 
     /**
-     * Launches an attack at an enemy.
-     * @param enemy the enemy to attack
-     * @return the damage done
+     * Gets the attribute with the given name as an id. If the attribute does not exist, then it
+     * will be created with a base value of 0.
+     * @param name the name of the attribute
+     * @return the attribute
      */
-    float attack( Char enemy );
+    Attribute getAttribute( String name );
 
     /**
-     * Does some damage to this char. The damage will be reduced by things such as armor or
-     * resistances. The damage can be altered/cancelled through {@link #getDamageHandler()}
-     * @param damage the damage to do
-     * @param source the source of the damage (may be null for no source)
-     * @return the damage done. 0 if it was cancelled
+     * Tests if this char has an attribute
+     * @param name the name of the attribute to test for
+     * @return true if the attribute exists
      */
-    float damage( float damage, Object source );
+    boolean hasAttribute( String name );
+
+
+    void damage( Attack attack );
 
     /**
      * Gets the side that this enemy is on.
@@ -94,10 +99,12 @@ public interface Char extends Actor, WorldVisual, Examinable {
     /**
      * Directly sets the characters health. If the health is <= 0, then the char will be killed. If
      * the health is greater than the maximum health, then the character will be set to maximum
-     * health. This method bypasses damage listeners sop careful use is advised.
+     * health. The set health can be altered though {@link #getHealthHandler()}
      * @param health the chars new health
+     * @return the characters new health (always what was passed to the event except when the event
+     * gets altered by plugins)
      */
-    void setHealth( float health );
+    float setHealth( float health );
 
     /**
      * Gets the maximum health this character can have
@@ -126,9 +133,19 @@ public interface Char extends Actor, WorldVisual, Examinable {
      */
     EventHandler<CharMoveListener> getMoveHandler();
 
+    EventHandler<CharAttackListener> getAttackHandler();
+
     /**
-     * EventHandler that fires events whenever {@link #damage(float, Object)} is called
+     * EventHandler that is dispatched every time {@link #setHealth(float)} is called
      */
-    EventHandler<CharDamagedListener> getDamageHandler();
+    EventHandler<CharHealthChangedListener> getHealthHandler();
+
+    /**
+     * Gets the default weapon used by this character. In the case of mobs, this is almost always
+     * just a dummy object used to represent a hand attack. In the case of the hero, this the equipped
+     * weapon or the hand weapon if no weapon is equipped.
+     * @return the weapon to use
+     */
+    Weapon weapon();
 
 }

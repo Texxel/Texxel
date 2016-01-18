@@ -9,7 +9,7 @@ public class Sword extends AbstractWeapon {
     private static final long serialVersionUID = 7190115410565231271L;
 
     public Sword() {
-        super( 2 );
+        super( 2, 1, 0.5f );
     }
 
     @Override
