@@ -6,6 +6,7 @@ package com.github.texxel.utils;
  */
 public class UniformRange implements Range {
 
+    private static final long serialVersionUID = 1656159158273084282L;
     private final float min, max;
 
     /**

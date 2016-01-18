@@ -4,6 +4,7 @@ package com.github.texxel.utils;
  * The TriangleRange class has tends to generate numbers in the middle of the range.
  */
 public class TriangleRange implements Range {
+    private static final long serialVersionUID = -5728134436309688004L;
 
     // TODO let users set the center value
 
