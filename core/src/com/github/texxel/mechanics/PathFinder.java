@@ -3,6 +3,7 @@ package com.github.texxel.mechanics;
 import com.github.texxel.utils.Arrays2D;
 import com.github.texxel.utils.Point2D;
 
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 
 /**
@@ -13,8 +14,7 @@ import java.util.HashMap;
 public final class PathFinder {
 
     /**
-     * Makes a brand new grid. Creating grids is expensive, thus, where possible, you should use
-     * {@link #sharedGrid(int, int)}.
+     * Makes a brand new grid for path finding
      * @param width the width to create the grid
      * @param height the height to create the grid
      * @return the new grid
@@ -23,25 +23,8 @@ public final class PathFinder {
         return new PathFinder( width, height );
     }
 
-    /**
-     * Gets a PathFinder grid that is shared. Using this method is good as it can reduce the strain on
-     * the garbage collector, but it can also be a cause for subtle bugs if another object requests
-     * and edits the same grid. To avoid this issue, ensure that the pathfinder is always discarded
-     * immediately after use.
-     * @param width the width of the created grid
-     * @param height the height of the created grid
-     * @return the shared grid
-     */
-    public static PathFinder sharedGrid( int width, int height ) {
-        Point2D dimension = new Point2D( width, height );
-        PathFinder pathFinder = sharedGrids.get( dimension );
-        if ( pathFinder == null )
-            sharedGrids.put( dimension, pathFinder = new PathFinder( width, height ) );
-        return pathFinder;
-    }
-
     // using a Point2D to represent a dimension. Yuck!
-    private static HashMap<Point2D, PathFinder> sharedGrids = new HashMap<>();
+    private static HashMap<Point2D, SoftReference<PathFinder>> sharedGrids = new HashMap<>();
 
     // note: order of surrounds is important to form a straight path
     private static final int[] xSurrounds = new int[] {

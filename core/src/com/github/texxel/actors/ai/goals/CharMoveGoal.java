@@ -24,6 +24,7 @@ public abstract class CharMoveGoal implements Goal {
     private Point2D target;
     private transient boolean[][] passable;
     private final Level level;
+    private transient PathFinder finder;
 
     public CharMoveGoal( Char character, Point2D target ) {
         if ( character == null )
@@ -34,6 +35,7 @@ public abstract class CharMoveGoal implements Goal {
         this.character = character;
         this.target = target;
         passable = new boolean[level.width()][level.height()];
+        finder = PathFinder.newGrid( level.width(), level.height() );
     }
 
     @Override
@@ -84,7 +86,7 @@ public abstract class CharMoveGoal implements Goal {
         boolean[][] passable = this.passable;
         Char character = this.character;
         setPassables( passable );
-        PathFinder pathFinder = PathFinder.sharedGrid( level.width(), level.height() );
+        PathFinder pathFinder = PathFinder.newGrid( level.width(), level.height() );
         pathFinder.setUp( passable, target.x, target.y );
         Point2D loc = character.getLocation();
         return pathFinder.getNextStep( loc.x, loc.y );
@@ -118,6 +120,7 @@ public abstract class CharMoveGoal implements Goal {
             throws IOException, ClassNotFoundException {
         inputStream.defaultReadObject();
         passable = new boolean[level.width()][level.height()];
+        finder = PathFinder.newGrid( level.width(), level.height() );
     }
 
 }
