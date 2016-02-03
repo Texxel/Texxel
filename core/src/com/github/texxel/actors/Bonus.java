@@ -2,7 +2,9 @@ package com.github.texxel.actors;
 
 import com.github.texxel.utils.Range;
 
-public interface Bonus {
+import java.io.Serializable;
+
+public interface Bonus extends Serializable {
 
     int INITIAL = 0, MULTIPLY = 10, ADD = 20, FINAL = 30;
 

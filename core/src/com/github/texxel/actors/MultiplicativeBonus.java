@@ -5,6 +5,7 @@ import com.github.texxel.utils.Range;
 
 public class MultiplicativeBonus implements Bonus {
 
+    private static final long serialVersionUID = 6402238445370922129L;
     private final Range scale;
 
     public MultiplicativeBonus( Range scale ) {

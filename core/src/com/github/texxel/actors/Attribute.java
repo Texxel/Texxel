@@ -3,16 +3,19 @@ package com.github.texxel.actors;
 import com.github.texxel.utils.ConstantRange;
 import com.github.texxel.utils.Range;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class Attribute {
+public class Attribute implements Serializable {
 
+    private static final long serialVersionUID = 5929859995859958592L;
     public final String name;
     public Range baseValue;
-    private List<Bonus> bonuses = new ArrayList<>();
+    private ArrayList<Bonus> bonuses = new ArrayList<>();
+    @SuppressWarnings( "NonSerializableFieldInSerializableClass" )
     private List<Bonus> publicBonuses = Collections.unmodifiableList( bonuses );
 
     Attribute( String name ) {
