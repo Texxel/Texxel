@@ -38,10 +38,9 @@ public interface Visual {
     /**
      * Sets the depth for this visual. The depth is in the opposite direction to the z axis (which
      * follows the standard right hand convention of being positive out of the screen). Thus, visuals
-     * with a very high depth will be drawn a the back and visuals with a very small (i.e. large
+     * with a very high depth will be drawn at the back and visuals with a very small (i.e. large
      * negative depth will be drawn on the top. Most things should get drawn at the default depth
-     * of 0. Tiles are drawn at depth 100. The Fog overlay is drawn at depth -100. Floating text
-     * overlays should be drawn at depth -500.
+     * of 0. Tiles are drawn at depth 100.
      * @param depth the visuals new depth
      * @return this
      */

@@ -22,12 +22,26 @@ import java.util.TreeMap;
 public class GameBatcher {
 
     private TreeMap<Integer, HashMap<Texture, ArrayList<Visual>>> collections = new TreeMap<>();
-    public final SpriteBatch batch;
+    public final Batch batch;
     private Camera camera;
 
+    /**
+     * The same as {@code new GameBatcher(new SpriteBatcher(), camera)}
+     * @see #GameBatcher(Batch, Camera)
+     */
     public GameBatcher( Camera camera ) {
+        this( new SpriteBatch(), camera );
+    }
+
+    /**
+     * Creates a new game batch. Before each flush, the batch will be updated with the camera's
+     * projection matrix. The camera will not be updated.
+     * @param batch the Batch to use for drawing visuals to
+     * @param camera the camera to configure the batch with
+     */
+    public GameBatcher( Batch batch, Camera camera ) {
         this.camera = camera;
-        batch = new SpriteBatch();
+        this.batch = batch;
     }
 
     /**
