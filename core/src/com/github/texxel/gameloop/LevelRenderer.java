@@ -46,24 +46,6 @@ public class LevelRenderer implements GameRenderer {
         }
     }
 
-    private class FogRenderer extends AbstractVisual implements CustomRenderer {
-
-        {
-            setDepth( -100 );
-        }
-
-        @Override
-        public boolean render( Batch batch ) {
-            level.getFogOfWar().render( batch );
-            return false;
-        }
-
-        @Override
-        public TextureRegion getRegion() {
-            return EmptyTexture.instance();
-        }
-    }
-
     private final GameBatcher batch;
     private final Visual[] specialVisuals;
 
@@ -74,7 +56,6 @@ public class LevelRenderer implements GameRenderer {
 
         specialVisuals = new Visual[] {
                 new TileRenderer(),
-                new FogRenderer()
         };
     }
 

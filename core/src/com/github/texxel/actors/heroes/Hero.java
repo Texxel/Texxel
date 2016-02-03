@@ -7,9 +7,6 @@ import com.github.texxel.sprites.api.HeroVisual;
 public interface Hero extends Char {
 
     @Override
-    HeroFOV getVision();
-
-    @Override
     HeroVisual getVisual();
 
     /**

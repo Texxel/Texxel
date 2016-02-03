@@ -17,8 +17,6 @@ import com.github.texxel.levels.components.Theme;
 import com.github.texxel.levels.components.ThemeRegistry;
 import com.github.texxel.levels.components.TileFiller;
 import com.github.texxel.levels.components.TileMap;
-import com.github.texxel.mechanics.FogOfWar;
-import com.github.texxel.mechanics.SimpleFog;
 import com.github.texxel.tiles.Tile;
 import com.github.texxel.tiles.WallTile;
 import com.github.texxel.utils.Assert;
@@ -48,9 +46,6 @@ public class Level implements Serializable {
     private final ArrayList<Actor> actors = new ArrayList<>();
     private RandomCategory<MobConstructor> bestiary = new RandomCategory<>();
 
-    // TODO fog should be moved to the UI
-    private final FogOfWar fog;
-
     // event handlers
     private final EventHandler<ActorSpawnListener> actorSpawnHandler = new EventHandler<>();
     private final EventHandler<ActorDestroyListener> actorDestroyHandler = new EventHandler<>();
@@ -75,7 +70,6 @@ public class Level implements Serializable {
             }
         };
         this.tileMap = new TileMap( width, height, filler );
-        this.fog = new SimpleFog( width, height );
         this.theme = Assert.nonnull( theme, "Theme cannot be null" );
 
         actors.add( new MobSpawner( this ) );
@@ -281,14 +275,6 @@ public class Level implements Serializable {
      */
     public boolean isInBounds( int x, int y ) {
         return x >= 0 && x < width && y >= 0 && y < height;
-    }
-
-    /**
-     * Gets the fog that covers the level. The fog gets updated every frame
-     * @return the level's fog
-     */
-    public FogOfWar getFogOfWar() {
-        return fog;
     }
 
     /**

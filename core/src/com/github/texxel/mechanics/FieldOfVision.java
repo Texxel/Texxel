@@ -69,4 +69,24 @@ public interface FieldOfVision extends Serializable {
      */
     void setViewDistance( int maxDistance );
 
+    /**
+     * Tests if a cell is known by the viewer. Some characters (like most mobs) may always
+     * return true.
+     * @param x the cell's x position
+     * @param y the cell's y position
+     * @return true if the hero has seen the cell before
+     * @throws IndexOutOfBoundsException if x,y is outside of the grid
+     */
+    boolean isKnown( int x, int y );
+
+    /**
+     * Sets if the viewer has seen a cell. Some simple characters (like mobs) may choose to
+     * completely ignore this method.
+     * @param x the cell's x position
+     * @param y the cell's y position
+     * @param discovered true if the cell is discovered
+     * @throws IndexOutOfBoundsException if x,y is outside the of the grid
+     */
+    void setKnown( int x, int y, boolean discovered );
+
 }

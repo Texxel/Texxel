@@ -92,6 +92,16 @@ public class BasicFOV implements FieldOfVision {
     }
 
     @Override
+    public boolean isKnown( int x, int y ) {
+        return true;
+    }
+
+    @Override
+    public void setKnown( int x, int y, boolean discovered ) {
+        // ignored
+    }
+
+    @Override
     public int getViewDistance() {
         return radius;
     }
@@ -221,7 +231,7 @@ public class BasicFOV implements FieldOfVision {
                         // optimisation. Nothing will get found when this is false
                         //println( "start wall slope bounds: s=" + startSlope + " e=" + nextEndSlope, depth );
                         scanSector( i + 1, yStart, startSlope, nextEndSlope, xx, xy, yx, yy, depth + 1 );
-                    } else {
+                    //} else {
                         //println( "skipped scan: s=" + startSlope + " e=" + nextEndSlope, depth );
                     }
                     lastWasSolid = true;

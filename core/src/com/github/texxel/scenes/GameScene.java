@@ -15,6 +15,7 @@ import com.github.texxel.gameloop.LevelUpdater;
 import com.github.texxel.ui.BackPackWindow;
 import com.github.texxel.ui.CameraControl;
 import com.github.texxel.ui.DepthMover;
+import com.github.texxel.ui.FogActor;
 import com.github.texxel.ui.HeroControl;
 import com.github.texxel.ui.HeroFollower;
 import com.github.texxel.ui.PixelSkin;
@@ -60,6 +61,7 @@ public class GameScene extends PixelScreen {
         // Set up the ui
         final Stage ui = getUserInterface();
 
+        ui.addActor( new FogActor( state, gameCamera, ui.getCamera() ) );
         ui.addListener( new HeroControl( state, ui.getCamera(), gameCamera ) );
         ui.addActor( new DepthMover( getApp(), state ) );
         ui.addListener( new CameraControl( gameCamera, ui.getCamera() ) );

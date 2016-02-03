@@ -1,15 +1,14 @@
-package com.github.texxel.actors.heroes;
+package com.github.texxel.mechanics;
 
-import com.github.texxel.mechanics.BasicFOV;
 import com.github.texxel.utils.Point2D;
 
-public class BasicHeroFOV extends BasicFOV implements HeroFOV {
+public class ComplexFOV extends BasicFOV implements FieldOfVision {
 
     private static final long serialVersionUID = 2536539835420855944L;
 
     private final boolean[][] discovered;
 
-    public BasicHeroFOV( boolean[][] solids, Point2D location ) {
+    public ComplexFOV( boolean[][] solids, Point2D location ) {
         super( solids, location );
         discovered = new boolean[solids.length][solids[0].length];
     }
@@ -24,12 +23,12 @@ public class BasicHeroFOV extends BasicFOV implements HeroFOV {
     }
 
     @Override
-    public boolean isDiscovered( int x, int y ) {
+    public boolean isKnown( int x, int y ) {
         return discovered[x][y];
     }
 
     @Override
-    public void setDiscovered( int x, int y, boolean discovered ) {
+    public void setKnown( int x, int y, boolean discovered ) {
         this.discovered[x][y] = discovered;
     }
 

@@ -2,14 +2,13 @@ package com.github.texxel.mechanics;
 
 import com.github.texxel.sprites.api.CustomRenderer;
 
-import java.io.Serializable;
-
 /**
  * The FogOfWar class is an overlay that reduces the users visibility of the world. The fog has a
- * co-ordinate system that is offset by half a cell from the level that it is overlaying. This is to
- * ensure that tiles that are behind solid tiles cannot be seen
+ * co-ordinate system that is offset by half a cell from the level that it is overlaying. The fog
+ * should also be created with a size one greater than the level. This is to ensure that tiles that
+ * are behind solid tiles cannot be seen
  */
-public interface FogOfWar extends CustomRenderer, Serializable {
+public interface FogOfWar extends CustomRenderer {
 
     /**
      * The amount of cells vertically in the fog
