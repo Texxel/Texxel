@@ -1,48 +1,119 @@
 package com.github.texxel.event;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.mockito.InOrder;
 
-public class EventHandlerTest extends TestCase {
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-    private static class TestListener implements Listener {
-        private static final long serialVersionUID = -6383987784609461608L;
+public class EventHandlerTest {
 
-        public final String id;
-        public TestListener( String id ) {
-            this.id = id;
-        }
-
-        public boolean onCall() {
-            testString = testString + id;
-            return false;
-        }
+    interface TestListener extends Listener {
+        boolean onEvent();
     }
 
-    private static class TestEvent implements Event<TestListener> {
+    class TestEvent implements Event<TestListener> {
         @Override
         public boolean dispatch( TestListener listener ) {
-            return listener.onCall();
+            return listener.onEvent();
         }
     }
 
-    private static String testString = "";
-
-    public void testAddListener() throws Exception {
+    @Test
+    public void listenersExecutedInOrder() throws Exception {
         EventHandler<TestListener> handler = new EventHandler<>();
-        handler.addListener( new TestListener( "A" ), EventHandler.LATE );
-        assertEquals( 1, handler.listeners.size() );
+        final TestListener l1 = mock( TestListener.class );
+        TestListener l2 = mock( TestListener.class );
+        TestListener l3 = mock( TestListener.class );
+        TestListener l4 = mock( TestListener.class );
+        TestListener l5 = mock( TestListener.class );
+        handler.addListener( l1, EventHandler.VERY_EARLY );
+        handler.addListener( l2, EventHandler.EARLY );
+        handler.addListener( l3, EventHandler.NORMAL );
+        handler.addListener( l4, EventHandler.LATE );
+        handler.addListener( l5, EventHandler.VERY_LATE );
+
+        handler.dispatch( new TestEvent() );
+
+        InOrder inOrder = inOrder( l1, l2, l3, l4, l5 );
+        inOrder.verify( l1 ).onEvent();
+        inOrder.verify( l2 ).onEvent();
+        inOrder.verify( l3 ).onEvent();
+        inOrder.verify( l4 ).onEvent();
+        inOrder.verify( l5 ).onEvent();
     }
 
-    public void testExecutionOrder() throws Exception {
+    @Test
+    public void eventIsCanceled() {
         EventHandler<TestListener> handler = new EventHandler<>();
-        handler.addListener( new TestListener( "A" ), EventHandler.VERY_EARLY );
-        handler.addListener( new TestListener( "B" ), EventHandler.EARLY );
-        handler.addListener( new TestListener( "C" ), EventHandler.NORMAL );
-        handler.addListener( new TestListener( "D" ), EventHandler.LATE );
-        handler.addListener( new TestListener( "E" ), EventHandler.VERY_LATE );
-        testString = "";
+
+        TestListener l1 = mock( TestListener.class );
+        TestListener l2 = mock( TestListener.class );
+        TestListener l3 = mock( TestListener.class );
+        when( l2.onEvent() ).thenReturn( true );
+
+        handler.addListener( l1, EventHandler.EARLY );
+        handler.addListener( l2, EventHandler.NORMAL );
+        handler.addListener( l3, EventHandler.LATE );
+
         handler.dispatch( new TestEvent() );
-        assertEquals( testString, "ABCDE" );
+
+        verify( l1 ).onEvent();
+        verify( l2 ).onEvent();
+        verify( l3, never() ).onEvent();
+    }
+
+    @Test
+    public void listenersAreRemoved() {
+        EventHandler<TestListener> handler = new EventHandler<>();
+        final TestListener l = mock( TestListener.class );
+        handler.addListener( l, EventHandler.NORMAL );
+        handler.removeListener( l, EventHandler.NORMAL );
+
+        handler.dispatch( new TestEvent() );
+
+        verify( l, never() ).onEvent();
+    }
+
+    @Test
+    public void listenersCanBeAddedAtMultipleLevels() {
+        EventHandler<TestListener> handler = new EventHandler<>();
+        final TestListener l = mock( TestListener.class );
+        handler.addListener( l, EventHandler.NORMAL );
+        handler.addListener( l, EventHandler.EARLY );
+
+        handler.dispatch( new TestEvent() );
+
+        verify( l, times( 2 ) ).onEvent();
+    }
+
+    @Test
+    public void handlerCanRemoveAllListeners() {
+        EventHandler<TestListener> handler = new EventHandler<>();
+        final TestListener l = mock( TestListener.class );
+        handler.addListener( l, EventHandler.NORMAL );
+        handler.addListener( l, EventHandler.EARLY );
+        handler.removeAll( l );
+
+        handler.dispatch( new TestEvent() );
+
+        verify( l, never() ).onEvent();
+    }
+
+    @Test
+    public void listenersCanOnlyBeRegisteredOnceAtEachLevel() {
+        EventHandler<TestListener> handler = new EventHandler<>();
+        final TestListener l = mock( TestListener.class );
+        handler.addListener( l, EventHandler.NORMAL );
+        handler.addListener( l, EventHandler.NORMAL );
+
+        handler.dispatch( new TestEvent() );
+
+        verify( l ).onEvent();
     }
 
 }
